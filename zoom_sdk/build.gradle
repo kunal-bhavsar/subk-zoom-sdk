@@ -43,15 +43,14 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 }
 
-publishing {
-    publications {
-        release(MavenPublication) {
-            groupId = 'com.subk'
-            artifactId = 'zoomsdk'
-            version = '1.0'
-
-            afterEvaluate {
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
                 from components.release
+                groupId = 'com.subk.zoomsdk'
+                artifactId = 'zoom_sdk'
+                version = '1.0'
             }
         }
     }
