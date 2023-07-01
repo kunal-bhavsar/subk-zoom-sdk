@@ -55,7 +55,6 @@ import com.subk.zoomsdk.meeting.util.ZMAdapterOsBugHelper;
 import com.subk.zoomsdk.meeting.view.ChatMsgAdapter;
 import com.subk.zoomsdk.meeting.view.KeyBoardLayout;
 import com.subk.zoomsdk.meeting.view.UserVideoAdapter;
-import com.subk.zoomsdk.utils.ToastHelper;
 import com.subk.zoomsdk.utils.UserHelper;
 
 import java.util.ArrayList;
@@ -327,9 +326,9 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
         int ret = ZoomVideoSDK.getInstance().initialize(this.getApplicationContext(), params);
         if (ret != ZoomVideoSDKErrors.Errors_Success) {
-            ToastHelper.showShortToast(this, ErrorMsgUtil.getMsgByErrorCode(ret));
+            Toast.makeText(this, ErrorMsgUtil.getMsgByErrorCode(ret), Toast.LENGTH_SHORT).show();
         }else {
-            ToastHelper.showShortToast(this, getString(R.string.launch_setting_version, ZoomVideoSDK.getInstance().getSDKVersion()));
+            Toast.makeText(this, getString(R.string.launch_setting_version, ZoomVideoSDK.getInstance().getSDKVersion()), Toast.LENGTH_SHORT).show();
         }
     }
 
