@@ -1,0 +1,89 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="app_name">ZoomLibTry</string>
+
+    <string name="action_logout" tools:ignore="ExtraTranslation">Logout</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="send_otp_fragment_label" tools:ignore="ExtraTranslation">Send OTP</string>
+    <string name="validate_otp_fragment_label" tools:ignore="ExtraTranslation">Validate OTP</string>
+    <string name="login_activity_label" tools:ignore="ExtraTranslation">Sarthi</string>
+    <string name="home_activity_label" tools:ignore="ExtraTranslation">Home</string>
+    <string name="task_details_activity_label" tools:ignore="ExtraTranslation">Task Details</string>
+
+    <string name="arg_phone_number" tools:ignore="ExtraTranslation">Phone Number</string>
+
+    <string name="logo_content" tools:ignore="ExtraTranslation">This sub-k logo</string>
+
+    <string name="action_send_otp" tools:ignore="ExtraTranslation">Send OTP</string>
+    <string name="action_validate_otp" tools:ignore="ExtraTranslation">Validate OTP</string>
+
+    <string name="sign_in_to_continue" tools:ignore="ExtraTranslation">Sign in to continue to Sarthi</string>
+    <string name="prompt_phone_number" tools:ignore="ExtraTranslation">Enter Phone Number..</string>
+    <string name="otp_sent_on_mobile_message" tools:ignore="ExtraTranslation">OTP has been sent to %1$s</string>
+    <string name="no_tasks_found_message" tools:ignore="ExtraTranslation">No tasks found</string>
+    <string name="title_activity_meeting" tools:ignore="ExtraTranslation">MeetingActivity</string>
+    <string name="dummy_button" tools:ignore="ExtraTranslation">Dummy Button</string>
+    <string name="dummy_content" tools:ignore="ExtraTranslation">DUMMY\nCONTENT</string>
+
+    <string name="session_name">Session Name</string>
+    <string name="session_name_hint" tools:ignore="ExtraTranslation">Required</string>
+    <string name="session_name_digits" tools:ignore="ExtraTranslation">0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ !#$%&#038;()+-:;&#060;&#061;.&#062;?@[]^_{}|~,</string>
+
+    <string name="feedback_survey" tools:ignore="ExtraTranslation">Feedback Survey</string>
+    <string name="feedbacks" tools:ignore="ExtraTranslation">Feedbacks</string>
+    <string name="feedback_survey_title" tools:ignore="ExtraTranslation">How would you rate this session?</string>
+    <string name="feedback_response_count" tools:ignore="ExtraTranslation">%d responses</string>
+    <string name="feedback_push_result" tools:ignore="ExtraTranslation">Push Feedback Survey</string>
+    <string name="feedback_repush_tip" tools:ignore="ExtraTranslation">The survey has been pushed. Re-push in %ds.</string>
+    <string name="feedback_push_to_participant_tip" tools:ignore="ExtraTranslation">Push this survey to all participants</string>
+    <string name="feedback_cancel" tools:ignore="ExtraTranslation">Cancel</string>
+    <string name="feedback_push" tools:ignore="ExtraTranslation">Push</string>
+    <string name="feedback_submit" tools:ignore="ExtraTranslation">Submit</string>
+    <string name="feedback_thank_title" tools:ignore="ExtraTranslation">Thank you for your feedback</string>
+    <string name="feedback_done" tools:ignore="ExtraTranslation">OK</string>
+    <string name="more_feedback_session">Send Feedback</string>
+    <string name="more_feedbacks">Feedbacks</string>
+
+    <string name="lower_third_preview" tools:ignore="ExtraTranslation">Preview</string>
+    <string name="low_third_title" tools:ignore="ExtraTranslation">Lower Third</string>
+    <string name="low_third_name_title" tools:ignore="ExtraTranslation">Your Name</string>
+    <string name="low_third_job_title" tools:ignore="ExtraTranslation">Description</string>
+    <string name="low_third_color_title" tools:ignore="ExtraTranslation">Brand Color</string>
+    <string name="lower_third_job_hint" tools:ignore="ExtraTranslation">e.g. Product Manager@Company</string>
+    <string name="low_third_save" tools:ignore="ExtraTranslation">Save</string>
+    <string name="low_third_cancel" tools:ignore="ExtraTranslation">Cancel</string>
+    <string name="low_third_update" tools:ignore="ExtraTranslation">Update</string>
+    <string name="close" tools:ignore="ExtraTranslation">Close</string>
+
+    <string name="cancel" tools:ignore="ExtraTranslation">Cancel</string>
+    <string name="actionbar_done" tools:ignore="ExtraTranslation">Done</string>
+    <string name="save" tools:ignore="ExtraTranslation">Save</string>
+    <string name="on" tools:ignore="ExtraTranslation">On</string>
+    <string name="off" tools:ignore="ExtraTranslation">Off</string>
+
+    <string name="leave_message">Do you want to leave this session?</string>
+    <string name="leave_end_text">End Session</string>
+    <string name="leave_leave_text">Leave Session</string>
+    <string name="share_title">Share</string>
+    <string name="share_screen">Share Device Screen</string>
+    <string name="share_screen_info">Everything on your device screen will be shared</string>
+    <string name="share_picture">Share a Picture</string>
+    <string name="share_picture_info">Share a picture from your device</string>
+    <string name="raise_hand" tools:ignore="ExtraTranslation">Raise Hand</string>
+    <string name="low_hand" tools:ignore="ExtraTranslation">Lower Hand</string>
+    <string name="launch_setting_version" tools:ignore="ExtraTranslation">Version:v%s</string>
+    <string name="update_task_title" tools:ignore="ExtraTranslation">Update Task</string>
+    <string name="task_title_hint" tools:ignore="ExtraTranslation">Title*</string>
+    <string name="task_type_hint" tools:ignore="ExtraTranslation">Task Type*</string>
+    <string name="task_start_time_hint" tools:ignore="ExtraTranslation">Start Time*</string>
+    <string name="task_end_time_hint" tools:ignore="ExtraTranslation">End Time*</string>
+    <string name="task_description_hint" tools:ignore="ExtraTranslation">Description*</string>
+    <string name="task_attendees_hint" tools:ignore="ExtraTranslation">Attendees</string>
+    <string name="task_assigned_to_hint" tools:ignore="ExtraTranslation">Assigned To*</string>
+    <string name="button_join_zoom_meeting" tools:ignore="ExtraTranslation">Join Zoom Meeting</string>
+    <string name="task_title_display" tools:ignore="ExtraTranslation">%s - %s</string>
+    <string name="from_time_display" tools:ignore="ExtraTranslation">From : %s</string>
+    <string name="to_time_display" tools:ignore="ExtraTranslation">To : %s</string>
+
+    <string name="otp_hint" tools:ignore="ExtraTranslation">Enter Otp Hint</string>
+    <string name="otp_error" tools:ignore="ExtraTranslation">Please enter valid OTP</string>
+</resources>

@@ -14,5 +14,4 @@ dependencyResolutionManagement {
     }
 }
 rootProject.name = "ZoomSdk"
-//include ':sample'
-include ':zoom_sdk'
+include ':library'
