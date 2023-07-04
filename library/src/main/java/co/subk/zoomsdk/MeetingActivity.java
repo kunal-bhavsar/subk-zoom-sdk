@@ -68,7 +68,7 @@ public class MeetingActivity extends BaseMeetingActivity {
 
     private AudioRawDataUtil audioRawDataUtil;
 
-    ImageView icon_screenshot,ivSwitchCamera;
+    ImageView icon_screenshot;
     protected final static int REQUEST_VIDEO_AUDIO_CODE = 1010;
 
 
@@ -216,7 +216,6 @@ public class MeetingActivity extends BaseMeetingActivity {
     protected void initView() {
         super.initView();
         icon_screenshot = findViewById(R.id.icon_screenshot);
-        ivSwitchCamera = findViewById(R.id.ivSwitchCamera);
         videoContain = findViewById(R.id.big_video_contain);
         videoContain.setOnClickListener(onEmptyContentClick);
         chatListView.setOnClickListener(onEmptyContentClick);
@@ -225,12 +224,6 @@ public class MeetingActivity extends BaseMeetingActivity {
             @Override
             public void onClick(View view) {
                 onClickScreenshot();
-            }
-        });
-        ivSwitchCamera.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onClickMoreSwitchCamera();
             }
         });
     }

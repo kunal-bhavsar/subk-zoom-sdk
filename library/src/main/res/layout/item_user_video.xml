@@ -98,7 +98,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="right|center_vertical"
-            android:src="@drawable/icon_unmute"/>
+            android:src="@drawable/icon_unmute_v2"/>
 
     </LinearLayout>
 </FrameLayout>

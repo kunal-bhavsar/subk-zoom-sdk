@@ -53,7 +53,7 @@
                 android:layout_width="@dimen/dp_68"
                 android:layout_height="@dimen/dp_68"
                 android:layout_marginTop="14dp"
-                android:visibility="visible"
+                android:visibility="gone"
                 android:src="@drawable/baseline_image_24" />
             <ImageView
                 android:id="@+id/icon_more"
@@ -63,13 +63,6 @@
                 android:onClick="onClickMore"
                 android:visibility="visible"
                 android:src="@drawable/icon_more" />
-
-            <ImageView
-                android:id="@+id/ivSwitchCamera"
-                android:layout_width="@dimen/dp_68"
-                android:layout_height="@dimen/dp_68"
-                android:layout_marginTop="14dp"
-                android:src="@drawable/icon_switchcamera" />
         </LinearLayout>
     </ScrollView>
 

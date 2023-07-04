@@ -1157,6 +1157,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
             feedbackText = getResources().getString(R.string.more_feedback_session);
         }
         tvFeedback.setText(feedbackText);
+        llFeedback.setVisibility(View.GONE);
         llFeedback.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -1418,7 +1419,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         if (null == zoomSDKUserInfo)
             return;
         // SET THIS TO VISIBLE FOR SHOWING MORE BUTTON IN SIDE RIBBON
-        iconMore.setVisibility(View.GONE);
+        iconMore.setVisibility(View.VISIBLE);
     }
 
 
@@ -1499,7 +1500,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
     private void showLowerThirdBtn(@NonNull final Dialog dialog) {
         final View llLowerThird = dialog.findViewById(R.id.llLowerThird);
-        llLowerThird.setVisibility(View.VISIBLE);
+        llLowerThird.setVisibility(View.GONE);
         llLowerThird.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

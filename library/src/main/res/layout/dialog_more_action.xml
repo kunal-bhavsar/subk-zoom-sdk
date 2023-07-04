@@ -236,5 +236,5 @@
 
 <!--    <include layout="@layout/zm_item_more_record"/>-->
     <include layout="@layout/item_camera_control" android:id="@+id/camera_control" android:visibility="gone"/>
-    <include layout="@layout/zm_item_more_emoji"/>
+    <include layout="@layout/zm_item_more_emoji" android:visibility="gone"/>
 </LinearLayout>
