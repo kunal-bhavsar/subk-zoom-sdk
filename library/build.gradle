@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace 'com.subk.zoomsdk'
+    namespace 'co.subk.zoomsdk'
     compileSdk 33
 
     defaultConfig {
-        minSdk 24
+        minSdk 23
         targetSdk 33
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -45,6 +45,7 @@ dependencies {
 
     implementation 'com.github.chrisbanes:PhotoView:2.3.0'
     implementation 'us.zoom.videosdk:ZoomVideoSDK:1.5.3'
+    implementation 'org.greenrobot:eventbus:3.2.0'
 }
 
 afterEvaluate {
@@ -52,9 +53,9 @@ afterEvaluate {
         publications {
             release(MavenPublication) {
                 from components.release
-                groupId = 'com.subk.zoomsdk'
-                artifactId = 'zoom_sdk'
-                version = '1.0'
+                groupId = 'co.subk.zoomsdk'
+                artifactId = 'zoomsdk'
+                version = '2.1'
             }
         }
     }
