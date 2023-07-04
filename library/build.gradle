@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace 'com.subk.zoomsdk'
+    namespace 'co.subk.zoomsdk'
     compileSdk 33
 
     defaultConfig {
@@ -52,9 +52,9 @@ afterEvaluate {
         publications {
             release(MavenPublication) {
                 from components.release
-                groupId = 'com.subk.zoomsdk'
-                artifactId = 'zoom_sdk'
-                version = '1.0'
+                groupId = 'co.subk'
+                artifactId = 'zoomsdk'
+                version = '1.2'
             }
         }
     }

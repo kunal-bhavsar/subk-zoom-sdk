@@ -62,7 +62,7 @@
             android:src="@drawable/lower_third_pic_bg"/>
     </FrameLayout>
 
-    <co.subk.sarthi.ui.meeting.view.LowerThirdLayout
+    <co.subk.zoomsdk.meeting.view.LowerThirdLayout
         android:id="@+id/layout_lower_third"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -187,7 +187,7 @@
         android:textSize="14sp"
         android:layout_marginBottom="8dp"/>
 
-    <co.subk.sarthi.ui.meeting.view.CycleColorImageView
+    <co.subk.zoomsdk.meeting.view.CycleColorImageView
         android:id="@+id/disableIv"
         android:layout_width="56dp"
         android:layout_height="56dp"
@@ -209,7 +209,7 @@
         app:layout_constraintBottom_toBottomOf="@+id/disableIv"
         android:src="@drawable/lower_third_lock"/>
 
-    <co.subk.sarthi.ui.meeting.view.CycleColorImageView
+    <co.subk.zoomsdk.meeting.view.CycleColorImageView
         android:id="@+id/blueIv"
         android:layout_width="56dp"
         android:layout_height="56dp"
@@ -221,7 +221,7 @@
         app:layout_constraintBottom_toBottomOf="@+id/disableIv"
         app:layout_constraintTop_toTopOf="@+id/disableIv"/>
 
-    <co.subk.sarthi.ui.meeting.view.CycleColorImageView
+    <co.subk.zoomsdk.meeting.view.CycleColorImageView
         android:id="@+id/redIv"
         android:layout_width="56dp"
         android:layout_height="56dp"
@@ -233,7 +233,7 @@
         app:layout_constraintTop_toTopOf="@+id/disableIv"
         app:layout_constraintBottom_toBottomOf="@+id/disableIv" />
 
-    <co.subk.sarthi.ui.meeting.view.CycleColorImageView
+    <co.subk.zoomsdk.meeting.view.CycleColorImageView
         android:id="@+id/greenIv"
         android:layout_width="56dp"
         android:layout_height="56dp"
@@ -246,7 +246,7 @@
         app:layout_constraintBottom_toBottomOf="@+id/disableIv"/>
 
 
-    <co.subk.sarthi.ui.meeting.view.CycleColorImageView
+    <co.subk.zoomsdk.meeting.view.CycleColorImageView
         android:id="@+id/orangeIv"
         android:layout_width="56dp"
         android:layout_height="56dp"
@@ -258,7 +258,7 @@
         app:layout_constraintTop_toTopOf="@+id/disableIv"
         app:layout_constraintBottom_toBottomOf="@+id/disableIv"/>
 
-    <co.subk.sarthi.ui.meeting.view.CycleColorImageView
+    <co.subk.zoomsdk.meeting.view.CycleColorImageView
         android:id="@+id/purpleIv"
         android:layout_width="56dp"
         android:layout_height="56dp"
@@ -270,7 +270,7 @@
         app:layout_constraintTop_toTopOf="@+id/disableIv"
         app:layout_constraintBottom_toBottomOf="@+id/disableIv"/>
 
-    <co.subk.sarthi.ui.meeting.view.CycleColorImageView
+    <co.subk.zoomsdk.meeting.view.CycleColorImageView
         android:id="@+id/lightPurpleIv"
         android:layout_width="56dp"
         android:layout_height="56dp"
@@ -281,7 +281,7 @@
         app:layout_constraintLeft_toLeftOf="@+id/disableIv"
         app:layout_constraintRight_toRightOf="@+id/disableIv"/>
 
-    <co.subk.sarthi.ui.meeting.view.CycleColorImageView
+    <co.subk.zoomsdk.meeting.view.CycleColorImageView
         android:id="@+id/yellowIv"
         android:layout_width="56dp"
         android:layout_height="56dp"

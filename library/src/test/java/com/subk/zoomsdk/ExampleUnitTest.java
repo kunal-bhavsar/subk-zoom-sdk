@@ -1,4 +1,4 @@
-package com.subk.zoomsdk;
+package co.subk.zoomsdk;
 
 import org.junit.Test;
 
