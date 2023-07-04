@@ -51,6 +51,7 @@ public class UserVideoAdapter extends RecyclerView.Adapter<UserVideoAdapter.Base
     private List<CmdReactionRequest> emojiActiveList = new ArrayList<>();
 
     private Handler handler = new Handler();
+    private VideoHolder viewHolder;
 
     private Runnable emojiTimerRunnable = new Runnable() {
 
@@ -203,6 +204,45 @@ public class UserVideoAdapter extends RecyclerView.Adapter<UserVideoAdapter.Base
         }
     }
 
+    public void onUserMuteUnmuteChanged(List<ZoomVideoSDKUser> list, RecyclerView userVideoList) {
+        activeAudioList = list;
+
+        for (int i=0;i<activeAudioList.size();i++)
+        {
+            if (userList.contains(activeAudioList.get(i)))
+            {
+                int indexxOfMatched = userList.indexOf(activeAudioList.get(i));
+
+                VideoHolder holder = (VideoHolder) userVideoList.findViewHolderForAdapterPosition(indexxOfMatched);
+
+                if (null != holder) {
+                    if (activeAudioList.get(i).getAudioStatus().isMuted()) {
+                        holder.muted.setVisibility(View.VISIBLE);
+                    } else {
+                        holder.muted.setVisibility(View.GONE);
+                    }
+                }
+            }
+        }
+
+       /* int childCount = userVideoList.getChildCount();
+        for (int i = 0; i < childCount; i++) {
+            View view = userVideoList.getChildAt(i);
+            int position = userVideoList.getChildAdapterPosition(view);
+            if (position >= 0 && position < userList.size()) {
+                ZoomVideoSDKUser userId = userList.get(position);
+                VideoHolder holder = (VideoHolder) userVideoList.findViewHolderForAdapterPosition(position);
+                if (null != holder) {
+                    if (null != activeAudioList && activeAudioList.contains(userId) && activeAudioList.get(0).getAudioStatus().isMuted()) {
+                        holder.muted.setVisibility(View.VISIBLE);
+                    } else {
+                        holder.muted.setVisibility(View.GONE);
+                    }
+                }
+            }
+        }*/
+    }
+
     public void onEmojiReceived(@NonNull CmdReactionRequest newRequest, RecyclerView userVideoList) {
         boolean existRequest = false;
         for (CmdReactionRequest request : emojiActiveList) {
@@ -289,7 +329,7 @@ public class UserVideoAdapter extends RecyclerView.Adapter<UserVideoAdapter.Base
     @Override
     public void onViewRecycled(@NonNull BaseHolder holder) {
         super.onViewRecycled(holder);
-        VideoHolder viewHolder = (VideoHolder) holder;
+        viewHolder = (VideoHolder) holder;
         if (renderType == BaseMeetingActivity.RENDER_TYPE_ZOOMRENDERER) {
             viewHolder.user.getVideoCanvas().unSubscribe(viewHolder.videoRenderer);
         } else {
@@ -395,6 +435,8 @@ public class UserVideoAdapter extends RecyclerView.Adapter<UserVideoAdapter.Base
 
         ImageView video_off_tips;
 
+        ImageView muted;
+
         View video_off_contain;
 
         ZoomVideoSDKUser user;
@@ -405,6 +447,7 @@ public class UserVideoAdapter extends RecyclerView.Adapter<UserVideoAdapter.Base
             video_off_tips = view.findViewById(R.id.video_off_tips);
             emojiView = view.findViewById(R.id.emojiIv);
             audioStatus = view.findViewById(R.id.item_audio_status);
+            muted = view.findViewById(R.id.muted);
             userNameText = view.findViewById(R.id.item_user_name);
             video_off_contain = view.findViewById(R.id.video_off_contain);
 

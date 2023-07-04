@@ -3,9 +3,14 @@ package co.subk.zoomsdk.meeting.notification;
 import android.app.Notification;
 import android.app.Service;
 import android.content.Intent;
+import android.content.pm.ServiceInfo;
 import android.os.Binder;
+import android.os.Build;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.util.Log;
+import android.widget.Toast;
 
 import us.zoom.sdk.ZoomVideoSDK;
 
@@ -26,12 +31,21 @@ public class NotificationService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        Notification notification = NotificationMgr.getConfNotification();
-        if (null != notification) {
-            startForeground(NotificationMgr.PT_NOTICICATION_ID, notification);
-        } else {
-            stopSelf();
-        }
+        final Handler handler = new Handler(Looper.getMainLooper());
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(NotificationService.this, "Entered in Handler", Toast.LENGTH_SHORT).show();
+                Notification notification = NotificationMgr.getConfNotification();
+                if (null != notification) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                        startForeground(NotificationMgr.PT_NOTICICATION_ID, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION);
+                    }
+                } else {
+                    stopSelf();
+                }
+            }
+        }, 1000);
     }
 
     @Override

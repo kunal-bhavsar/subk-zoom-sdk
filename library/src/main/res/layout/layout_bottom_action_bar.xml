@@ -49,15 +49,27 @@
                 android:src="@drawable/icon_video_off" />
 
             <ImageView
+                android:id="@+id/icon_screenshot"
+                android:layout_width="@dimen/dp_68"
+                android:layout_height="@dimen/dp_68"
+                android:layout_marginTop="14dp"
+                android:visibility="visible"
+                android:src="@drawable/baseline_image_24" />
+            <ImageView
                 android:id="@+id/icon_more"
                 android:layout_width="@dimen/dp_68"
                 android:layout_height="@dimen/dp_68"
                 android:layout_marginTop="14dp"
                 android:onClick="onClickMore"
-                android:visibility="gone"
+                android:visibility="visible"
                 android:src="@drawable/icon_more" />
 
-
+            <ImageView
+                android:id="@+id/ivSwitchCamera"
+                android:layout_width="@dimen/dp_68"
+                android:layout_height="@dimen/dp_68"
+                android:layout_marginTop="14dp"
+                android:src="@drawable/icon_switchcamera" />
         </LinearLayout>
     </ScrollView>
 

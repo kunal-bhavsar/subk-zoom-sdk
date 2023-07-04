@@ -1,19 +1,37 @@
 package co.subk.zoomsdk;
 
+import android.Manifest;
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
+import android.text.format.DateFormat;
 import android.util.Log;
+import android.view.PixelCopy;
+import android.view.SurfaceView;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.Toast;
 
-import co.subk.zoomsdk.R;
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import androidx.core.app.ActivityCompat;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.util.Date;
+import java.util.List;
+import java.util.Random;
 
 import co.subk.zoomsdk.cmd.CmdFeedbackPushRequest;
 import co.subk.zoomsdk.cmd.CmdHandler;
@@ -24,14 +42,9 @@ import co.subk.zoomsdk.meeting.BaseMeetingActivity;
 import co.subk.zoomsdk.meeting.LowerThirdSettingFragment;
 import co.subk.zoomsdk.meeting.feedback.data.FeedbackDataManager;
 import co.subk.zoomsdk.meeting.feedback.view.FeedbackSubmitDialog;
-import co.subk.zoomsdk.meeting.notification.NotificationService;
 import co.subk.zoomsdk.meeting.rawdata.RawDataRenderer;
 import co.subk.zoomsdk.meeting.util.AudioRawDataUtil;
 import co.subk.zoomsdk.meeting.util.SharePreferenceUtil;
-
-import java.util.List;
-import java.util.Random;
-
 import us.zoom.sdk.ZoomVideoSDK;
 import us.zoom.sdk.ZoomVideoSDKErrors;
 import us.zoom.sdk.ZoomVideoSDKShareHelper;
@@ -54,6 +67,11 @@ public class MeetingActivity extends BaseMeetingActivity {
     private FrameLayout videoContain;
 
     private AudioRawDataUtil audioRawDataUtil;
+
+    ImageView icon_screenshot,ivSwitchCamera;
+    protected final static int REQUEST_VIDEO_AUDIO_CODE = 1010;
+
+
     private CmdHandler mFeedbackPushHandler = new CmdHandler() {
         @Override
         public void onCmdReceived(CmdRequest request) {
@@ -63,6 +81,8 @@ public class MeetingActivity extends BaseMeetingActivity {
         }
     };
 
+    SurfaceView surfaceView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,6 +91,8 @@ public class MeetingActivity extends BaseMeetingActivity {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
         CmdHelper.getInstance().addListener(mFeedbackPushHandler);
         FeedbackDataManager.getInstance().startListenerFeedbackData();
+
+
     }
 
     @Override
@@ -113,20 +135,46 @@ public class MeetingActivity extends BaseMeetingActivity {
     };
 
     private void startMeetingService() {
-        Intent intent = new Intent(this, NotificationService.class);
+
+       /* try {
+            Intent myIntent = new Intent(this,Class.forName("co.subk.sarthi.NotificationService"));
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                startForegroundService(myIntent);
+            } else {
+                startService(myIntent);
+            }
+
+            if(null!=serviceConnection){
+                bindService(myIntent,serviceConnection, BIND_AUTO_CREATE);
+            }
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }*/
+        /*Intent intent = new Intent(this, NotificationService.class);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             startForegroundService(intent);
         } else {
             startService(intent);
         }
+
         if(null!=serviceConnection){
-            bindService(intent,serviceConnection, Context.BIND_AUTO_CREATE);
-        }
+            bindService(intent,serviceConnection, BIND_AUTO_CREATE);
+        }*/
     }
 
     private void stopMeetingService() {
-        Intent intent = new Intent(this, NotificationService.class);
-        stopService(intent);
+        /*Intent intent = new Intent(this, NotificationService.class);
+        stopService(intent);*/
+        /*try {
+            Intent myIntent = new Intent(this,Class.forName("co.subk.sarthi.NotificationService"));
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                stopService(myIntent);
+            } else {
+                stopService(myIntent);
+            }
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }*/
         try {
             if (null != serviceConnection) {
                 unbindService(serviceConnection);
@@ -167,9 +215,33 @@ public class MeetingActivity extends BaseMeetingActivity {
     @Override
     protected void initView() {
         super.initView();
+        icon_screenshot = findViewById(R.id.icon_screenshot);
+        ivSwitchCamera = findViewById(R.id.ivSwitchCamera);
         videoContain = findViewById(R.id.big_video_contain);
         videoContain.setOnClickListener(onEmptyContentClick);
         chatListView.setOnClickListener(onEmptyContentClick);
+
+        icon_screenshot.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onClickScreenshot();
+            }
+        });
+        ivSwitchCamera.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onClickMoreSwitchCamera();
+            }
+        });
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private void capturePicture() {
+        Bitmap bmp = Bitmap.createBitmap(zoomCanvas.getWidth(), zoomCanvas.getHeight(), Bitmap.Config.ARGB_8888);
+        PixelCopy.request(surfaceView, bmp, i -> {
+            Log.e("asdsa", String.valueOf(bmp.getHeight()));
+            //imageView.setImageBitmap(bmp); //"iv_Result" is the image view
+        }, new Handler(Looper.getMainLooper()));
     }
 
     View.OnClickListener onEmptyContentClick = new View.OnClickListener() {
@@ -187,7 +259,7 @@ public class MeetingActivity extends BaseMeetingActivity {
     };
 
     private void changeResolution() {
-        if (renderType == BaseMeetingActivity.RENDER_TYPE_OPENGLES) {
+        if (renderType == RENDER_TYPE_OPENGLES) {
             int resolution = new Random().nextInt(3);
             resolution++;
             if (resolution > ZoomVideoSDKVideoResolution.VideoResolution_360P.getValue()) {
@@ -226,7 +298,7 @@ public class MeetingActivity extends BaseMeetingActivity {
         ZoomVideoSDK.getInstance().addListener(this);
 
         FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
-        if (renderType == BaseMeetingActivity.RENDER_TYPE_ZOOMRENDERER) {
+        if (renderType == RENDER_TYPE_ZOOMRENDERER) {
             zoomCanvas = new ZoomVideoSDKVideoView(this, !renderWithSurfaceView);
             videoContain.addView(zoomCanvas, 0, params);
         } else {
@@ -279,7 +351,7 @@ public class MeetingActivity extends BaseMeetingActivity {
 
     protected void unSubscribe() {
         if (null != currentShareUser) {
-            if (renderType == BaseMeetingActivity.RENDER_TYPE_ZOOMRENDERER) {
+            if (renderType == RENDER_TYPE_ZOOMRENDERER) {
                 currentShareUser.getVideoCanvas().unSubscribe(zoomCanvas);
                 currentShareUser.getShareCanvas().unSubscribe(zoomCanvas);
             } else {
@@ -288,7 +360,7 @@ public class MeetingActivity extends BaseMeetingActivity {
         }
 
         if (null != mActiveUser) {
-            if (renderType == BaseMeetingActivity.RENDER_TYPE_ZOOMRENDERER) {
+            if (renderType == RENDER_TYPE_ZOOMRENDERER) {
                 mActiveUser.getVideoCanvas().unSubscribe(zoomCanvas);
                 mActiveUser.getShareCanvas().unSubscribe(zoomCanvas);
             } else {
@@ -298,7 +370,7 @@ public class MeetingActivity extends BaseMeetingActivity {
     }
 
     protected void subscribeVideoByUser(ZoomVideoSDKUser user) {
-        if (renderType == BaseMeetingActivity.RENDER_TYPE_ZOOMRENDERER) {
+        if (renderType == RENDER_TYPE_ZOOMRENDERER) {
             ZoomVideoSDKVideoAspect aspect = ZoomVideoSDKVideoAspect.ZoomVideoSDKVideoAspect_LetterBox;
             if (ZoomVideoSDK.getInstance().isInSession()) {
                 aspect = ZoomVideoSDKVideoAspect.ZoomVideoSDKVideoAspect_Original;
@@ -345,7 +417,7 @@ public class MeetingActivity extends BaseMeetingActivity {
 
 
     protected void subscribeShareByUser(ZoomVideoSDKUser user) {
-        if (renderType == BaseMeetingActivity.RENDER_TYPE_ZOOMRENDERER) {
+        if (renderType == RENDER_TYPE_ZOOMRENDERER) {
             if (null != mActiveUser) {
                 mActiveUser.getVideoCanvas().unSubscribe(zoomCanvas);
                 mActiveUser.getShareCanvas().unSubscribe(zoomCanvas);
@@ -396,9 +468,53 @@ public class MeetingActivity extends BaseMeetingActivity {
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+
+        // requestPermission(REQUEST_VIDEO_AUDIO_CODE);
+    }
+
+    protected boolean requestPermission(int code) {
+
+        String[] permissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            permissions = new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE};
+        }
+
+
+        if (Build.VERSION.SDK_INT >= 23) {
+            for (String permission : permissions) {
+                if (checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(MeetingActivity.this, permissions, code);
+                    return false;
+                }
+            }
+            return true;
+        }
+        return true;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_VIDEO_AUDIO_CODE) {
+            if (Build.VERSION.SDK_INT >= 23 && (checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
+                    /*&& (Build.VERSION.SDK_INT >= 31 && getActivity().checkSelfPermission(Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED)*/)) {
+                onPermissionGranted();
+            }
+            else
+            {
+                requestPermission(REQUEST_VIDEO_AUDIO_CODE);
+            }
+        }
+    }
+
+    protected void onPermissionGranted() {}
+
+    @Override
     protected void onStartShareView() {
         super.onStartShareView();
-        if (renderType == BaseMeetingActivity.RENDER_TYPE_ZOOMRENDERER) {
+        if (renderType == RENDER_TYPE_ZOOMRENDERER) {
             if (null != mActiveUser) {
                 mActiveUser.getVideoCanvas().unSubscribe(zoomCanvas);
             }
@@ -430,6 +546,80 @@ public class MeetingActivity extends BaseMeetingActivity {
             }
             selectAndScrollToUser(userInfo);
         }
+    }
+
+    public void onClickScreenshot() {
+        //Toast.makeText(this, "on click Screenhsot", Toast.LENGTH_SHORT).show();
+        // requestPermission(REQUEST_VIDEO_AUDIO_CODE);
+       /* if (ActivityCompat.checkSelfPermission(MeetingActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(MeetingActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(MeetingActivity.this, Manifest.permission.MANAGE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions((Activity) MeetingActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.MANAGE_EXTERNAL_STORAGE}, 1);
+        }
+        else
+        {*/
+        //takeScreenshot();
+        //}
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            //   capturePicture();
+        }
+
+    }
+    private void takeScreenshot() {
+        Date now = new Date();
+        DateFormat.format("yyyy-MM-dd_hh:mm:ss", now);
+
+        String fileName =
+                String.valueOf(System.currentTimeMillis()).replaceAll(":", ".") + ".jpg";
+
+        try {
+            // image naming and path  to include sd card  appending name you choose for file
+            String mPath = Environment.getExternalStorageDirectory().toString() + "/"  + fileName/*+ now + ".jpg"*/;
+
+            // create bitmap screen capture
+            View v1 = zoomCanvas/*getWindow().getDecorView().getRootView()*/;
+            v1.setDrawingCacheEnabled(true);
+            // Bitmap bitmap = Bitmap.createBitmap(v1.getDrawingCache());
+
+
+
+            final Bitmap bitmap = Bitmap.createBitmap(zoomCanvas.getWidth(), zoomCanvas.getHeight(),
+                    Bitmap.Config.ARGB_8888);
+            // Make the request to copy.
+
+           /* PixelCopy.request(zoomCanvas, bitmap, (copyResult) -> {
+                if (copyResult == PixelCopy.SUCCESS) {
+                    Log.e(TAG, bitmap.toString());
+                    //saveBitmapToFile(bitmap, contactId);
+                } else {
+                    Toast.makeText(this, "Faild", Toast.LENGTH_SHORT).show();
+                }
+            }, new Handler());
+*/
+
+
+            v1.setDrawingCacheEnabled(false);
+
+            File imageFile = new File(mPath);
+
+            FileOutputStream outputStream = new FileOutputStream(imageFile);
+            int quality = 100;
+            bitmap.compress(Bitmap.CompressFormat.JPEG, quality, outputStream);
+            outputStream.flush();
+            outputStream.close();
+
+            openScreenshot(imageFile);
+        } catch (Throwable e) {
+            // Several error may come out with file handling or DOM
+            e.printStackTrace();
+        }
+    }
+
+    private void openScreenshot(File imageFile) {
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_VIEW);
+        Uri uri = Uri.fromFile(imageFile);
+        intent.setDataAndType(uri, "image/*");
+        startActivity(intent);
     }
 
 
