@@ -4,11 +4,15 @@ package co.subk.zoomsdk.meeting;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.media.projection.MediaProjectionManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -20,7 +24,9 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -36,13 +42,18 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import co.subk.zoomsdk.model.SubkEvent;
+import co.subk.zoomsdk.NetworkChangeReceiver;
 import co.subk.zoomsdk.R;
+import co.subk.zoomsdk.model.InternetEvent;
+import co.subk.zoomsdk.model.SubkEvent;
 import co.subk.zoomsdk.cmd.CmdHandler;
 import co.subk.zoomsdk.cmd.CmdHelper;
 import co.subk.zoomsdk.cmd.CmdLowerThirdRequest;
@@ -188,6 +199,9 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     protected LinearLayout panelRecordBtn;
     protected ZoomVideoSDKRecordingStatus status = ZoomVideoSDKRecordingStatus.Recording_Stop;
 
+    private BroadcastReceiver mNetworkReceiver;
+
+    androidx.appcompat.app.AlertDialog alertDialog;
     @NonNull
     private List<CmdLowerThirdRequest> lowerThirdRequests = new ArrayList<>();
     // private LowerThirdLayout lowerThirdLayout;
@@ -275,7 +289,26 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         updateSessionInfo();
 
 
+        mNetworkReceiver = new NetworkChangeReceiver();
+        registerNetworkBroadcastForNougat();
 
+    }
+
+    private void registerNetworkBroadcastForNougat() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            registerReceiver(mNetworkReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            registerReceiver(mNetworkReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+        }
+    }
+
+    protected void unregisterNetworkChanges() {
+        try {
+            unregisterReceiver(mNetworkReceiver);
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        }
     }
 
     public void setupZoom(Bundle bundle)
@@ -483,8 +516,17 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        if (!EventBus.getDefault().isRegistered(this))
+            EventBus.getDefault().register(this);
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
+        EventBus.getDefault().unregister(this);
+        unregisterNetworkChanges();
         if (null != shareToolbar) {
             shareToolbar.destroy();
         }
@@ -1989,6 +2031,94 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     @Override
     public void onUserVideoNetworkStatusChanged(ZoomVideoSDKNetworkStatus status, ZoomVideoSDKUser user) {
         Log.d(TAG, "onUserVideoNetworkStatusChanged:" + user.getUserName() + ":" + status);
+    }
+
+    public void showOfflineDialog()
+    {
+        final androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(BaseMeetingActivity.this,R.style.CustomAlertDialog);
+        ViewGroup viewGroup = findViewById(android.R.id.content);
+        View dialogView = LayoutInflater.from(iconMore.getContext()).inflate(R.layout.offline_layout, viewGroup, false);
+
+        TextView heading = dialogView.findViewById(R.id.heading);
+
+        heading.setText("You Are Offline!!!");
+
+        TextView pay = dialogView.findViewById(R.id.pay);
+
+        builder.setView(dialogView);
+        alertDialog = builder.create();
+        alertDialog.setCancelable(false);
+
+
+        pay.setText("Try Again");
+
+        pay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                boolean isonline = isOnline(BaseMeetingActivity.this);
+                if (isonline)
+                {
+                    alertDialog.dismiss();
+                }
+                else
+                {
+                    Toast.makeText(BaseMeetingActivity.this, "No Internet Connection", Toast.LENGTH_SHORT).show();
+                }
+                //callDeleteInMailAPI();
+            }
+        });
+
+
+        alertDialog.show();
+    }
+
+
+    @Subscribe
+    public void onInternetChange(InternetEvent internetEvent){
+        /*cartEventList.add(cartEvent);
+        String cartTotalItems = "Cart Items: "+cartEventList.size();
+        cartTextView.setText(cartTotalItems);*/
+        //  Toast.makeText(this, "Item added to cart.", Toast.LENGTH_SHORT).show();
+
+        if (internetEvent.isOnline)
+        {
+            if (alertDialog!=null)
+            {
+                if (alertDialog.isShowing())
+                {
+                    alertDialog.dismiss();
+                }
+            }
+
+        }
+        else
+        {
+            if (alertDialog!=null)
+            {
+                if (!alertDialog.isShowing())
+                {
+                    showOfflineDialog();
+                }
+            }
+            else
+            {
+                showOfflineDialog();
+            }
+        }
+
+    }
+
+
+    private boolean isOnline(Context context) {
+        try {
+            ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo netInfo = cm.getActiveNetworkInfo();
+            //should check null because in airplane mode it will be null
+            return (netInfo != null && netInfo.isConnected());
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
 
