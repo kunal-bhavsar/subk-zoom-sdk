@@ -480,7 +480,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
             text_fps = findViewById(R.id.text_fps);
         }
         if (ZoomVideoSDK.getInstance().isInSession()) {
-            text_fps.setVisibility(View.VISIBLE);
+            text_fps.setVisibility(View.GONE); // Was Visible Here Change to GOne as per requirement on 08/07/23 @arul
         }
     }
 
@@ -738,7 +738,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
             @Override
             public void run() {
                 if (statisticInfo.getWidth() > 0 && statisticInfo.getHeight() > 0) {
-                    text_fps.setVisibility(View.VISIBLE);
+                    text_fps.setVisibility(View.GONE); // Was Visible Here Change to GOne as per requirement on 08/07/23 @arul
                     String text = statisticInfo.getWidth() + "X" + statisticInfo.getHeight() + " " + fps + " FPS";
                     if (fps < 10) {
                         text = statisticInfo.getWidth() + "X" + statisticInfo.getHeight() + "  " + fps + " FPS";
@@ -759,7 +759,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         videoListContain = findViewById(R.id.video_list_contain);
         adapter = new UserVideoAdapter(this, this, renderType);
         userVideoList.setItemViewCacheSize(0);
-        LinearLayoutManager layoutManager=new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false);
+        LinearLayoutManager layoutManager=new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
         layoutManager.setItemPrefetchEnabled(false);
         userVideoList.setLayoutManager(layoutManager);
         userVideoList.setAdapter(adapter);
@@ -1593,7 +1593,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
             practiceText.setText("Participants:" + size);
             if (sessionInfo != null) meetingPwd = sessionInfo.getSessionPassword();
             // mtvInput.setVisibility(View.VISIBLE);
-            text_fps.setVisibility(View.VISIBLE);
+            text_fps.setVisibility(View.GONE); // Was Visible Here Change to GOne as per requirement on 08/07/23 @arul
         } else {
             if (keyBoardLayout.isKeyBoardShow()) {
                 keyBoardLayout.dismissChat(true);

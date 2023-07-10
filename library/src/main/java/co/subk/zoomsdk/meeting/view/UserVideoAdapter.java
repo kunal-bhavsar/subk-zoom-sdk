@@ -366,8 +366,10 @@ public class UserVideoAdapter extends RecyclerView.Adapter<UserVideoAdapter.Base
 
         if (selectedVideoUser == user) {
             viewHolder.itemView.setBackgroundResource(R.drawable.video_active_item_bg);
+            //viewHolder.itemView.setVisibility(View.GONE);
         } else {
             viewHolder.itemView.setBackgroundResource(R.drawable.video_item_bg);
+            //viewHolder.itemView.setVisibility(View.VISIBLE);
         }
 
         if (null != activeAudioList && activeAudioList.contains(user)) {
