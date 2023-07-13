@@ -1,5 +1,7 @@
 package co.subk.zoomsdk.meeting.view;
 
+import static co.subk.zoomsdk.ZoomSdkHelper.RENDER_TYPE_ZOOMRENDERER;
+
 import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
@@ -330,7 +332,7 @@ public class UserVideoAdapter extends RecyclerView.Adapter<UserVideoAdapter.Base
     public void onViewRecycled(@NonNull BaseHolder holder) {
         super.onViewRecycled(holder);
         viewHolder = (VideoHolder) holder;
-        if (renderType == BaseMeetingActivity.RENDER_TYPE_ZOOMRENDERER) {
+        if (renderType == RENDER_TYPE_ZOOMRENDERER) {
             viewHolder.user.getVideoCanvas().unSubscribe(viewHolder.videoRenderer);
         } else {
             viewHolder.user.getVideoPipe().unSubscribe(viewHolder.rawDataRenderer);
@@ -398,7 +400,7 @@ public class UserVideoAdapter extends RecyclerView.Adapter<UserVideoAdapter.Base
     }
 
     private void subscribeVideo(ZoomVideoSDKUser user, VideoHolder viewHolder) {
-        if (renderType == BaseMeetingActivity.RENDER_TYPE_ZOOMRENDERER) {
+        if (renderType == RENDER_TYPE_ZOOMRENDERER) {
             user.getVideoCanvas().unSubscribe(viewHolder.videoRenderer);
             user.getVideoCanvas().subscribe(viewHolder.videoRenderer, ZoomVideoSDKVideoAspect.ZoomVideoSDKVideoAspect_PanAndScan);
         } else {
@@ -457,7 +459,7 @@ public class UserVideoAdapter extends RecyclerView.Adapter<UserVideoAdapter.Base
             rawDataRenderer = view.findViewById(R.id.videoRawDataRenderer);
 
 
-            if (renderType == BaseMeetingActivity.RENDER_TYPE_ZOOMRENDERER) {
+            if (renderType == RENDER_TYPE_ZOOMRENDERER) {
                 videoRenderer.setVisibility(View.VISIBLE);
                 videoRenderer.setZOrderMediaOverlay(true);
             } else {

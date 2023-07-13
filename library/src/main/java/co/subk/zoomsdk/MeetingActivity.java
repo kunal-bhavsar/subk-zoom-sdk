@@ -1,5 +1,8 @@
 package co.subk.zoomsdk;
 
+import static co.subk.zoomsdk.ZoomSdkHelper.RENDER_TYPE_OPENGLES;
+import static co.subk.zoomsdk.ZoomSdkHelper.RENDER_TYPE_ZOOMRENDERER;
+
 import android.Manifest;
 import android.content.ComponentName;
 import android.content.Intent;
