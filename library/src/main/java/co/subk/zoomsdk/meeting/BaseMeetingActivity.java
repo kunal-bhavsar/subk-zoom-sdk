@@ -45,7 +45,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -70,7 +69,7 @@ import co.subk.zoomsdk.meeting.util.ZMAdapterOsBugHelper;
 import co.subk.zoomsdk.meeting.view.ChatMsgAdapter;
 import co.subk.zoomsdk.meeting.view.KeyBoardLayout;
 import co.subk.zoomsdk.meeting.view.UserVideoAdapter;
-import co.subk.zoomsdk.utils.UserHelper;
+import co.subk.zoomsdk.meeting.util.UserHelper;
 import us.zoom.sdk.ZoomVideoSDK;
 import us.zoom.sdk.ZoomVideoSDKAudioHelper;
 import us.zoom.sdk.ZoomVideoSDKAudioOption;

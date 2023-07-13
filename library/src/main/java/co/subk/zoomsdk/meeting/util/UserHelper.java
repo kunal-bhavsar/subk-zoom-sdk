@@ -1,4 +1,4 @@
-package co.subk.zoomsdk.utils;
+package co.subk.zoomsdk.meeting.util;
 
 import java.util.ArrayList;
 import java.util.List;

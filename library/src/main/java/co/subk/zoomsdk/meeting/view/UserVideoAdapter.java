@@ -17,7 +17,7 @@ import co.subk.zoomsdk.cmd.CmdReactionRequest;
 import co.subk.zoomsdk.cmd.EmojiReactionType;
 import co.subk.zoomsdk.meeting.BaseMeetingActivity;
 import co.subk.zoomsdk.meeting.rawdata.RawDataRenderer;
-import co.subk.zoomsdk.utils.UserHelper;
+import co.subk.zoomsdk.meeting.util.UserHelper;
 
 import java.util.ArrayList;
 import java.util.List;
