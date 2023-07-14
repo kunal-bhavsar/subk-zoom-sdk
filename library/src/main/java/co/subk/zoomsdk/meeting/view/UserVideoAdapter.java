@@ -1,5 +1,7 @@
 package co.subk.zoomsdk.meeting.view;
 
+import static co.subk.zoomsdk.ZoomSdkHelper.RENDER_TYPE_ZOOMRENDERER;
+
 import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
@@ -17,7 +19,7 @@ import co.subk.zoomsdk.cmd.CmdReactionRequest;
 import co.subk.zoomsdk.cmd.EmojiReactionType;
 import co.subk.zoomsdk.meeting.BaseMeetingActivity;
 import co.subk.zoomsdk.meeting.rawdata.RawDataRenderer;
-import co.subk.zoomsdk.utils.UserHelper;
+import co.subk.zoomsdk.meeting.util.UserHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -330,7 +332,7 @@ public class UserVideoAdapter extends RecyclerView.Adapter<UserVideoAdapter.Base
     public void onViewRecycled(@NonNull BaseHolder holder) {
         super.onViewRecycled(holder);
         viewHolder = (VideoHolder) holder;
-        if (renderType == BaseMeetingActivity.RENDER_TYPE_ZOOMRENDERER) {
+        if (renderType == RENDER_TYPE_ZOOMRENDERER) {
             viewHolder.user.getVideoCanvas().unSubscribe(viewHolder.videoRenderer);
         } else {
             viewHolder.user.getVideoPipe().unSubscribe(viewHolder.rawDataRenderer);
@@ -413,7 +415,7 @@ public class UserVideoAdapter extends RecyclerView.Adapter<UserVideoAdapter.Base
     }
 
     private void subscribeVideo(ZoomVideoSDKUser user, VideoHolder viewHolder) {
-        if (renderType == BaseMeetingActivity.RENDER_TYPE_ZOOMRENDERER) {
+        if (renderType == RENDER_TYPE_ZOOMRENDERER) {
             user.getVideoCanvas().unSubscribe(viewHolder.videoRenderer);
             user.getVideoCanvas().subscribe(viewHolder.videoRenderer, ZoomVideoSDKVideoAspect.ZoomVideoSDKVideoAspect_PanAndScan);
         } else {
@@ -472,7 +474,7 @@ public class UserVideoAdapter extends RecyclerView.Adapter<UserVideoAdapter.Base
             rawDataRenderer = view.findViewById(R.id.videoRawDataRenderer);
 
 
-            if (renderType == BaseMeetingActivity.RENDER_TYPE_ZOOMRENDERER) {
+            if (renderType == RENDER_TYPE_ZOOMRENDERER) {
                 videoRenderer.setVisibility(View.VISIBLE);
                 videoRenderer.setZOrderMediaOverlay(true);
             } else {

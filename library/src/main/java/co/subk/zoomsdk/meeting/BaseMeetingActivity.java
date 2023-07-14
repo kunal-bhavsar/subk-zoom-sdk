@@ -1,6 +1,12 @@
 package co.subk.zoomsdk.meeting;
 
 
+import static co.subk.zoomsdk.ZoomSdkHelper.RENDER_TYPE_OPENGLES;
+import static co.subk.zoomsdk.ZoomSdkHelper.RENDER_TYPE_ZOOMRENDERER;
+import static co.subk.zoomsdk.ZoomSdkHelper.REQUEST_SELECT_ORIGINAL_PIC;
+import static co.subk.zoomsdk.ZoomSdkHelper.REQUEST_SHARE_SCREEN_PERMISSION;
+import static co.subk.zoomsdk.ZoomSdkHelper.REQUEST_SYSTEM_ALERT_WINDOW;
+
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.app.Service;
@@ -45,7 +51,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -70,7 +75,7 @@ import co.subk.zoomsdk.meeting.util.ZMAdapterOsBugHelper;
 import co.subk.zoomsdk.meeting.view.ChatMsgAdapter;
 import co.subk.zoomsdk.meeting.view.KeyBoardLayout;
 import co.subk.zoomsdk.meeting.view.UserVideoAdapter;
-import co.subk.zoomsdk.utils.UserHelper;
+import co.subk.zoomsdk.meeting.util.UserHelper;
 import us.zoom.sdk.ZoomVideoSDK;
 import us.zoom.sdk.ZoomVideoSDKAudioHelper;
 import us.zoom.sdk.ZoomVideoSDKAudioOption;
@@ -116,15 +121,6 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
     protected static final String TAG = BaseMeetingActivity.class.getSimpleName();
 
-    public static final int RENDER_TYPE_ZOOMRENDERER = 0;
-
-    public static final int RENDER_TYPE_OPENGLES = 1;
-
-    public final static int REQUEST_SHARE_SCREEN_PERMISSION = 1001;
-
-    public final static int REQUEST_SYSTEM_ALERT_WINDOW = 1002;
-
-    public final static int REQUEST_SELECT_ORIGINAL_PIC = 1003;
 
     protected Display display;
 
