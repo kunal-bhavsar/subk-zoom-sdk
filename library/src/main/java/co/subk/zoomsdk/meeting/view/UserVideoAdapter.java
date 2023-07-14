@@ -365,11 +365,26 @@ public class UserVideoAdapter extends RecyclerView.Adapter<UserVideoAdapter.Base
         }
 
         if (selectedVideoUser == user) {
-            viewHolder.itemView.setBackgroundResource(R.drawable.video_active_item_bg);
-            //viewHolder.itemView.setVisibility(View.GONE);
-        } else {
-            viewHolder.itemView.setBackgroundResource(R.drawable.video_item_bg);
-            //viewHolder.itemView.setVisibility(View.VISIBLE);
+            //Toast.makeText(context, "aayo", Toast.LENGTH_SHORT).show();
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    viewHolder.itemView.setBackgroundResource(R.drawable.video_active_item_bg);
+                    viewHolder.itemView.setVisibility(View.GONE);
+                }
+            }, 3000);
+
+        }
+        else {
+            //Toast.makeText(context, "nhi aayo", Toast.LENGTH_SHORT).show();
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    viewHolder.itemView.setBackgroundResource(R.drawable.video_item_bg);
+                    viewHolder.itemView.setVisibility(View.VISIBLE);
+                }
+            }, 3000);
+
         }
 
         if (null != activeAudioList && activeAudioList.contains(user)) {

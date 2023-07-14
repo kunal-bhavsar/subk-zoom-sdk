@@ -470,6 +470,8 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         updateActionBarLayoutParams();
         updateChatLayoutParams();
         updateSmallVideoLayoutParams();
+
+        adapter.notifyDataSetChanged();
     }
 
     private void updateFpsOrientation() {
