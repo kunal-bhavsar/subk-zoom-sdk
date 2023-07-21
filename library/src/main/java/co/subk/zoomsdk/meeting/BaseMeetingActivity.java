@@ -668,6 +668,8 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         }*/
         int ret = ZoomVideoSDK.getInstance().getShareHelper().startShareScreen(data);
         if (ret == ZoomVideoSDKErrors.Errors_Success) {
+            /**Added by arul to switch Camera Status*/
+            switchVideoStatusonScreenShare();
             shareToolbar.showToolbar();
             showDesktop();
         }
@@ -946,6 +948,17 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         }
     }
 
+    public void switchVideoStatusonScreenShare() {
+        ZoomVideoSDKUser zoomSDKUserInfo = session.getMySelf();
+        if (null == zoomSDKUserInfo)
+            return;
+        if (zoomSDKUserInfo.getVideoStatus().isOn()) {
+            ZoomVideoSDK.getInstance().getVideoHelper().stopVideo();
+        } else {
+            ZoomVideoSDK.getInstance().getVideoHelper().startVideo();
+        }
+    }
+
 
     public void onClickShare(View view) {
         ZoomVideoSDKShareHelper sdkShareHelper = ZoomVideoSDK.getInstance().getShareHelper();
@@ -962,6 +975,8 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         }
         if (currentShareUser == session.getMySelf()) {
             sdkShareHelper.stopShare();
+            /**Added by arul to switch Camera Status*/
+            switchVideoStatusonScreenShare();
             return;
         }
 
