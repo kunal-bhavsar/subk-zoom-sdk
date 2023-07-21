@@ -55,7 +55,7 @@ afterEvaluate {
                 from components.release
                 groupId = 'co.subk.zoomsdk'
                 artifactId = 'zoomsdk'
-                version = '2.7'
+                version = '2.8'
             }
         }
     }
