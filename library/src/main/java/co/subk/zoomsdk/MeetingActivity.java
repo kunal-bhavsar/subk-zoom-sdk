@@ -24,6 +24,7 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -74,6 +75,7 @@ public class MeetingActivity extends BaseMeetingActivity {
     ImageView icon_screenshot;
     protected final static int REQUEST_VIDEO_AUDIO_CODE = 1010;
 
+    TextView username;
 
     private CmdHandler mFeedbackPushHandler = new CmdHandler() {
         @Override
@@ -218,6 +220,7 @@ public class MeetingActivity extends BaseMeetingActivity {
     @Override
     protected void initView() {
         super.initView();
+        username = findViewById(R.id.username);
         icon_screenshot = findViewById(R.id.icon_screenshot);
         videoContain = findViewById(R.id.big_video_contain);
         videoContain.setOnClickListener(onEmptyContentClick);
@@ -303,6 +306,14 @@ public class MeetingActivity extends BaseMeetingActivity {
         }
 
         ZoomVideoSDKUser mySelf = ZoomVideoSDK.getInstance().getSession().getMySelf();
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                username.setText(mySelf.getUserName());
+            }
+        }, 5000);
+
         subscribeVideoByUser(mySelf);
         refreshFps();
         CmdHelper.getInstance().addListener(lowerThirdHandler);
@@ -366,6 +377,7 @@ public class MeetingActivity extends BaseMeetingActivity {
     }
 
     protected void subscribeVideoByUser(ZoomVideoSDKUser user) {
+        username.setText(user.getUserName());
         if (renderType == RENDER_TYPE_ZOOMRENDERER) {
             ZoomVideoSDKVideoAspect aspect = ZoomVideoSDKVideoAspect.ZoomVideoSDKVideoAspect_LetterBox;
             if (ZoomVideoSDK.getInstance().isInSession()) {

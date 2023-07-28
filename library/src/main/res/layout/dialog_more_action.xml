@@ -214,6 +214,7 @@
         android:layout_height="66dp"
         android:background="@drawable/more_action_last_bg"
         android:gravity="center_vertical"
+        android:visibility="gone"
         android:orientation="horizontal"
         android:paddingLeft="24dp"
         android:paddingRight="16dp">

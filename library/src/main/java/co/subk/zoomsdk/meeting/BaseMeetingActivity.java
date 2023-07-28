@@ -468,6 +468,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         updateSmallVideoLayoutParams();
 
         adapter.notifyDataSetChanged();
+        adapter.isOrientationChanges();
     }
 
     private void updateFpsOrientation() {
@@ -605,6 +606,16 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
     public void onSingleTap(ZoomVideoSDKUser user) {
 //        if (user != mActiveUser) {
+
+        List<ZoomVideoSDKUser> all = UserHelper.getAllUsers();
+
+        if (all.contains(user))
+        {
+            all.remove(user);
+        }
+
+        adapter.RefreshMyList(all);
+
         subscribeVideoByUser(user);
 //        }
     }

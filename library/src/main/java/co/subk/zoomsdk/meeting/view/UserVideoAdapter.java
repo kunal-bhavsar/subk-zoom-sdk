@@ -371,10 +371,13 @@ public class UserVideoAdapter extends RecyclerView.Adapter<UserVideoAdapter.Base
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
+                    if (null != tapListener) {
+                        tapListener.onSingleTap(user);
+                    }
                     viewHolder.itemView.setBackgroundResource(R.drawable.video_active_item_bg);
                     viewHolder.itemView.setVisibility(View.GONE);
                 }
-            }, 3000);
+            }, 1000);
 
         }
         else {
@@ -385,7 +388,7 @@ public class UserVideoAdapter extends RecyclerView.Adapter<UserVideoAdapter.Base
                     viewHolder.itemView.setBackgroundResource(R.drawable.video_item_bg);
                     viewHolder.itemView.setVisibility(View.VISIBLE);
                 }
-            }, 3000);
+            }, 1000);
 
         }
 
@@ -412,6 +415,47 @@ public class UserVideoAdapter extends RecyclerView.Adapter<UserVideoAdapter.Base
                 break;
             }
         }
+    }
+
+    public void RefreshMyList(List<ZoomVideoSDKUser> all)
+    {
+        userList.clear();
+        userList.addAll(all);
+        notifyDataSetChanged();
+    }
+
+    public void isOrientationChanges()
+    {
+
+        for (int i=0;i<userList.size();i++)
+        {
+            ZoomVideoSDKUser user = userList.get(i);
+
+            if (selectedVideoUser == user) {
+                //Toast.makeText(context, "aayo", Toast.LENGTH_SHORT).show();
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        viewHolder.itemView.setBackgroundResource(R.drawable.video_active_item_bg);
+                        viewHolder.itemView.setVisibility(View.GONE);
+                    }
+                }, 2000);
+
+            }
+            else {
+                //Toast.makeText(context, "nhi aayo", Toast.LENGTH_SHORT).show();
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        viewHolder.itemView.setBackgroundResource(R.drawable.video_item_bg);
+                        viewHolder.itemView.setVisibility(View.VISIBLE);
+                    }
+                }, 2000);
+
+            }
+        }
+
+
     }
 
     private void subscribeVideo(ZoomVideoSDKUser user, VideoHolder viewHolder) {

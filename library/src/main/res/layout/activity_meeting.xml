@@ -178,6 +178,28 @@
             </LinearLayout>
         </LinearLayout>
 
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:paddingTop="@dimen/dp_5"
+            android:paddingBottom="@dimen/dp_5"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_gravity="left|top"
+            android:background="@drawable/meeting_top_bar_bg"
+            android:orientation="horizontal"
+            android:paddingRight="@dimen/dp_5"
+            android:paddingLeft="@dimen/dp_5">
+
+            <TextView
+                android:id="@+id/username"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:singleLine="true"
+                android:textColor="#FFFFFF"
+                android:textSize="@dimen/textsize_16" />
+
+        </LinearLayout>
+
         <TextView
             android:id="@+id/btn_view_share"
             android:layout_width="wrap_content"
