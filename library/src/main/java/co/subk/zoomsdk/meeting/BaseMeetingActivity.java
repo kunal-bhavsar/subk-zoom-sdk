@@ -8,10 +8,12 @@ import static co.subk.zoomsdk.ZoomSdkHelper.REQUEST_SHARE_SCREEN_PERMISSION;
 import static co.subk.zoomsdk.ZoomSdkHelper.REQUEST_SYSTEM_ALERT_WINDOW;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
@@ -58,6 +60,7 @@ import java.util.List;
 import co.subk.zoomsdk.NetworkChangeReceiver;
 import co.subk.zoomsdk.R;
 import co.subk.zoomsdk.model.InternetEvent;
+import co.subk.zoomsdk.model.MobileAttendee;
 import co.subk.zoomsdk.model.SubkEvent;
 import co.subk.zoomsdk.cmd.CmdHandler;
 import co.subk.zoomsdk.cmd.CmdHelper;
@@ -1084,6 +1087,45 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     }
 
 
+    public void showInviteAttendeePopup()
+    {
+        LayoutInflater inflater = this.getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.invite_attendee_popup, null);
+        AlertDialog alertDialog = new AlertDialog.Builder(BaseMeetingActivity.this).create();
+        alertDialog.setTitle("Invite Attendee");
+        alertDialog.setCancelable(false);
+        //alertDialog.setMessage("Your Message Here");
+
+
+        final EditText etmobile = (EditText) dialogView.findViewById(R.id.etmobile);
+
+
+        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Invite", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (etmobile.getText().toString().length()>0)
+                {
+                    EventBus.getDefault().post(new MobileAttendee(etmobile.getText().toString()));
+                    alertDialog.dismiss();
+                }
+
+            }
+        });
+
+
+        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                alertDialog.dismiss();
+            }
+        });
+
+
+        alertDialog.setView(dialogView);
+        alertDialog.show();
+    }
+
+
 
     public void onClickMore(View view) {
         ZoomVideoSDKUser zoomSDKUserInfo = session.getMySelf();
@@ -1097,9 +1139,18 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         final View llStartRecord = builder.findViewById(R.id.llStartRecord);
         final View llRecording = builder.findViewById(R.id.llRecordStatus);
         final View llFeedback = builder.findViewById(R.id.llFeedback);
+        View llinviteattendee = builder.findViewById(R.id.llinviteattendee);
         final TextView tvFeedback = builder.findViewById(R.id.tvFeedback);
         final TextView tvSpeaker = builder.findViewById(R.id.tvSpeaker);
         final ImageView ivSpeaker = builder.findViewById(R.id.ivSpeaker);
+
+        llinviteattendee.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                builder.dismiss();
+                showInviteAttendeePopup();
+            }
+        });
 
         if (zoomSDKUserInfo.getVideoStatus().isOn()) {
             llSwitchCamera.setVisibility(View.VISIBLE);
