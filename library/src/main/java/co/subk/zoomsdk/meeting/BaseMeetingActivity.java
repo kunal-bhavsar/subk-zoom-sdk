@@ -1105,7 +1105,9 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
             public void onClick(DialogInterface dialog, int which) {
                 if (etmobile.getText().toString().length()>0)
                 {
-                    EventBus.getDefault().post(new MobileAttendee(etmobile.getText().toString()));
+                    Toast.makeText(BaseMeetingActivity.this, "Here", Toast.LENGTH_SHORT).show();
+                    //EventBus.getDefault().post(new MobileAttendee(etmobile.getText().toString()));
+                    EventBus.getDefault().post(new SubkEvent("mobile " +etmobile.getText().toString()));
                     alertDialog.dismiss();
                 }
 
