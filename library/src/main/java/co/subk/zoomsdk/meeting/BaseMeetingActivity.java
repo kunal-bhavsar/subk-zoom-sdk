@@ -1150,7 +1150,8 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
             @Override
             public void onClick(View view) {
                 builder.dismiss();
-                showInviteAttendeePopup();
+                EventBus.getDefault().post(new SubkEvent("mobile"));
+                //showInviteAttendeePopup();
             }
         });
 
