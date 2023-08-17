@@ -80,13 +80,16 @@ import co.subk.zoomsdk.meeting.view.KeyBoardLayout;
 import co.subk.zoomsdk.meeting.view.UserVideoAdapter;
 import co.subk.zoomsdk.meeting.util.UserHelper;
 import us.zoom.sdk.ZoomVideoSDK;
+import us.zoom.sdk.ZoomVideoSDKAnnotationHelper;
 import us.zoom.sdk.ZoomVideoSDKAudioHelper;
 import us.zoom.sdk.ZoomVideoSDKAudioOption;
 import us.zoom.sdk.ZoomVideoSDKAudioRawData;
 import us.zoom.sdk.ZoomVideoSDKAudioStatus;
+import us.zoom.sdk.ZoomVideoSDKCRCCallStatus;
 import us.zoom.sdk.ZoomVideoSDKChatHelper;
 import us.zoom.sdk.ZoomVideoSDKChatMessage;
 import us.zoom.sdk.ZoomVideoSDKChatMessageDeleteType;
+import us.zoom.sdk.ZoomVideoSDKChatPrivilegeType;
 import us.zoom.sdk.ZoomVideoSDKDelegate;
 import us.zoom.sdk.ZoomVideoSDKErrors;
 import us.zoom.sdk.ZoomVideoSDKInitParams;
@@ -102,6 +105,7 @@ import us.zoom.sdk.ZoomVideoSDKProxySettingHandler;
 import us.zoom.sdk.ZoomVideoSDKRawDataMemoryMode;
 import us.zoom.sdk.ZoomVideoSDKRawDataPipe;
 import us.zoom.sdk.ZoomVideoSDKRawDataPipeDelegate;
+import us.zoom.sdk.ZoomVideoSDKRecordingConsentHandler;
 import us.zoom.sdk.ZoomVideoSDKRecordingStatus;
 import us.zoom.sdk.ZoomVideoSDKSSLCertificateInfo;
 import us.zoom.sdk.ZoomVideoSDKSession;
@@ -116,6 +120,7 @@ import us.zoom.sdk.ZoomVideoSDKVideoHelper;
 import us.zoom.sdk.ZoomVideoSDKVideoOption;
 import us.zoom.sdk.ZoomVideoSDKVideoResolution;
 import us.zoom.sdk.ZoomVideoSDKVideoStatisticInfo;
+import us.zoom.sdk.ZoomVideoSDKVideoSubscribeFailReason;
 import us.zoom.sdk.ZoomVideoSDKVideoView;
 
 
@@ -1932,6 +1937,11 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     }
 
     @Override
+    public void onChatPrivilegeChanged(ZoomVideoSDKChatHelper chatHelper, ZoomVideoSDKChatPrivilegeType currentPrivilege) {
+
+    }
+
+    @Override
     public void onUserHostChanged(ZoomVideoSDKUserHelper userHelper, ZoomVideoSDKUser userInfo) {
         if (userInfo != null) {
             Log.d(TAG, "onUserHostChanged userInfo: " + userInfo.getUserName());
@@ -2024,9 +2034,14 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     }
 
     @Override
-    public void onCloudRecordingStatus(ZoomVideoSDKRecordingStatus status) {
+    public void onCloudRecordingStatus(ZoomVideoSDKRecordingStatus status, ZoomVideoSDKRecordingConsentHandler handler) {
 
     }
+
+    /*@Override
+    public void onCloudRecordingStatus(ZoomVideoSDKRecordingStatus status) {
+
+    }*/
 
     @Override
     public void onHostAskUnmute() {
@@ -2075,6 +2090,16 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     }
 
     @Override
+    public void onOriginalLanguageMsgReceived(ZoomVideoSDKLiveTranscriptionHelper.ILiveTranscriptionMessageInfo messageInfo) {
+
+    }
+
+    @Override
+    public void onLiveTranscriptionMsgInfoReceived(ZoomVideoSDKLiveTranscriptionHelper.ILiveTranscriptionMessageInfo messageInfo) {
+
+    }
+
+    @Override
     public void onLiveTranscriptionMsgError(ZoomVideoSDKLiveTranscriptionHelper.ILiveTranscriptionLanguage spokenLanguage, ZoomVideoSDKLiveTranscriptionHelper.ILiveTranscriptionLanguage transcriptLanguage) {
 
     }
@@ -2109,6 +2134,36 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     @Override
     public void onUserVideoNetworkStatusChanged(ZoomVideoSDKNetworkStatus status, ZoomVideoSDKUser user) {
         Log.d(TAG, "onUserVideoNetworkStatusChanged:" + user.getUserName() + ":" + status);
+    }
+
+    @Override
+    public void onUserRecordingConsent(ZoomVideoSDKUser user) {
+
+    }
+
+    @Override
+    public void onCallCRCDeviceStatusChanged(ZoomVideoSDKCRCCallStatus status) {
+
+    }
+
+    @Override
+    public void onVideoCanvasSubscribeFail(ZoomVideoSDKVideoSubscribeFailReason fail_reason, ZoomVideoSDKUser pUser, ZoomVideoSDKVideoView view) {
+
+    }
+
+    @Override
+    public void onShareCanvasSubscribeFail(ZoomVideoSDKVideoSubscribeFailReason fail_reason, ZoomVideoSDKUser pUser, ZoomVideoSDKVideoView view) {
+
+    }
+
+    @Override
+    public void onAnnotationHelperCleanUp(ZoomVideoSDKAnnotationHelper helper) {
+
+    }
+
+    @Override
+    public void onAnnotationPrivilegeChange(boolean enable, ZoomVideoSDKUser shareOwner) {
+
     }
 
     public void showOfflineDialog()
