@@ -40,6 +40,7 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -171,6 +172,8 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
     protected RecyclerView chatListView;
 
+    protected ProgressBar loader;
+
     private ChatMsgAdapter chatMsgAdapter;
 
     protected String myDisplayName = "";
@@ -278,12 +281,13 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         displayMetrics = new DisplayMetrics();
         display.getMetrics(displayMetrics);
 
-        Bundle bundle = getIntent().getExtras();
+        loader = findViewById(R.id.loader);
+        loader.setVisibility(View.VISIBLE);
 
         initZoomSDK();
 
+        Bundle bundle = getIntent().getExtras();
         setupZoom(bundle);
-
 
         session = ZoomVideoSDK.getInstance().getSession();
         ZoomVideoSDK.getInstance().addListener(BaseMeetingActivity.this);
@@ -292,10 +296,10 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         initMeeting();
         updateSessionInfo();
 
-
         mNetworkReceiver = new NetworkChangeReceiver();
         registerNetworkBroadcastForNougat();
 
+        loader.setVisibility(View.GONE);
     }
 
     private void registerNetworkBroadcastForNougat() {

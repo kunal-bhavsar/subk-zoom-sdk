@@ -96,8 +96,6 @@ public class MeetingActivity extends BaseMeetingActivity {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
         CmdHelper.getInstance().addListener(mFeedbackPushHandler);
         FeedbackDataManager.getInstance().startListenerFeedbackData();
-
-
     }
 
     @Override
