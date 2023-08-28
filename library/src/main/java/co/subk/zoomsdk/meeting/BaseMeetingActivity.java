@@ -40,6 +40,7 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -206,6 +207,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     private BroadcastReceiver mNetworkReceiver;
 
     androidx.appcompat.app.AlertDialog alertDialog;
+
     @NonNull
     private List<CmdLowerThirdRequest> lowerThirdRequests = new ArrayList<>();
     // private LowerThirdLayout lowerThirdLayout;
@@ -277,6 +279,8 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         display = ((WindowManager) getSystemService(Service.WINDOW_SERVICE)).getDefaultDisplay();
         displayMetrics = new DisplayMetrics();
         display.getMetrics(displayMetrics);
+
+        //progress_bar = find
 
         Bundle bundle = getIntent().getExtras();
 
