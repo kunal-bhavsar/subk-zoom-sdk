@@ -172,6 +172,8 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
     protected RecyclerView chatListView;
 
+    protected ProgressBar loader;
+
     private ChatMsgAdapter chatMsgAdapter;
 
     protected String myDisplayName = "";
@@ -207,7 +209,6 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     private BroadcastReceiver mNetworkReceiver;
 
     androidx.appcompat.app.AlertDialog alertDialog;
-
     @NonNull
     private List<CmdLowerThirdRequest> lowerThirdRequests = new ArrayList<>();
     // private LowerThirdLayout lowerThirdLayout;
@@ -280,14 +281,13 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         displayMetrics = new DisplayMetrics();
         display.getMetrics(displayMetrics);
 
-        //progress_bar = find
-
-        Bundle bundle = getIntent().getExtras();
+        loader = findViewById(R.id.loader);
+        loader.setVisibility(View.VISIBLE);
 
         initZoomSDK();
 
+        Bundle bundle = getIntent().getExtras();
         setupZoom(bundle);
-
 
         session = ZoomVideoSDK.getInstance().getSession();
         ZoomVideoSDK.getInstance().addListener(BaseMeetingActivity.this);
@@ -296,10 +296,10 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         initMeeting();
         updateSessionInfo();
 
-
         mNetworkReceiver = new NetworkChangeReceiver();
         registerNetworkBroadcastForNougat();
 
+        loader.setVisibility(View.GONE);
     }
 
     private void registerNetworkBroadcastForNougat() {
@@ -373,7 +373,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     protected void initZoomSDK() {
         ZoomVideoSDKInitParams params = new ZoomVideoSDKInitParams();
         params.domain = "zoom.us";
-        params.logFilePrefix = "MyZoomLog"; // Optional for debugging
+//        params.logFilePrefix = "MyZoomLog"; // Optional for debugging
         params.enableLog = true;
         params.videoRawDataMemoryMode = ZoomVideoSDKRawDataMemoryMode.ZoomVideoSDKRawDataMemoryModeHeap;
         params.audioRawDataMemoryMode = ZoomVideoSDKRawDataMemoryMode.ZoomVideoSDKRawDataMemoryModeHeap;
@@ -1761,7 +1761,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     public void onUserJoin(ZoomVideoSDKUserHelper userHelper, List<ZoomVideoSDKUser> userList) {
 
         Log.d(TAG, "onUserJoin " + userList.size());
-        //updateVideoListLayout();
+        updateVideoListLayout();
         if (!isActivityPaused) {
             adapter.onUserJoin(userList);
         }
