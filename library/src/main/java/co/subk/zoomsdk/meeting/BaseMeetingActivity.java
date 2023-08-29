@@ -373,7 +373,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     protected void initZoomSDK() {
         ZoomVideoSDKInitParams params = new ZoomVideoSDKInitParams();
         params.domain = "zoom.us";
-//        params.logFilePrefix = "MyZoomLog"; // Optional for debugging
+        params.logFilePrefix = "MyZoomLog"; // Optional for debugging
         params.enableLog = true;
         params.videoRawDataMemoryMode = ZoomVideoSDKRawDataMemoryMode.ZoomVideoSDKRawDataMemoryModeHeap;
         params.audioRawDataMemoryMode = ZoomVideoSDKRawDataMemoryMode.ZoomVideoSDKRawDataMemoryModeHeap;
@@ -1654,9 +1654,6 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
     @SuppressLint("NewApi")
     protected void askScreenSharePermission() {
-        if (Build.VERSION.SDK_INT < 21) {
-            return;
-        }
         if (ZoomVideoSDK.getInstance().getShareHelper().isSharingOut()) {
             return;
         }
@@ -1761,7 +1758,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     public void onUserJoin(ZoomVideoSDKUserHelper userHelper, List<ZoomVideoSDKUser> userList) {
 
         Log.d(TAG, "onUserJoin " + userList.size());
-        updateVideoListLayout();
+        //updateVideoListLayout();
         if (!isActivityPaused) {
             adapter.onUserJoin(userList);
         }
