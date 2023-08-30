@@ -71,6 +71,7 @@
     <string name="raise_hand" tools:ignore="ExtraTranslation">Raise Hand</string>
     <string name="low_hand" tools:ignore="ExtraTranslation">Lower Hand</string>
     <string name="launch_setting_version" tools:ignore="ExtraTranslation">Version:v%s</string>
+    <string name="zoom_version" tools:ignore="ExtraTranslation">Zoom Version:v%s</string>
     <string name="update_task_title" tools:ignore="ExtraTranslation">Update Task</string>
     <string name="task_title_hint" tools:ignore="ExtraTranslation">Title*</string>
     <string name="task_type_hint" tools:ignore="ExtraTranslation">Task Type*</string>
