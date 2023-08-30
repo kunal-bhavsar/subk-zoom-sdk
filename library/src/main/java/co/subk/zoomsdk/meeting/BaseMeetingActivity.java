@@ -381,9 +381,9 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
         int ret = ZoomVideoSDK.getInstance().initialize(this.getApplicationContext(), params);
         if (ret != ZoomVideoSDKErrors.Errors_Success) {
-            Toast.makeText(this, ErrorMsgUtil.getMsgByErrorCode(ret), Toast.LENGTH_SHORT).show();
+            Log.e(TAG, ErrorMsgUtil.getMsgByErrorCode(ret));
         }else {
-            Toast.makeText(this, getString(R.string.launch_setting_version, ZoomVideoSDK.getInstance().getSDKVersion()), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.zoom_version, ZoomVideoSDK.getInstance().getSDKVersion()), Toast.LENGTH_SHORT).show();
         }
     }
 
