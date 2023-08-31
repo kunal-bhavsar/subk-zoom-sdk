@@ -179,6 +179,12 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     protected String myDisplayName = "";
     protected String meetingPwd = "";
     protected String sessionName;
+
+    protected boolean allowToInviteAttendee = false;
+    protected boolean allowToShareScreen = false;
+    protected boolean allowToMuteAudio = false;
+    protected boolean allowToHideVideo = false;
+    protected boolean allowToEndMeeting = false;
     protected int renderType;
 
     protected ImageView videoOffView;
@@ -281,9 +287,6 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         displayMetrics = new DisplayMetrics();
         display.getMetrics(displayMetrics);
 
-        loader = findViewById(R.id.loader);
-        loader.setVisibility(View.VISIBLE);
-
         initZoomSDK();
 
         Bundle bundle = getIntent().getExtras();
@@ -298,8 +301,6 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
         mNetworkReceiver = new NetworkChangeReceiver();
         registerNetworkBroadcastForNougat();
-
-        loader.setVisibility(View.GONE);
     }
 
     private void registerNetworkBroadcastForNougat() {
@@ -418,6 +419,11 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
             meetingPwd = bundle.getString("password");
             sessionName = bundle.getString("sessionName");
             renderType = bundle.getInt("render_type", RENDER_TYPE_ZOOMRENDERER);
+            allowToInviteAttendee = bundle.getBoolean("allow_to_invite_attendee");
+            allowToShareScreen = bundle.getBoolean("allow_to_share_screen");
+            allowToMuteAudio = bundle.getBoolean("allow_to_mute_audio");
+            allowToHideVideo = bundle.getBoolean("allow_to_hide_video");
+            allowToEndMeeting = bundle.getBoolean("allow_to_end_meeting");
         }
 
         /* sessionContext.userName = "Arull"*//*name*//*;
@@ -777,6 +783,9 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
 
     protected void initView() {
+        loader = findViewById(R.id.loader);
+        showLoader();
+
         sessionNameText = findViewById(R.id.sessionName);
         // mtvInput = findViewById(R.id.tv_input);
         userVideoList = findViewById(R.id.userVideoList);
@@ -791,7 +800,19 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         text_fps = findViewById(R.id.text_fps);
 
         iconVideo = findViewById(R.id.icon_video);
+        if (allowToHideVideo) {
+            iconVideo.setVisibility(View.VISIBLE);
+        }
+        else {
+            iconVideo.setVisibility(View.GONE);
+        }
         iconAudio = findViewById(R.id.icon_audio);
+        if (allowToMuteAudio) {
+            iconAudio.setVisibility(View.VISIBLE);
+        }
+        else {
+            iconAudio.setVisibility(View.GONE);
+        }
         iconMore = findViewById(R.id.icon_more);
         practiceText = findViewById(R.id.text_meeting_user_size);
 
@@ -809,6 +830,13 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         iconLock = findViewById(R.id.meeting_lock_status);
 
         iconShare = findViewById(R.id.icon_share);
+        if (allowToShareScreen) {
+            iconShare.setVisibility(View.VISIBLE);
+        }
+        else {
+            iconShare.setVisibility(View.GONE);
+        }
+
         actionBarScroll = findViewById(R.id.action_bar_scroll);
 
         videoOffView = findViewById(R.id.video_off_tips);
@@ -869,6 +897,13 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         });
     }
 
+    public void showLoader() {
+        loader.setVisibility(View.VISIBLE);
+    }
+
+    public void hideLoader() {
+        loader.setVisibility(View.GONE);
+    }
     @Override
     public void onItemClick() {
 
@@ -934,7 +969,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         });
 
         boolean end = false;
-        if (null != userInfo && userInfo.isHost()) {
+        if (null != userInfo && userInfo.isHost() && allowToEndMeeting) {
             ((TextView) builder.findViewById(R.id.btn_end)).setText(getString(R.string.leave_end_text));
             end = true;
         }
@@ -1104,7 +1139,6 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         AlertDialog alertDialog = new AlertDialog.Builder(BaseMeetingActivity.this).create();
         alertDialog.setTitle("Invite Attendee");
         alertDialog.setCancelable(false);
-        //alertDialog.setMessage("Your Message Here");
 
 
         final EditText etmobile = (EditText) dialogView.findViewById(R.id.etmobile);
@@ -1151,19 +1185,23 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         final View llStartRecord = builder.findViewById(R.id.llStartRecord);
         final View llRecording = builder.findViewById(R.id.llRecordStatus);
         final View llFeedback = builder.findViewById(R.id.llFeedback);
-        View llinviteattendee = builder.findViewById(R.id.llinviteattendee);
+        View llInviteAttendee = builder.findViewById(R.id.llinviteattendee);
         final TextView tvFeedback = builder.findViewById(R.id.tvFeedback);
         final TextView tvSpeaker = builder.findViewById(R.id.tvSpeaker);
         final ImageView ivSpeaker = builder.findViewById(R.id.ivSpeaker);
 
-        llinviteattendee.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                builder.dismiss();
-                EventBus.getDefault().post(new SubkEvent("mobile"));
-                //showInviteAttendeePopup();
-            }
+        llInviteAttendee.setOnClickListener(view1 -> {
+            builder.dismiss();
+            EventBus.getDefault().post(new SubkEvent("mobile"));
+            //showInviteAttendeePopup();
         });
+
+        if (allowToInviteAttendee) {
+            llInviteAttendee.setVisibility(View.VISIBLE);
+        }
+        else {
+            llInviteAttendee.setVisibility(View.GONE);
+        }
 
         if (zoomSDKUserInfo.getVideoStatus().isOn()) {
             llSwitchCamera.setVisibility(View.VISIBLE);
@@ -1192,77 +1230,77 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
         llRecording.setVisibility(View.GONE);
         llStartRecord.setVisibility(View.GONE);
-        if (
-                canStartRecord() && status != ZoomVideoSDKRecordingStatus.Recording_DiskFull) {
-            if (status == ZoomVideoSDKRecordingStatus.Recording_Stop) {
-                llStartRecord.setVisibility(View.VISIBLE);
-                llStartRecord.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        builder.dismiss();
-                        onClickStartCloudRecord();
-                    }
-                });
-            } else {
-                llRecording.setVisibility(View.VISIBLE);
-                final ImageView recordImg = llRecording.findViewById(R.id.imgRecording);
-                final ImageView pauseRecordImg = llRecording.findViewById(R.id.btn_pause_record);
-                final ImageView stopRecordImg = llRecording.findViewById(R.id.btn_stop_record);
-//                final ProgressBar startRecordProgressBar = llRecording.findViewById(R.id.progressStartingRecord);
-                final TextView recordStatus = llRecording.findViewById(R.id.txtRecordStatus);
-
-                pauseRecordImg.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (status == ZoomVideoSDKRecordingStatus.Recording_Pause) {
-                            int error = ZoomVideoSDK.getInstance().getRecordingHelper().resumeCloudRecording();
-                            if (error == ZoomVideoSDKErrors.Errors_Success) {
-                                pauseRecordImg.setImageResource(R.drawable.zm_record_btn_pause);
-                                recordImg.setVisibility(View.VISIBLE);
-                                recordStatus.setText("Recording…");
-                            } else {
-                                Toast.makeText(BaseMeetingActivity.this, "resume cloud record error: " + ErrorMsgUtil.getMsgByErrorCode(error) + ". Error code: "+error, Toast.LENGTH_LONG).show();
-                            }
-                        } else {
-                            int error = ZoomVideoSDK.getInstance().getRecordingHelper().pauseCloudRecording();
-                            if (error == ZoomVideoSDKErrors.Errors_Success) {
-                                pauseRecordImg.setImageResource(R.drawable.zm_record_btn_resume);
-                                recordImg.setVisibility(View.GONE);
-                                recordStatus.setText("Recording Paused");
-                            } else {
-                                Toast.makeText(BaseMeetingActivity.this, "pause cloud record error: " + ErrorMsgUtil.getMsgByErrorCode(error) + ". Error code: "+error, Toast.LENGTH_LONG).show();
-                            }
-                        }
-                    }
-                });
-
-
-                stopRecordImg.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        int error = ZoomVideoSDK.getInstance().getRecordingHelper().stopCloudRecording();
-                        if (error == ZoomVideoSDKErrors.Errors_Success) {
-                            builder.dismiss();
-                        } else {
-                            Toast.makeText(BaseMeetingActivity.this, "stop cloud record error: " + ErrorMsgUtil.getMsgByErrorCode(error) + ". Error code: "+error, Toast.LENGTH_LONG).show();
-                        }
-                    }
-                });
-
-                if (status == ZoomVideoSDKRecordingStatus.Recording_Pause) {
-                    recordImg.setVisibility(View.GONE);
-                    recordStatus.setText("Recording Paused");
-                } else {
-                    recordImg.setVisibility(View.VISIBLE);
-                    recordStatus.setText("Recording…");
-                }
-
-                pauseRecordImg.setVisibility(View.VISIBLE);
-                stopRecordImg.setVisibility(View.VISIBLE);
-                pauseRecordImg.setImageResource(status == ZoomVideoSDKRecordingStatus.Recording_Pause ? R.drawable.zm_record_btn_resume : R.drawable.zm_record_btn_pause);
-//                startRecordProgressBar.setVisibility(View.GONE);
-            }
-        }
+//        if (
+//                canStartRecord() && status != ZoomVideoSDKRecordingStatus.Recording_DiskFull) {
+//            if (status == ZoomVideoSDKRecordingStatus.Recording_Stop) {
+//                llStartRecord.setVisibility(View.VISIBLE);
+//                llStartRecord.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        builder.dismiss();
+//                        onClickStartCloudRecord();
+//                    }
+//                });
+//            } else {
+//                llRecording.setVisibility(View.VISIBLE);
+//                final ImageView recordImg = llRecording.findViewById(R.id.imgRecording);
+//                final ImageView pauseRecordImg = llRecording.findViewById(R.id.btn_pause_record);
+//                final ImageView stopRecordImg = llRecording.findViewById(R.id.btn_stop_record);
+////                final ProgressBar startRecordProgressBar = llRecording.findViewById(R.id.progressStartingRecord);
+//                final TextView recordStatus = llRecording.findViewById(R.id.txtRecordStatus);
+//
+//                pauseRecordImg.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        if (status == ZoomVideoSDKRecordingStatus.Recording_Pause) {
+//                            int error = ZoomVideoSDK.getInstance().getRecordingHelper().resumeCloudRecording();
+//                            if (error == ZoomVideoSDKErrors.Errors_Success) {
+//                                pauseRecordImg.setImageResource(R.drawable.zm_record_btn_pause);
+//                                recordImg.setVisibility(View.VISIBLE);
+//                                recordStatus.setText("Recording…");
+//                            } else {
+//                                Toast.makeText(BaseMeetingActivity.this, "resume cloud record error: " + ErrorMsgUtil.getMsgByErrorCode(error) + ". Error code: "+error, Toast.LENGTH_LONG).show();
+//                            }
+//                        } else {
+//                            int error = ZoomVideoSDK.getInstance().getRecordingHelper().pauseCloudRecording();
+//                            if (error == ZoomVideoSDKErrors.Errors_Success) {
+//                                pauseRecordImg.setImageResource(R.drawable.zm_record_btn_resume);
+//                                recordImg.setVisibility(View.GONE);
+//                                recordStatus.setText("Recording Paused");
+//                            } else {
+//                                Toast.makeText(BaseMeetingActivity.this, "pause cloud record error: " + ErrorMsgUtil.getMsgByErrorCode(error) + ". Error code: "+error, Toast.LENGTH_LONG).show();
+//                            }
+//                        }
+//                    }
+//                });
+//
+//
+//                stopRecordImg.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        int error = ZoomVideoSDK.getInstance().getRecordingHelper().stopCloudRecording();
+//                        if (error == ZoomVideoSDKErrors.Errors_Success) {
+//                            builder.dismiss();
+//                        } else {
+//                            Toast.makeText(BaseMeetingActivity.this, "stop cloud record error: " + ErrorMsgUtil.getMsgByErrorCode(error) + ". Error code: "+error, Toast.LENGTH_LONG).show();
+//                        }
+//                    }
+//                });
+//
+//                if (status == ZoomVideoSDKRecordingStatus.Recording_Pause) {
+//                    recordImg.setVisibility(View.GONE);
+//                    recordStatus.setText("Recording Paused");
+//                } else {
+//                    recordImg.setVisibility(View.VISIBLE);
+//                    recordStatus.setText("Recording…");
+//                }
+//
+//                pauseRecordImg.setVisibility(View.VISIBLE);
+//                stopRecordImg.setVisibility(View.VISIBLE);
+//                pauseRecordImg.setImageResource(status == ZoomVideoSDKRecordingStatus.Recording_Pause ? R.drawable.zm_record_btn_resume : R.drawable.zm_record_btn_pause);
+////                startRecordProgressBar.setVisibility(View.GONE);
+//            }
+//        }
 
         if (isSpeakerOn()) {
             tvSpeaker.setText("Turn off Speaker");
@@ -1714,6 +1752,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
         adapter.onUserJoin(UserHelper.getAllUsers());
         refreshUserListAdapter();
+        hideLoader();
         // mtvInput.setVisibility(View.VISIBLE);
     }
 
