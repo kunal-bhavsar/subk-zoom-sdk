@@ -1104,7 +1104,6 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         AlertDialog alertDialog = new AlertDialog.Builder(BaseMeetingActivity.this).create();
         alertDialog.setTitle("Invite Attendee");
         alertDialog.setCancelable(false);
-        //alertDialog.setMessage("Your Message Here");
 
 
         final EditText etmobile = (EditText) dialogView.findViewById(R.id.etmobile);
@@ -1192,77 +1191,77 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
         llRecording.setVisibility(View.GONE);
         llStartRecord.setVisibility(View.GONE);
-        if (
-                canStartRecord() && status != ZoomVideoSDKRecordingStatus.Recording_DiskFull) {
-            if (status == ZoomVideoSDKRecordingStatus.Recording_Stop) {
-                llStartRecord.setVisibility(View.VISIBLE);
-                llStartRecord.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        builder.dismiss();
-                        onClickStartCloudRecord();
-                    }
-                });
-            } else {
-                llRecording.setVisibility(View.VISIBLE);
-                final ImageView recordImg = llRecording.findViewById(R.id.imgRecording);
-                final ImageView pauseRecordImg = llRecording.findViewById(R.id.btn_pause_record);
-                final ImageView stopRecordImg = llRecording.findViewById(R.id.btn_stop_record);
-//                final ProgressBar startRecordProgressBar = llRecording.findViewById(R.id.progressStartingRecord);
-                final TextView recordStatus = llRecording.findViewById(R.id.txtRecordStatus);
-
-                pauseRecordImg.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (status == ZoomVideoSDKRecordingStatus.Recording_Pause) {
-                            int error = ZoomVideoSDK.getInstance().getRecordingHelper().resumeCloudRecording();
-                            if (error == ZoomVideoSDKErrors.Errors_Success) {
-                                pauseRecordImg.setImageResource(R.drawable.zm_record_btn_pause);
-                                recordImg.setVisibility(View.VISIBLE);
-                                recordStatus.setText("Recording…");
-                            } else {
-                                Toast.makeText(BaseMeetingActivity.this, "resume cloud record error: " + ErrorMsgUtil.getMsgByErrorCode(error) + ". Error code: "+error, Toast.LENGTH_LONG).show();
-                            }
-                        } else {
-                            int error = ZoomVideoSDK.getInstance().getRecordingHelper().pauseCloudRecording();
-                            if (error == ZoomVideoSDKErrors.Errors_Success) {
-                                pauseRecordImg.setImageResource(R.drawable.zm_record_btn_resume);
-                                recordImg.setVisibility(View.GONE);
-                                recordStatus.setText("Recording Paused");
-                            } else {
-                                Toast.makeText(BaseMeetingActivity.this, "pause cloud record error: " + ErrorMsgUtil.getMsgByErrorCode(error) + ". Error code: "+error, Toast.LENGTH_LONG).show();
-                            }
-                        }
-                    }
-                });
-
-
-                stopRecordImg.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        int error = ZoomVideoSDK.getInstance().getRecordingHelper().stopCloudRecording();
-                        if (error == ZoomVideoSDKErrors.Errors_Success) {
-                            builder.dismiss();
-                        } else {
-                            Toast.makeText(BaseMeetingActivity.this, "stop cloud record error: " + ErrorMsgUtil.getMsgByErrorCode(error) + ". Error code: "+error, Toast.LENGTH_LONG).show();
-                        }
-                    }
-                });
-
-                if (status == ZoomVideoSDKRecordingStatus.Recording_Pause) {
-                    recordImg.setVisibility(View.GONE);
-                    recordStatus.setText("Recording Paused");
-                } else {
-                    recordImg.setVisibility(View.VISIBLE);
-                    recordStatus.setText("Recording…");
-                }
-
-                pauseRecordImg.setVisibility(View.VISIBLE);
-                stopRecordImg.setVisibility(View.VISIBLE);
-                pauseRecordImg.setImageResource(status == ZoomVideoSDKRecordingStatus.Recording_Pause ? R.drawable.zm_record_btn_resume : R.drawable.zm_record_btn_pause);
-//                startRecordProgressBar.setVisibility(View.GONE);
-            }
-        }
+//        if (
+//                canStartRecord() && status != ZoomVideoSDKRecordingStatus.Recording_DiskFull) {
+//            if (status == ZoomVideoSDKRecordingStatus.Recording_Stop) {
+//                llStartRecord.setVisibility(View.VISIBLE);
+//                llStartRecord.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        builder.dismiss();
+//                        onClickStartCloudRecord();
+//                    }
+//                });
+//            } else {
+//                llRecording.setVisibility(View.VISIBLE);
+//                final ImageView recordImg = llRecording.findViewById(R.id.imgRecording);
+//                final ImageView pauseRecordImg = llRecording.findViewById(R.id.btn_pause_record);
+//                final ImageView stopRecordImg = llRecording.findViewById(R.id.btn_stop_record);
+////                final ProgressBar startRecordProgressBar = llRecording.findViewById(R.id.progressStartingRecord);
+//                final TextView recordStatus = llRecording.findViewById(R.id.txtRecordStatus);
+//
+//                pauseRecordImg.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        if (status == ZoomVideoSDKRecordingStatus.Recording_Pause) {
+//                            int error = ZoomVideoSDK.getInstance().getRecordingHelper().resumeCloudRecording();
+//                            if (error == ZoomVideoSDKErrors.Errors_Success) {
+//                                pauseRecordImg.setImageResource(R.drawable.zm_record_btn_pause);
+//                                recordImg.setVisibility(View.VISIBLE);
+//                                recordStatus.setText("Recording…");
+//                            } else {
+//                                Toast.makeText(BaseMeetingActivity.this, "resume cloud record error: " + ErrorMsgUtil.getMsgByErrorCode(error) + ". Error code: "+error, Toast.LENGTH_LONG).show();
+//                            }
+//                        } else {
+//                            int error = ZoomVideoSDK.getInstance().getRecordingHelper().pauseCloudRecording();
+//                            if (error == ZoomVideoSDKErrors.Errors_Success) {
+//                                pauseRecordImg.setImageResource(R.drawable.zm_record_btn_resume);
+//                                recordImg.setVisibility(View.GONE);
+//                                recordStatus.setText("Recording Paused");
+//                            } else {
+//                                Toast.makeText(BaseMeetingActivity.this, "pause cloud record error: " + ErrorMsgUtil.getMsgByErrorCode(error) + ". Error code: "+error, Toast.LENGTH_LONG).show();
+//                            }
+//                        }
+//                    }
+//                });
+//
+//
+//                stopRecordImg.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        int error = ZoomVideoSDK.getInstance().getRecordingHelper().stopCloudRecording();
+//                        if (error == ZoomVideoSDKErrors.Errors_Success) {
+//                            builder.dismiss();
+//                        } else {
+//                            Toast.makeText(BaseMeetingActivity.this, "stop cloud record error: " + ErrorMsgUtil.getMsgByErrorCode(error) + ". Error code: "+error, Toast.LENGTH_LONG).show();
+//                        }
+//                    }
+//                });
+//
+//                if (status == ZoomVideoSDKRecordingStatus.Recording_Pause) {
+//                    recordImg.setVisibility(View.GONE);
+//                    recordStatus.setText("Recording Paused");
+//                } else {
+//                    recordImg.setVisibility(View.VISIBLE);
+//                    recordStatus.setText("Recording…");
+//                }
+//
+//                pauseRecordImg.setVisibility(View.VISIBLE);
+//                stopRecordImg.setVisibility(View.VISIBLE);
+//                pauseRecordImg.setImageResource(status == ZoomVideoSDKRecordingStatus.Recording_Pause ? R.drawable.zm_record_btn_resume : R.drawable.zm_record_btn_pause);
+////                startRecordProgressBar.setVisibility(View.GONE);
+//            }
+//        }
 
         if (isSpeakerOn()) {
             tvSpeaker.setText("Turn off Speaker");
