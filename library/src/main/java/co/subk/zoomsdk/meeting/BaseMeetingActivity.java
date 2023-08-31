@@ -179,6 +179,12 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     protected String myDisplayName = "";
     protected String meetingPwd = "";
     protected String sessionName;
+
+    protected boolean allowToInviteAttendee = false;
+    protected boolean allowToShareScreen = false;
+    protected boolean allowToMuteAudio = false;
+    protected boolean allowToHideVideo = false;
+    protected boolean allowToEndMeeting = false;
     protected int renderType;
 
     protected ImageView videoOffView;
@@ -281,9 +287,6 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         displayMetrics = new DisplayMetrics();
         display.getMetrics(displayMetrics);
 
-        loader = findViewById(R.id.loader);
-        loader.setVisibility(View.VISIBLE);
-
         initZoomSDK();
 
         Bundle bundle = getIntent().getExtras();
@@ -298,8 +301,6 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
         mNetworkReceiver = new NetworkChangeReceiver();
         registerNetworkBroadcastForNougat();
-
-        loader.setVisibility(View.GONE);
     }
 
     private void registerNetworkBroadcastForNougat() {
@@ -418,6 +419,11 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
             meetingPwd = bundle.getString("password");
             sessionName = bundle.getString("sessionName");
             renderType = bundle.getInt("render_type", RENDER_TYPE_ZOOMRENDERER);
+            allowToInviteAttendee = bundle.getBoolean("allow_to_invite_attendee");
+            allowToShareScreen = bundle.getBoolean("allow_to_share_screen");
+            allowToMuteAudio = bundle.getBoolean("allow_to_mute_audio");
+            allowToHideVideo = bundle.getBoolean("allow_to_hide_video");
+            allowToEndMeeting = bundle.getBoolean("allow_to_end_meeting");
         }
 
         /* sessionContext.userName = "Arull"*//*name*//*;
@@ -777,6 +783,9 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
 
     protected void initView() {
+        loader = findViewById(R.id.loader);
+        showLoader();
+
         sessionNameText = findViewById(R.id.sessionName);
         // mtvInput = findViewById(R.id.tv_input);
         userVideoList = findViewById(R.id.userVideoList);
@@ -791,7 +800,19 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         text_fps = findViewById(R.id.text_fps);
 
         iconVideo = findViewById(R.id.icon_video);
+        if (allowToHideVideo) {
+            iconVideo.setVisibility(View.VISIBLE);
+        }
+        else {
+            iconVideo.setVisibility(View.GONE);
+        }
         iconAudio = findViewById(R.id.icon_audio);
+        if (allowToMuteAudio) {
+            iconAudio.setVisibility(View.VISIBLE);
+        }
+        else {
+            iconAudio.setVisibility(View.GONE);
+        }
         iconMore = findViewById(R.id.icon_more);
         practiceText = findViewById(R.id.text_meeting_user_size);
 
@@ -809,6 +830,13 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         iconLock = findViewById(R.id.meeting_lock_status);
 
         iconShare = findViewById(R.id.icon_share);
+        if (allowToShareScreen) {
+            iconShare.setVisibility(View.VISIBLE);
+        }
+        else {
+            iconShare.setVisibility(View.GONE);
+        }
+
         actionBarScroll = findViewById(R.id.action_bar_scroll);
 
         videoOffView = findViewById(R.id.video_off_tips);
@@ -869,6 +897,13 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         });
     }
 
+    public void showLoader() {
+        loader.setVisibility(View.VISIBLE);
+    }
+
+    public void hideLoader() {
+        loader.setVisibility(View.GONE);
+    }
     @Override
     public void onItemClick() {
 
@@ -934,7 +969,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         });
 
         boolean end = false;
-        if (null != userInfo && userInfo.isHost()) {
+        if (null != userInfo && userInfo.isHost() && allowToEndMeeting) {
             ((TextView) builder.findViewById(R.id.btn_end)).setText(getString(R.string.leave_end_text));
             end = true;
         }
@@ -1150,19 +1185,23 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         final View llStartRecord = builder.findViewById(R.id.llStartRecord);
         final View llRecording = builder.findViewById(R.id.llRecordStatus);
         final View llFeedback = builder.findViewById(R.id.llFeedback);
-        View llinviteattendee = builder.findViewById(R.id.llinviteattendee);
+        View llInviteAttendee = builder.findViewById(R.id.llinviteattendee);
         final TextView tvFeedback = builder.findViewById(R.id.tvFeedback);
         final TextView tvSpeaker = builder.findViewById(R.id.tvSpeaker);
         final ImageView ivSpeaker = builder.findViewById(R.id.ivSpeaker);
 
-        llinviteattendee.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                builder.dismiss();
-                EventBus.getDefault().post(new SubkEvent("mobile"));
-                //showInviteAttendeePopup();
-            }
+        llInviteAttendee.setOnClickListener(view1 -> {
+            builder.dismiss();
+            EventBus.getDefault().post(new SubkEvent("mobile"));
+            //showInviteAttendeePopup();
         });
+
+        if (allowToInviteAttendee) {
+            llInviteAttendee.setVisibility(View.VISIBLE);
+        }
+        else {
+            llInviteAttendee.setVisibility(View.GONE);
+        }
 
         if (zoomSDKUserInfo.getVideoStatus().isOn()) {
             llSwitchCamera.setVisibility(View.VISIBLE);
@@ -1713,6 +1752,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
         adapter.onUserJoin(UserHelper.getAllUsers());
         refreshUserListAdapter();
+        hideLoader();
         // mtvInput.setVisibility(View.VISIBLE);
     }
 
