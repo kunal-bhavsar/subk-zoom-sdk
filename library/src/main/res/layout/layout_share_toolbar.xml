@@ -6,19 +6,50 @@
     android:layout_margin="12dp"
     android:background="@drawable/zm_toolbar_stopshare_bgcolor"
     android:gravity="center"
-    android:orientation="vertical"
+    android:orientation="horizontal"
     android:padding="4dp">
 
-    <ImageView
+    <LinearLayout
+        android:id="@+id/audio_share_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/zm_screenshare_stop" />
+        android:layout_marginHorizontal="6dp"
+        android:orientation="vertical">
 
-    <TextView
+        <ImageView
+            android:id="@+id/img_share_audio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/zm_screenshare_audio_disable" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Share Audio"
+            android:textAllCaps="false"
+            android:textColor="#FFFFFF"
+            android:textSize="8sp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/stop_share_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Stop Share"
-        android:textAllCaps="false"
-        android:textColor="#FFFFFF"
-        android:textSize="8sp" />
+        android:orientation="vertical">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/zm_screenshare_stop" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Stop Share"
+            android:textAllCaps="false"
+            android:textColor="#FFFFFF"
+            android:textSize="8sp" />
+
+    </LinearLayout>
 </LinearLayout>

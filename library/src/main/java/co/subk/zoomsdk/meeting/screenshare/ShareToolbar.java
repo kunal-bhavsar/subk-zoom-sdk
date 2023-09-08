@@ -4,18 +4,19 @@ import android.content.Context;
 import android.graphics.PixelFormat;
 import android.os.Build;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.Display;
-import android.view.GestureDetector;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.ImageView;
 
 import co.subk.zoomsdk.R;
-
+import us.zoom.sdk.ZoomVideoSDK;
 
 public class ShareToolbar {
+    private final static String TAG = "ShareToolbar";
 
     public interface Listener {
         void onClickStopShare();
@@ -26,7 +27,8 @@ public class ShareToolbar {
     private final Context mContext;
 
     private View contentView;
-
+    private View stopShareLayout;
+    private View shareAudioLayout;
     private Listener mListener;
     private Display mDisplay;
 
@@ -48,51 +50,34 @@ public class ShareToolbar {
             }
         });
 
-        GestureDetector.SimpleOnGestureListener listener = new GestureDetector.SimpleOnGestureListener() {
+        stopShareLayout = contentView.findViewById(R.id.stop_share_layout);
+        shareAudioLayout = contentView.findViewById(R.id.audio_share_layout);
 
-
-            @Override
-            public boolean onSingleTapConfirmed(MotionEvent e) {
-                if (null != mListener) {
-                    mListener.onClickStopShare();
+        if (stopShareLayout != null) {
+            stopShareLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (null != mListener) {
+                        mListener.onClickStopShare();
+                    }
+                    destroy();
                 }
-                destroy();
-                return true;
-            }
+            });
+        }
 
-            @Override
-            public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-
-                WindowManager.LayoutParams layoutParams = (WindowManager.LayoutParams) contentView.getLayoutParams();
-                int dx, dy;
-                if (mLastRawX == -1 || mLastRawY == -1) {
-                    dx = (int) (e2.getRawX() - e1.getRawX());
-                    dy = (int) (e2.getRawY() - e1.getRawY());
-                } else {
-                    dx = (int) (e2.getRawX() - mLastRawX);
-                    dy = (int) (e2.getRawY() - mLastRawY);
+        if (null != shareAudioLayout) {
+            ImageView imageView = contentView.findViewById(R.id.img_share_audio);
+            shareAudioLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    boolean shareAudio = ZoomVideoSDK.getInstance().getShareHelper().isShareDeviceAudioEnabled();
+                    ZoomVideoSDK.getInstance().getShareHelper().enableShareDeviceAudio(!shareAudio);
+                    shareAudio = ZoomVideoSDK.getInstance().getShareHelper().isShareDeviceAudioEnabled();
+                    Log.d(TAG, "shareAudio:" + shareAudio);
+                    imageView.setImageResource(shareAudio ? R.drawable.zm_screenshare_audio_enable : R.drawable.zm_screenshare_audio_disable);
                 }
-                layoutParams.x += dx;
-                layoutParams.y += dy;
-                mLastRawX = e2.getRawX();
-                mLastRawY = e2.getRawY();
-                mWindowManager.updateViewLayout(contentView, layoutParams);
-                return true;
-            }
-        };
-
-        final GestureDetector detector = new GestureDetector(listener);
-
-        contentView.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_UP) {
-                    mLastRawX = -1f;
-                    mLastRawY = -1f;
-                }
-                return detector.onTouchEvent(event);
-            }
-        });
+            });
+        }
     }
 
     public void destroy() {
@@ -105,6 +90,7 @@ public class ShareToolbar {
     }
 
     public void showToolbar() {
+
         if (null == contentView) {
             init();
         }
@@ -143,3 +129,4 @@ public class ShareToolbar {
         }
     }
 }
+
