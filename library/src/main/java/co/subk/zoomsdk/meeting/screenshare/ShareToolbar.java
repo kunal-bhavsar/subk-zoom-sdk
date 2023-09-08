@@ -14,8 +14,6 @@ import android.widget.ImageView;
 
 import co.subk.zoomsdk.R;
 import us.zoom.sdk.ZoomVideoSDK;
-import us.zoom.sdk.ZoomVideoSDKAnnotationHelper;
-import us.zoom.sdk.ZoomVideoSDKErrors;
 
 public class ShareToolbar {
     private final static String TAG = "ShareToolbar";
@@ -24,8 +22,6 @@ public class ShareToolbar {
         void onClickStopShare();
     }
 
-    protected static final boolean annoter_test = false;
-
     private final WindowManager mWindowManager;
 
     private final Context mContext;
@@ -33,22 +29,17 @@ public class ShareToolbar {
     private View contentView;
     private View stopShareLayout;
     private View shareAudioLayout;
-    private View annotationView;
-    private View annotationLayout;
-
     private Listener mListener;
     private Display mDisplay;
 
     float mLastRawX = -1f;
     float mLastRawY = -1f;
 
-    boolean annotateStart = false;
     public ShareToolbar(Listener listener, Context context) {
         mListener = listener;
         mContext = context.getApplicationContext();
         mWindowManager = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
         mDisplay = mWindowManager.getDefaultDisplay();
-        annotateStart = false;
     }
 
     private void init() {
@@ -61,7 +52,6 @@ public class ShareToolbar {
 
         stopShareLayout = contentView.findViewById(R.id.stop_share_layout);
         shareAudioLayout = contentView.findViewById(R.id.audio_share_layout);
-        annotationLayout = contentView.findViewById(R.id.annotation_layout);
 
         if (stopShareLayout != null) {
             stopShareLayout.setOnClickListener(new View.OnClickListener() {
@@ -88,41 +78,10 @@ public class ShareToolbar {
                 }
             });
         }
-
-        if (annoter_test) {
-            if (annotationLayout != null) {
-                annotationLayout.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        int error = ZoomVideoSDKErrors.Errors_Wrong_Usage;
-                        ZoomVideoSDKAnnotationHelper annotationHelper = getAnnotationHelper();
-                        if (annotationHelper != null) {
-                            if (!annotateStart) {
-                                error = annotationHelper.startAnnotation();
-                            } else {
-                                error = annotationHelper.stopAnnotation();
-                            }
-                        }
-                        if (error == ZoomVideoSDKErrors.Errors_Success) {
-                            annotateStart = !annotateStart;
-                        } else {
-                            Log.e(TAG, "start/stop annotation error: " + error);
-                        }
-                    }
-                });
-                annotationLayout.setVisibility(View.VISIBLE);
-            }
-        }
     }
 
     public void destroy() {
         if (null != mWindowManager) {
-            if (annoter_test) {
-                if (null != annotationView) {
-                    mWindowManager.removeView(annotationView);
-                    annotationView = null;
-                }
-            }
             if (null != contentView) {
                 mWindowManager.removeView(contentView);
                 contentView = null;
@@ -130,33 +89,7 @@ public class ShareToolbar {
         }
     }
 
-    private ZoomVideoSDKAnnotationHelper annotationHelper = null;
-
-    private ZoomVideoSDKAnnotationHelper getAnnotationHelper() {
-        if (annotationHelper == null) {
-            annotationHelper = ZoomVideoSDK.getInstance().getShareHelper().createAnnotationHelper(null);
-        }
-        return annotationHelper;
-    }
-
     public void showToolbar() {
-
-        if (annoter_test) {
-            if (null == annotationView) {
-                ZoomVideoSDKAnnotationHelper annotationHelper = getAnnotationHelper();
-                if (annotationHelper != null) {
-                    annotationView = annotationHelper.getAnnotationView();
-                }
-            }
-            if (annotationView != null) {
-                WindowManager.LayoutParams inLayoutParams = new WindowManager.LayoutParams();
-                inLayoutParams.type = getWindowLayoutParamsType();
-                inLayoutParams.format = PixelFormat.RGBA_8888;
-                inLayoutParams.width = WindowManager.LayoutParams.MATCH_PARENT;
-                inLayoutParams.height = WindowManager.LayoutParams.MATCH_PARENT;
-                mWindowManager.addView(annotationView, inLayoutParams);
-            }
-        }
 
         if (null == contentView) {
             init();

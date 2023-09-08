@@ -52,18 +52,4 @@
             android:textSize="8sp" />
 
     </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/annotation_layout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:orientation="vertical"
-        android:visibility="gone">
-
-        <us.zoom.sdksample.share.AnnotateToolbar
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-    </LinearLayout>
 </LinearLayout>
