@@ -4,28 +4,37 @@ import android.content.Context;
 import android.graphics.PixelFormat;
 import android.os.Build;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.Display;
-import android.view.GestureDetector;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.ImageView;
 
 import co.subk.zoomsdk.R;
-
+import us.zoom.sdk.ZoomVideoSDK;
+import us.zoom.sdk.ZoomVideoSDKAnnotationHelper;
+import us.zoom.sdk.ZoomVideoSDKErrors;
 
 public class ShareToolbar {
+    private final static String TAG = "ShareToolbar";
 
     public interface Listener {
         void onClickStopShare();
     }
+
+    protected static final boolean annoter_test = false;
 
     private final WindowManager mWindowManager;
 
     private final Context mContext;
 
     private View contentView;
+    private View stopShareLayout;
+    private View shareAudioLayout;
+    private View annotationView;
+    private View annotationLayout;
 
     private Listener mListener;
     private Display mDisplay;
@@ -33,11 +42,13 @@ public class ShareToolbar {
     float mLastRawX = -1f;
     float mLastRawY = -1f;
 
+    boolean annotateStart = false;
     public ShareToolbar(Listener listener, Context context) {
         mListener = listener;
         mContext = context.getApplicationContext();
         mWindowManager = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
         mDisplay = mWindowManager.getDefaultDisplay();
+        annotateStart = false;
     }
 
     private void init() {
@@ -48,55 +59,70 @@ public class ShareToolbar {
             }
         });
 
-        GestureDetector.SimpleOnGestureListener listener = new GestureDetector.SimpleOnGestureListener() {
+        stopShareLayout = contentView.findViewById(R.id.stop_share_layout);
+        shareAudioLayout = contentView.findViewById(R.id.audio_share_layout);
+        annotationLayout = contentView.findViewById(R.id.annotation_layout);
 
-
-            @Override
-            public boolean onSingleTapConfirmed(MotionEvent e) {
-                if (null != mListener) {
-                    mListener.onClickStopShare();
+        if (stopShareLayout != null) {
+            stopShareLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (null != mListener) {
+                        mListener.onClickStopShare();
+                    }
+                    destroy();
                 }
-                destroy();
-                return true;
-            }
+            });
+        }
 
-            @Override
-            public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-
-                WindowManager.LayoutParams layoutParams = (WindowManager.LayoutParams) contentView.getLayoutParams();
-                int dx, dy;
-                if (mLastRawX == -1 || mLastRawY == -1) {
-                    dx = (int) (e2.getRawX() - e1.getRawX());
-                    dy = (int) (e2.getRawY() - e1.getRawY());
-                } else {
-                    dx = (int) (e2.getRawX() - mLastRawX);
-                    dy = (int) (e2.getRawY() - mLastRawY);
+        if (null != shareAudioLayout) {
+            ImageView imageView = contentView.findViewById(R.id.img_share_audio);
+            shareAudioLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    boolean shareAudio = ZoomVideoSDK.getInstance().getShareHelper().isShareDeviceAudioEnabled();
+                    ZoomVideoSDK.getInstance().getShareHelper().enableShareDeviceAudio(!shareAudio);
+                    shareAudio = ZoomVideoSDK.getInstance().getShareHelper().isShareDeviceAudioEnabled();
+                    Log.d(TAG, "shareAudio:" + shareAudio);
+                    imageView.setImageResource(shareAudio ? R.drawable.zm_screenshare_audio_enable : R.drawable.zm_screenshare_audio_disable);
                 }
-                layoutParams.x += dx;
-                layoutParams.y += dy;
-                mLastRawX = e2.getRawX();
-                mLastRawY = e2.getRawY();
-                mWindowManager.updateViewLayout(contentView, layoutParams);
-                return true;
-            }
-        };
+            });
+        }
 
-        final GestureDetector detector = new GestureDetector(listener);
-
-        contentView.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_UP) {
-                    mLastRawX = -1f;
-                    mLastRawY = -1f;
-                }
-                return detector.onTouchEvent(event);
+        if (annoter_test) {
+            if (annotationLayout != null) {
+                annotationLayout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        int error = ZoomVideoSDKErrors.Errors_Wrong_Usage;
+                        ZoomVideoSDKAnnotationHelper annotationHelper = getAnnotationHelper();
+                        if (annotationHelper != null) {
+                            if (!annotateStart) {
+                                error = annotationHelper.startAnnotation();
+                            } else {
+                                error = annotationHelper.stopAnnotation();
+                            }
+                        }
+                        if (error == ZoomVideoSDKErrors.Errors_Success) {
+                            annotateStart = !annotateStart;
+                        } else {
+                            Log.e(TAG, "start/stop annotation error: " + error);
+                        }
+                    }
+                });
+                annotationLayout.setVisibility(View.VISIBLE);
             }
-        });
+        }
     }
 
     public void destroy() {
         if (null != mWindowManager) {
+            if (annoter_test) {
+                if (null != annotationView) {
+                    mWindowManager.removeView(annotationView);
+                    annotationView = null;
+                }
+            }
             if (null != contentView) {
                 mWindowManager.removeView(contentView);
                 contentView = null;
@@ -104,7 +130,34 @@ public class ShareToolbar {
         }
     }
 
+    private ZoomVideoSDKAnnotationHelper annotationHelper = null;
+
+    private ZoomVideoSDKAnnotationHelper getAnnotationHelper() {
+        if (annotationHelper == null) {
+            annotationHelper = ZoomVideoSDK.getInstance().getShareHelper().createAnnotationHelper(null);
+        }
+        return annotationHelper;
+    }
+
     public void showToolbar() {
+
+        if (annoter_test) {
+            if (null == annotationView) {
+                ZoomVideoSDKAnnotationHelper annotationHelper = getAnnotationHelper();
+                if (annotationHelper != null) {
+                    annotationView = annotationHelper.getAnnotationView();
+                }
+            }
+            if (annotationView != null) {
+                WindowManager.LayoutParams inLayoutParams = new WindowManager.LayoutParams();
+                inLayoutParams.type = getWindowLayoutParamsType();
+                inLayoutParams.format = PixelFormat.RGBA_8888;
+                inLayoutParams.width = WindowManager.LayoutParams.MATCH_PARENT;
+                inLayoutParams.height = WindowManager.LayoutParams.MATCH_PARENT;
+                mWindowManager.addView(annotationView, inLayoutParams);
+            }
+        }
+
         if (null == contentView) {
             init();
         }
@@ -143,3 +196,4 @@ public class ShareToolbar {
         }
     }
 }
+
