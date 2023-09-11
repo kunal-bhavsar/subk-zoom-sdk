@@ -1892,6 +1892,10 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
             return;
         }
 
+        if (videoHelper.isMyVideoMirrored()) {
+            videoHelper.mirrorMyVideo(false);
+        }
+
         ZoomVideoSDKUser zoomSDKUserInfo = session.getMySelf();
         if (null != zoomSDKUserInfo) {
             iconVideo.setImageResource(zoomSDKUserInfo.getVideoStatus().isOn() ? R.drawable.icon_video_off : R.drawable.icon_video_on);
