@@ -41,10 +41,10 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
 
         binding.fab.setOnClickListener(view -> {
-            String sessionName = "Meeting on";
+            String sessionName = "Meeting 28th Aug 9 AM";
             String name = "Kunal Bhavsar";
-            String password = "70369513";
-            String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHBfa2V5IjoiSFRvZVBWVkhSbmhONEV5dmQxc3Q3RmJyN1hJZkJLc08xQmEzIiwicm9sZV90eXBlIjoxLCJ0cGMiOiJNZWV0aW5nIG9uIiwidmVyc2lvbiI6MSwiaWF0IjoxNjkzNDg1MTQ5LCJleHAiOjE2OTM0OTIzNDksInVzZXJfaWRlbnRpdHkiOiIzNTQ4Iiwic2Vzc2lvbl9rZXkiOiI2YjAzOTQ1Ny0yMzU3LTQyZDItODYzYy1lN2ExODE1MDhjNTIiLCJjbG91ZF9yZWNvcmRpbmdfb3B0aW9uIjowLCJjbG91ZF9yZWNvcmRpbmdfZWxlY3Rpb24iOjEsImFwcEtleSI6IkhUb2VQVlZIUm5oTjRFeXZkMXN0N0ZicjdYSWZCS3NPMUJhMyIsInRva2VuRXhwIjoxNjkzNDkyMzQ5LCJwd2QiOiI3MDM2OTUxMyJ9.84qqScDZWxBMIcHf9QReyDVsYmLLMhjVnhGskQGCREY";
+            String password = "51612730";
+            String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHBfa2V5IjoiSFRvZVBWVkhSbmhONEV5dmQxc3Q3RmJyN1hJZkJLc08xQmEzIiwicm9sZV90eXBlIjowLCJ0cGMiOiJNZWV0aW5nIDI4dGggQXVnIDkgQU0iLCJ2ZXJzaW9uIjoxLCJpYXQiOjE2OTQ0NTI5OTAsImV4cCI6MTY5NDQ2MDE5MCwidXNlcl9pZGVudGl0eSI6Ijc3MTAwNTQzODEiLCJzZXNzaW9uX2tleSI6Ijc0YWY4YjQ4LTA2NzItNDdjOC1hODc2LTUxMTRlYjRlZjAyNyIsImNsb3VkX3JlY29yZGluZ19vcHRpb24iOjAsImNsb3VkX3JlY29yZGluZ19lbGVjdGlvbiI6MSwiYXBwS2V5IjoiSFRvZVBWVkhSbmhONEV5dmQxc3Q3RmJyN1hJZkJLc08xQmEzIiwidG9rZW5FeHAiOjE2OTQ0NjAxOTAsInB3ZCI6IjUxNjEyNzMwIn0.ZvnitU2Iu6diKYW7x9rkkulkWPhJjKyB1tuP7x0i5os";
 
             Intent intent = new Intent(MainActivity.this, MeetingActivity.class);
             intent.putExtra("name", name);
@@ -57,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
             intent.putExtra("allow_to_mute_audio", true);
             intent.putExtra("allow_to_hide_video", true);
             intent.putExtra("allow_to_end_meeting", true);
+            intent.putExtra("allow_to_take_screenshot", true);
             startActivity(intent);
         });
 

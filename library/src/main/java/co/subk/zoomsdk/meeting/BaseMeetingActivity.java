@@ -185,6 +185,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     protected boolean allowToMuteAudio = false;
     protected boolean allowToHideVideo = false;
     protected boolean allowToEndMeeting = false;
+    protected boolean allowToTakeScreenshot = false;
     protected int renderType;
 
     protected ImageView videoOffView;
@@ -424,6 +425,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
             allowToMuteAudio = bundle.getBoolean("allow_to_mute_audio");
             allowToHideVideo = bundle.getBoolean("allow_to_hide_video");
             allowToEndMeeting = bundle.getBoolean("allow_to_end_meeting");
+            allowToTakeScreenshot = bundle.getBoolean("allow_to_take_screenshot");
         }
 
         /* sessionContext.userName = "Arull"*//*name*//*;
@@ -812,6 +814,11 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         }
         else {
             iconAudio.setVisibility(View.GONE);
+        }
+
+        if (!allowToTakeScreenshot) {
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE,
+				WindowManager.LayoutParams.FLAG_SECURE);
         }
         iconMore = findViewById(R.id.icon_more);
         practiceText = findViewById(R.id.text_meeting_user_size);
