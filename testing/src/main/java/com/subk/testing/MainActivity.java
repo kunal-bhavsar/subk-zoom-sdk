@@ -2,6 +2,7 @@ package com.subk.testing;
 
 import static co.subk.zoomsdk.ZoomSdkHelper.RENDER_TYPE_ZOOMRENDERER;
 
+import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -41,10 +42,10 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
 
         binding.fab.setOnClickListener(view -> {
-            String sessionName = "Meeting 28th Aug 9 AM";
-            String name = "Kunal Bhavsar";
-            String password = "51612730";
-            String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHBfa2V5IjoiSFRvZVBWVkhSbmhONEV5dmQxc3Q3RmJyN1hJZkJLc08xQmEzIiwicm9sZV90eXBlIjowLCJ0cGMiOiJNZWV0aW5nIDI4dGggQXVnIDkgQU0iLCJ2ZXJzaW9uIjoxLCJpYXQiOjE2OTQ0NTI5OTAsImV4cCI6MTY5NDQ2MDE5MCwidXNlcl9pZGVudGl0eSI6Ijc3MTAwNTQzODEiLCJzZXNzaW9uX2tleSI6Ijc0YWY4YjQ4LTA2NzItNDdjOC1hODc2LTUxMTRlYjRlZjAyNyIsImNsb3VkX3JlY29yZGluZ19vcHRpb24iOjAsImNsb3VkX3JlY29yZGluZ19lbGVjdGlvbiI6MSwiYXBwS2V5IjoiSFRvZVBWVkhSbmhONEV5dmQxc3Q3RmJyN1hJZkJLc08xQmEzIiwidG9rZW5FeHAiOjE2OTQ0NjAxOTAsInB3ZCI6IjUxNjEyNzMwIn0.ZvnitU2Iu6diKYW7x9rkkulkWPhJjKyB1tuP7x0i5os";
+            String sessionName = "Location Getter - Arul";
+            String name = "Rajan Sanghvi";
+            String password = "789789789";
+            String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHBfa2V5IjoiSFRvZVBWVkhSbmhONEV5dmQxc3Q3RmJyN1hJZkJLc08xQmEzIiwicm9sZV90eXBlIjoxLCJ0cGMiOiJMb2NhdGlvbiBHZXR0ZXIgLSBBcnVsIiwidmVyc2lvbiI6MSwiaWF0IjoxNjk0ODUxMzUxLCJleHAiOjE2OTQ4NTg1NTEsInVzZXJfaWRlbnRpdHkiOiIzNTQ4Iiwic2Vzc2lvbl9rZXkiOiI5YzcyZDU5YS0zYmM4LTQ1MTUtYTVmNC00NTgwZDkzMzM4NzciLCJjbG91ZF9yZWNvcmRpbmdfb3B0aW9uIjowLCJjbG91ZF9yZWNvcmRpbmdfZWxlY3Rpb24iOjEsImFwcEtleSI6IkhUb2VQVlZIUm5oTjRFeXZkMXN0N0ZicjdYSWZCS3NPMUJhMyIsInRva2VuRXhwIjoxNjk0ODU4NTUxLCJwd2QiOiI3ODk3ODk3ODkifQ.5pKDPpCepF5PlUO7zq6ijRfMankJ0w2d8VyNrEJNsDY";
 
             Intent intent = new Intent(MainActivity.this, MeetingActivity.class);
             intent.putExtra("name", name);
@@ -58,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
             intent.putExtra("allow_to_hide_video", true);
             intent.putExtra("allow_to_end_meeting", true);
             intent.putExtra("allow_to_take_screenshot", true);
+            intent.putExtra("allow_to_get_location", true);
             startActivity(intent);
         });
 
@@ -69,7 +71,9 @@ public class MainActivity extends AppCompatActivity {
         String[] permissions = new String[]{
                 android.Manifest.permission.CAMERA,
                 android.Manifest.permission.RECORD_AUDIO,
-                android.Manifest.permission.READ_EXTERNAL_STORAGE
+                android.Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.ACCESS_COARSE_LOCATION,
+                Manifest.permission.ACCESS_FINE_LOCATION
         };
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             permissions = new String[]{
@@ -78,6 +82,8 @@ public class MainActivity extends AppCompatActivity {
                     android.Manifest.permission.READ_MEDIA_IMAGES,
                     android.Manifest.permission.READ_MEDIA_VIDEO,
                     android.Manifest.permission.READ_PHONE_STATE,
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.ACCESS_FINE_LOCATION,
                     android.Manifest.permission.BLUETOOTH_CONNECT
             };
         } else if (Build.VERSION.SDK_INT >= 31) {
@@ -86,6 +92,8 @@ public class MainActivity extends AppCompatActivity {
                     android.Manifest.permission.RECORD_AUDIO,
                     android.Manifest.permission.READ_EXTERNAL_STORAGE,
                     android.Manifest.permission.READ_PHONE_STATE,
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.ACCESS_FINE_LOCATION,
                     android.Manifest.permission.BLUETOOTH_CONNECT
             };
         }
@@ -107,6 +115,8 @@ public class MainActivity extends AppCompatActivity {
                     checkSelfPermission(android.Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED &&
                     Build.VERSION.SDK_INT >= 31 &&
                     checkSelfPermission(android.Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED
+                    && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                    && checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
             ) {
                 onPermissionGranted();
             }
