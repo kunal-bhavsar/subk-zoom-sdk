@@ -709,7 +709,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
             shareToolbar = new ShareToolbar(this,this);
         }
 
-        EventBus.getDefault().post(new SubkEvent("Screenshare Started"));
+        EventBus.getDefault().post(new SubkEvent("Screenshare Started","","",""));
 
         /*if (Build.VERSION.SDK_INT >= 29) {
             //MediaProjection  need service with foregroundServiceType mediaProjection in android Q
@@ -1193,7 +1193,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                 {
                     Toast.makeText(BaseMeetingActivity.this, "Here", Toast.LENGTH_SHORT).show();
                     //EventBus.getDefault().post(new MobileAttendee(etmobile.getText().toString()));
-                    EventBus.getDefault().post(new SubkEvent("mobile " +etmobile.getText().toString()));
+                    EventBus.getDefault().post(new SubkEvent("mobile " +etmobile.getText().toString(),"","",""));
                     alertDialog.dismiss();
                 }
 
@@ -1234,7 +1234,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
         llInviteAttendee.setOnClickListener(view1 -> {
             builder.dismiss();
-            EventBus.getDefault().post(new SubkEvent("mobile"));
+            EventBus.getDefault().post(new SubkEvent("mobile","","",""));
             //showInviteAttendeePopup();
         });
 
@@ -2364,7 +2364,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                             requestNewLocationData();
                         } else {
                             /** Need to add a event here as well @ arul  */
-                            EventBus.getDefault().post(new SubkEvent("location"));
+                            EventBus.getDefault().post(new SubkEvent("location ",String.valueOf(location.getLatitude()),String.valueOf(location.getLongitude()),String.valueOf(location.getAccuracy())));
                             /*latitudeTextView.setText(location.getLatitude() + "");
                             longitTextView.setText(location.getLongitude() + "");*/
                             //Toast.makeText(BaseMeetingActivity.this, "From First - lat = " + location.getLatitude() + "\n" + "long = " + location.getLongitude() + "\n accurecy = " + location.getAccuracy()  , Toast.LENGTH_SHORT).show();
