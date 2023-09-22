@@ -288,8 +288,6 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         displayMetrics = new DisplayMetrics();
         display.getMetrics(displayMetrics);
 
-        initZoomSDK();
-
         Bundle bundle = getIntent().getExtras();
         setupZoom(bundle);
 
@@ -348,6 +346,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         ZoomVideoSDKAudioOption audioOption = new ZoomVideoSDKAudioOption();
         audioOption.connect = true;
         audioOption.mute = false;
+        audioOption.isMyVoiceInMix = true;
 
         ZoomVideoSDKVideoOption videoOption = new ZoomVideoSDKVideoOption();
         videoOption.localVideoOn = true;
@@ -355,10 +354,10 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         ZoomVideoSDKSessionContext sessionContext = new ZoomVideoSDKSessionContext();
         sessionContext.audioOption = audioOption;
         sessionContext.videoOption = videoOption;
-        sessionContext.sessionName = /*"Latest Meetign Arul"*/sessionName;
-        sessionContext.userName = /*"7597371013"*/name;
-        sessionContext.token = /*"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHBfa2V5IjoiSFRvZVBWVkhSbmhONEV5dmQxc3Q3RmJyN1hJZkJLc08xQmEzIiwidHBjIjoiTGF0ZXN0IE1lZXRpZ24gQXJ1bCIsInNlc3Npb25fa2V5IjoiODQ1MzhlODAtYjRkZC00MWY4LWI1YzUtM2JmYTZlMWMwNjRhIiwidXNlcl9pZGVudGl0eSI6Ijc1OTczNzEwMTMiLCJyb2xlX3R5cGUiOjEsImlhdCI6MTY4ODQ3MDg3NywiZXhwIjoxNjg4NDc4MDc3LCJhcHBLZXkiOiJIVG9lUFZWSFJuaE40RXl2ZDFzdDdGYnI3WElmQktzTzFCYTMiLCJ0b2tlbkV4cCI6MTY4ODQ3ODA3NywicHdkIjoiNDEwODA5NDUiLCJjbG91ZF9yZWNvcmRpbmdfb3B0aW9uIjowfQ.htwJBF77m-jiUtMoSv2bjSV2UkXE_msI8l2XwyEmBsc"*/token;
-        sessionContext.sessionPassword = /*"41080945"*/password;
+        sessionContext.sessionName = sessionName;
+        sessionContext.userName = name;
+        sessionContext.token = token;
+        sessionContext.sessionPassword = password;
         sessionContext.sessionIdleTimeoutMins = 40;
 
         ZoomVideoSDKSession session = ZoomVideoSDK.getInstance().joinSession(sessionContext);
@@ -371,25 +370,6 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
             return;
         }
     }
-
-    protected void initZoomSDK() {
-        ZoomVideoSDKInitParams params = new ZoomVideoSDKInitParams();
-        params.domain = "zoom.us";
-        params.logFilePrefix = "MyZoomLog"; // Optional for debugging
-        params.enableLog = true;
-        params.videoRawDataMemoryMode = ZoomVideoSDKRawDataMemoryMode.ZoomVideoSDKRawDataMemoryModeHeap;
-        params.audioRawDataMemoryMode = ZoomVideoSDKRawDataMemoryMode.ZoomVideoSDKRawDataMemoryModeHeap;
-        params.shareRawDataMemoryMode = ZoomVideoSDKRawDataMemoryMode.ZoomVideoSDKRawDataMemoryModeHeap;
-
-        int ret = ZoomVideoSDK.getInstance().initialize(this.getApplicationContext(), params);
-        if (ret != ZoomVideoSDKErrors.Errors_Success) {
-            Log.e(TAG, ErrorMsgUtil.getMsgByErrorCode(ret));
-        }else {
-            Toast.makeText(this, getString(R.string.zoom_version, ZoomVideoSDK.getInstance().getSDKVersion()), Toast.LENGTH_SHORT).show();
-        }
-    }
-
-
 
     @Override
     protected void onNewIntent(Intent intent) {
