@@ -1,6 +1,18 @@
 package co.subk.zoomsdk.meeting;
 
 
+import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_ALLOW_TO_END_MEETING;
+import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_ALLOW_TO_GET_LOCATION;
+import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_ALLOW_TO_HIDE_VIDEO;
+import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_ALLOW_TO_INVITE_ATTENDEE;
+import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_ALLOW_TO_MUTE_AUDIO;
+import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_ALLOW_TO_SHARE_SCREEN;
+import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_ALLOW_TO_TAKE_SCREENSHOT;
+import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_PASSWORD;
+import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_RENDER_TYPE;
+import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_SESSION_NAME;
+import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_TOKEN;
+import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_USERNAME;
 import static co.subk.zoomsdk.ZoomSdkHelper.RENDER_TYPE_OPENGLES;
 import static co.subk.zoomsdk.ZoomSdkHelper.RENDER_TYPE_ZOOMRENDERER;
 import static co.subk.zoomsdk.ZoomSdkHelper.REQUEST_SELECT_ORIGINAL_PIC;
@@ -341,10 +353,10 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     {
         String sessionName = "",name = "",password = "",tokens = "";
         if (null != bundle) {
-            name = bundle.getString("name");
-            password = bundle.getString("password");
-            sessionName = bundle.getString("sessionName");
-            tokens = bundle.getString("tokens");
+            name = bundle.getString(PARAM_USERNAME);
+            password = bundle.getString(PARAM_PASSWORD);
+            sessionName = bundle.getString(PARAM_SESSION_NAME);
+            tokens = bundle.getString(PARAM_TOKEN);
         }
 
         // String tokens = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHBfa2V5IjoiSFRvZVBWVkhSbmhONEV5dmQxc3Q3RmJyN1hJZkJLc08xQmEzIiwidHBjIjoiTVkgVEFzayBhbmRyb2lkIiwic2Vzc2lvbl9rZXkiOiI4MDEyNmEwNS0zZDQ4LTRlODQtOTA0YS0zZTI3NzZjZmZhN2UiLCJ1c2VyX2lkZW50aXR5IjoiOTc2OTcxNTU1OSIsInJvbGVfdHlwZSI6MSwiaWF0IjoxNjgzNDczOTQ5LCJleHAiOjE2ODM0ODExNDksImFwcEtleSI6IkhUb2VQVlZIUm5oTjRFeXZkMXN0N0ZicjdYSWZCS3NPMUJhMyIsInRva2VuRXhwIjoxNjgzNDgxMTQ5LCJwd2QiOiIxNzU3MDUyNCIsImNsb3VkX3JlY29yZGluZ19vcHRpb24iOjB9.YvTZU4_4KiT5aWvX_al_JSDE_oIMAUBx4I2UrIaOyGc";
@@ -412,19 +424,18 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     }
 
     protected void parseIntent(Bundle bundle) {
-        //Bundle bundle = getIntent().getExtras();
         if (null != bundle) {
-            myDisplayName = bundle.getString("name");
-            meetingPwd = bundle.getString("password");
-            sessionName = bundle.getString("sessionName");
-            renderType = bundle.getInt("render_type", RENDER_TYPE_ZOOMRENDERER);
-            allowToInviteAttendee = bundle.getBoolean("allow_to_invite_attendee");
-            allowToShareScreen = bundle.getBoolean("allow_to_share_screen");
-            allowToMuteAudio = bundle.getBoolean("allow_to_mute_audio");
-            allowToHideVideo = bundle.getBoolean("allow_to_hide_video");
-            allowToEndMeeting = bundle.getBoolean("allow_to_end_meeting");
-            allowToTakeScreenshot = bundle.getBoolean("allow_to_take_screenshot");
-            allowToCaptureLocation = bundle.getBoolean("allow_to_get_location");
+            myDisplayName = bundle.getString(PARAM_USERNAME);
+            meetingPwd = bundle.getString(PARAM_PASSWORD);
+            sessionName = bundle.getString(PARAM_SESSION_NAME);
+            renderType = bundle.getInt(PARAM_RENDER_TYPE, RENDER_TYPE_ZOOMRENDERER);
+            allowToInviteAttendee = bundle.getBoolean(PARAM_ALLOW_TO_INVITE_ATTENDEE);
+            allowToShareScreen = bundle.getBoolean(PARAM_ALLOW_TO_SHARE_SCREEN);
+            allowToMuteAudio = bundle.getBoolean(PARAM_ALLOW_TO_MUTE_AUDIO);
+            allowToHideVideo = bundle.getBoolean(PARAM_ALLOW_TO_HIDE_VIDEO);
+            allowToEndMeeting = bundle.getBoolean(PARAM_ALLOW_TO_END_MEETING);
+            allowToTakeScreenshot = bundle.getBoolean(PARAM_ALLOW_TO_TAKE_SCREENSHOT);
+            allowToCaptureLocation = bundle.getBoolean(PARAM_ALLOW_TO_GET_LOCATION);
         }
 
         /* sessionContext.userName = "Arull"*//*name*//*;

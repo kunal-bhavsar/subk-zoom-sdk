@@ -1,5 +1,17 @@
 package com.subk.testing;
 
+import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_ALLOW_TO_END_MEETING;
+import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_ALLOW_TO_GET_LOCATION;
+import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_ALLOW_TO_HIDE_VIDEO;
+import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_ALLOW_TO_INVITE_ATTENDEE;
+import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_ALLOW_TO_MUTE_AUDIO;
+import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_ALLOW_TO_SHARE_SCREEN;
+import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_ALLOW_TO_TAKE_SCREENSHOT;
+import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_PASSWORD;
+import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_RENDER_TYPE;
+import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_SESSION_NAME;
+import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_TOKEN;
+import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_USERNAME;
 import static co.subk.zoomsdk.ZoomSdkHelper.RENDER_TYPE_ZOOMRENDERER;
 
 import android.Manifest;
@@ -48,18 +60,18 @@ public class MainActivity extends AppCompatActivity {
             String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHBfa2V5IjoiSFRvZVBWVkhSbmhONEV5dmQxc3Q3RmJyN1hJZkJLc08xQmEzIiwicm9sZV90eXBlIjoxLCJ0cGMiOiJMb2NhdGlvbiBHZXR0ZXIgLSBBcnVsIiwidmVyc2lvbiI6MSwiaWF0IjoxNjk0ODUxMzUxLCJleHAiOjE2OTQ4NTg1NTEsInVzZXJfaWRlbnRpdHkiOiIzNTQ4Iiwic2Vzc2lvbl9rZXkiOiI5YzcyZDU5YS0zYmM4LTQ1MTUtYTVmNC00NTgwZDkzMzM4NzciLCJjbG91ZF9yZWNvcmRpbmdfb3B0aW9uIjowLCJjbG91ZF9yZWNvcmRpbmdfZWxlY3Rpb24iOjEsImFwcEtleSI6IkhUb2VQVlZIUm5oTjRFeXZkMXN0N0ZicjdYSWZCS3NPMUJhMyIsInRva2VuRXhwIjoxNjk0ODU4NTUxLCJwd2QiOiI3ODk3ODk3ODkifQ.5pKDPpCepF5PlUO7zq6ijRfMankJ0w2d8VyNrEJNsDY";
 
             Intent intent = new Intent(MainActivity.this, MeetingActivity.class);
-            intent.putExtra("name", name);
-            intent.putExtra("tokens", token);
-            intent.putExtra("password", password);
-            intent.putExtra("sessionName", sessionName);
-            intent.putExtra("render_type", RENDER_TYPE_ZOOMRENDERER);
-            intent.putExtra("allow_to_invite_attendee", true);
-            intent.putExtra("allow_to_share_screen", true);
-            intent.putExtra("allow_to_mute_audio", true);
-            intent.putExtra("allow_to_hide_video", true);
-            intent.putExtra("allow_to_end_meeting", true);
-            intent.putExtra("allow_to_take_screenshot", true);
-            intent.putExtra("allow_to_get_location", true);
+            intent.putExtra(PARAM_USERNAME, name);
+            intent.putExtra(PARAM_TOKEN, token);
+            intent.putExtra(PARAM_PASSWORD, password);
+            intent.putExtra(PARAM_SESSION_NAME, sessionName);
+            intent.putExtra(PARAM_RENDER_TYPE, RENDER_TYPE_ZOOMRENDERER);
+            intent.putExtra(PARAM_ALLOW_TO_INVITE_ATTENDEE, true);
+            intent.putExtra(PARAM_ALLOW_TO_SHARE_SCREEN, true);
+            intent.putExtra(PARAM_ALLOW_TO_MUTE_AUDIO, true);
+            intent.putExtra(PARAM_ALLOW_TO_HIDE_VIDEO, true);
+            intent.putExtra(PARAM_ALLOW_TO_END_MEETING, true);
+            intent.putExtra(PARAM_ALLOW_TO_TAKE_SCREENSHOT, true);
+            intent.putExtra(PARAM_ALLOW_TO_GET_LOCATION, true);
             startActivity(intent);
         });
 

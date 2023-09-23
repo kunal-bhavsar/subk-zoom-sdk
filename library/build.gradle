@@ -47,8 +47,6 @@ dependencies {
     implementation 'us.zoom.videosdk:ZoomVideoSDK:1.8.12'  //1.5.3
     implementation 'org.greenrobot:eventbus:3.2.0'
     implementation 'com.google.android.gms:play-services-location:21.0.1'
-
-
 }
 
 afterEvaluate {
