@@ -1,5 +1,7 @@
 package co.subk.zoomsdk;
 
+import static co.subk.zoomsdk.ZoomSdkHelper.EVENT_INTERNET_CHANGE;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -10,23 +12,16 @@ import android.util.Log;
 import org.greenrobot.eventbus.EventBus;
 
 import co.subk.zoomsdk.model.InternetEvent;
-import co.subk.zoomsdk.model.SubkEvent;
 
 public class NetworkChangeReceiver extends BroadcastReceiver
 {
     @Override
-    public void onReceive(Context context, Intent intent)
-    {
-        try
-        {
+    public void onReceive(Context context, Intent intent) {
+        try {
             if (isOnline(context)) {
-                //dialog(true);
-                EventBus.getDefault().post(new InternetEvent(true));
-                Log.e("Arul", "Online Connect Intenet ");
+                EventBus.getDefault().post(new InternetEvent(EVENT_INTERNET_CHANGE, true));
             } else {
-                //dialog(false);
-                EventBus.getDefault().post(new InternetEvent(false));
-                Log.e("Arul", "Conectivity Failure !!! ");
+                EventBus.getDefault().post(new InternetEvent(EVENT_INTERNET_CHANGE, false));
             }
         } catch (NullPointerException e) {
             e.printStackTrace();

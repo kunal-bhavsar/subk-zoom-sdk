@@ -1,6 +1,9 @@
 package co.subk.zoomsdk.meeting;
 
 
+import static co.subk.zoomsdk.ZoomSdkHelper.EVENT_INVITE_ATTENDEE;
+import static co.subk.zoomsdk.ZoomSdkHelper.EVENT_SHARE_LOCATION;
+import static co.subk.zoomsdk.ZoomSdkHelper.EVENT_SHARE_SESSION_INFO;
 import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_ALLOW_TO_END_MEETING;
 import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_ALLOW_TO_GET_LOCATION;
 import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_ALLOW_TO_HIDE_VIDEO;
@@ -86,6 +89,8 @@ import java.util.List;
 import co.subk.zoomsdk.NetworkChangeReceiver;
 import co.subk.zoomsdk.R;
 import co.subk.zoomsdk.model.InternetEvent;
+import co.subk.zoomsdk.model.InviteAttendeeEvent;
+import co.subk.zoomsdk.model.LocationEvent;
 import co.subk.zoomsdk.model.MobileAttendee;
 import co.subk.zoomsdk.model.SubkEvent;
 import co.subk.zoomsdk.cmd.CmdHandler;
@@ -701,7 +706,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
             shareToolbar = new ShareToolbar(this,this);
         }
 
-        EventBus.getDefault().post(new SubkEvent("Screenshare Started","","",""));
+        EventBus.getDefault().post(new SubkEvent(EVENT_SHARE_SESSION_INFO));
 
         /*if (Build.VERSION.SDK_INT >= 29) {
             //MediaProjection  need service with foregroundServiceType mediaProjection in android Q
@@ -981,8 +986,6 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         builder.setCanceledOnTouchOutside(true);
         builder.setCancelable(true);
         builder.show();
-
-
     }
 
     public void onClickEnd(View view) {
@@ -1175,30 +1178,18 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         alertDialog.setCancelable(false);
 
 
-        final EditText etmobile = (EditText) dialogView.findViewById(R.id.etmobile);
+        final EditText etmobile = dialogView.findViewById(R.id.etmobile);
 
 
-        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Invite", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                if (etmobile.getText().toString().length()>0)
-                {
-                    Toast.makeText(BaseMeetingActivity.this, "Here", Toast.LENGTH_SHORT).show();
-                    //EventBus.getDefault().post(new MobileAttendee(etmobile.getText().toString()));
-                    EventBus.getDefault().post(new SubkEvent("mobile " +etmobile.getText().toString(),"","",""));
-                    alertDialog.dismiss();
-                }
-
-            }
-        });
-
-
-        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
+        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Invite", (dialog, which) -> {
+            if (etmobile.getText().toString().length()>0) {
+                EventBus.getDefault().post(new InviteAttendeeEvent(EVENT_INVITE_ATTENDEE, etmobile.getText().toString()));
                 alertDialog.dismiss();
             }
         });
+
+
+        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Cancel", (dialog, which) -> alertDialog.dismiss());
 
 
         alertDialog.setView(dialogView);
@@ -1226,7 +1217,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
         llInviteAttendee.setOnClickListener(view1 -> {
             builder.dismiss();
-            EventBus.getDefault().post(new SubkEvent("mobile","","",""));
+            EventBus.getDefault().post(new InviteAttendeeEvent(EVENT_INVITE_ATTENDEE,""));
             //showInviteAttendeePopup();
         });
 
@@ -2355,12 +2346,14 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                         if (location == null) {
                             requestNewLocationData();
                         } else {
-                            /** Need to add a event here as well @ arul  */
-                            EventBus.getDefault().post(new SubkEvent("location ",String.valueOf(location.getLatitude()),String.valueOf(location.getLongitude()),String.valueOf(location.getAccuracy())));
-                            /*latitudeTextView.setText(location.getLatitude() + "");
-                            longitTextView.setText(location.getLongitude() + "");*/
-                            //Toast.makeText(BaseMeetingActivity.this, "From First - lat = " + location.getLatitude() + "\n" + "long = " + location.getLongitude() + "\n accurecy = " + location.getAccuracy()  , Toast.LENGTH_SHORT).show();
-
+                            EventBus.getDefault().post(
+                                new LocationEvent(
+                                    EVENT_SHARE_LOCATION,
+                                    String.valueOf(location.getLatitude()),
+                                    String.valueOf(location.getLongitude()),
+                                    String.valueOf(location.getAccuracy())
+                                )
+                            );
                         }
                     }
                 });
@@ -2398,12 +2391,14 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         @Override
         public void onLocationResult(LocationResult locationResult) {
             Location mLastLocation = locationResult.getLastLocation();
-            EventBus.getDefault().post(new SubkEvent("location ",String.valueOf(mLastLocation.getLatitude()),String.valueOf(mLastLocation.getLongitude()),String.valueOf(mLastLocation.getAccuracy())));
-
-            /** Need to add a event here as well @ arul  */
-            /*latitudeTextView.setText("Latitude: " + mLastLocation.getLatitude() + "");
-            longitTextView.setText("Longitude: " + mLastLocation.getLongitude() + "");*/
-            //Toast.makeText(BaseMeetingActivity.this, "From New - lat = " + mLastLocation.getLatitude() + "\n" + "long = " + mLastLocation.getLongitude() + "\n accurecy = " + mLastLocation.getAccuracy()  , Toast.LENGTH_SHORT).show();
+            EventBus.getDefault().post(
+                new LocationEvent(
+                    EVENT_SHARE_LOCATION,
+                    String.valueOf(mLastLocation.getLatitude()),
+                    String.valueOf(mLastLocation.getLongitude()),
+                    String.valueOf(mLastLocation.getAccuracy())
+                )
+            );
         }
     };
 
