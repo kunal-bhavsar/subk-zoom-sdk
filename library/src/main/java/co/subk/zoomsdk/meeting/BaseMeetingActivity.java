@@ -1681,7 +1681,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     }
 
     public void publishSessionJoinedEvent() {
-        EventBus.getDefault().post(new SessionJoinedEvent(ZoomVideoSDK.getInstance().getSession().getSessionID()));
+        EventBus.getDefault().post(new SessionJoinedEvent(taskId, ZoomVideoSDK.getInstance().getSession().getSessionID()));
     }
 
     private void publishLocationEvent() {
@@ -1735,7 +1735,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     };
 
     public void publishSessionEndedEvent() {
-        EventBus.getDefault().post(new SessionEndedEvent());
+        EventBus.getDefault().post(new SessionEndedEvent(taskId));
     }
 
     @Override
