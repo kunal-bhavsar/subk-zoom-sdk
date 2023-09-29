@@ -20,6 +20,8 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Rect;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.media.projection.MediaProjectionManager;
@@ -62,17 +64,24 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.Priority;
+import com.google.android.gms.tasks.CancellationTokenSource;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 import co.subk.zoomsdk.NetworkChangeReceiver;
 import co.subk.zoomsdk.R;
+import co.subk.zoomsdk.model.GetLocationItem;
 import co.subk.zoomsdk.model.InternetEvent;
 import co.subk.zoomsdk.model.MobileAttendee;
 import co.subk.zoomsdk.model.SubkEvent;
@@ -234,6 +243,9 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
     FusedLocationProviderClient mFusedLocationClient;
     int PERMISSION_ID = 44;
+
+    ArrayList<GetLocationItem> getalllocationdata = new ArrayList<>();
+    ArrayList<Float> accuracyList = new ArrayList<>();
     @NonNull
     private List<CmdLowerThirdRequest> lowerThirdRequests = new ArrayList<>();
     // private LowerThirdLayout lowerThirdLayout;
@@ -320,7 +332,36 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
         mNetworkReceiver = new NetworkChangeReceiver();
         registerNetworkBroadcastForNougat();
+
+
+        /*sessionNameText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                int lowest_index_value = minIndex(accuracyList);
+
+
+                Toast.makeText(BaseMeetingActivity.this, "lowest index " + lowest_index_value, Toast.LENGTH_SHORT).show();
+                Toast.makeText(BaseMeetingActivity.this, " " + getalllocationdata.size(), Toast.LENGTH_SHORT).show();
+            }
+        });*/
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                int lowest_index_value = minIndex(accuracyList);
+
+                EventBus.getDefault().post(new SubkEvent("location ",String.valueOf(getalllocationdata.get(lowest_index_value).getLatitude()),String.valueOf(getalllocationdata.get(lowest_index_value).getLongitude()),String.valueOf(getalllocationdata.get(lowest_index_value).getAccuracy())));
+
+            }
+        }, 30000);
+
+
+
     }
+
+    public int minIndex (ArrayList<Float> list) {
+        return list.indexOf (Collections.min(list)); }
 
     private void registerNetworkBroadcastForNougat() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -852,7 +893,16 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
             mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
             // method to get the location
-            getLastLocation();
+           // getLastLocation();
+            if (checkPermissions()) {
+
+                // check if location is enabled
+                if (isLocationEnabled()) {
+                    requestNewLocationData();
+
+                    //requestCurrentLocation();
+                }
+            }
         }
 
 
@@ -2365,10 +2415,11 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                             requestNewLocationData();
                         } else {
                             /** Need to add a event here as well @ arul  */
-                            EventBus.getDefault().post(new SubkEvent("location ",String.valueOf(location.getLatitude()),String.valueOf(location.getLongitude()),String.valueOf(location.getAccuracy())));
+                            //EventBus.getDefault().post(new SubkEvent("location ",String.valueOf(location.getLatitude()),String.valueOf(location.getLongitude()),String.valueOf(location.getAccuracy())));
                             /*latitudeTextView.setText(location.getLatitude() + "");
                             longitTextView.setText(location.getLongitude() + "");*/
-                            //Toast.makeText(BaseMeetingActivity.this, "From First - lat = " + location.getLatitude() + "\n" + "long = " + location.getLongitude() + "\n accurecy = " + location.getAccuracy()  , Toast.LENGTH_SHORT).show();
+                          //  Toast.makeText(BaseMeetingActivity.this, "From First - lat = " + location.getLatitude() + "\n" + "long = " + location.getLongitude() , Toast.LENGTH_SHORT).show();
+                          //  Toast.makeText(BaseMeetingActivity.this, "From First - accuracy = " + location.getAccuracy()  , Toast.LENGTH_SHORT).show();
 
                         }
                     }
@@ -2392,14 +2443,32 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         // object with appropriate methods
         LocationRequest mLocationRequest = new LocationRequest();
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        mLocationRequest.setInterval(5);
-        mLocationRequest.setFastestInterval(0);
-        mLocationRequest.setNumUpdates(1);
+        mLocationRequest.setInterval(5000);
+        mLocationRequest.setFastestInterval(2000);
+        mLocationRequest.setNumUpdates(5);
 
         // setting LocationRequest
         // on FusedLocationClient
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         mFusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper());
+    }
+
+    private void requestCurrentLocation()
+    {
+        CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+        mFusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, cancellationTokenSource.getToken())
+                .addOnSuccessListener(BaseMeetingActivity.this, new OnSuccessListener<Location>() {
+                    @Override
+                    public void onSuccess(Location location) {
+                        // Got last known location. In some rare situations this can be null.
+                        if (location != null) {
+                            //do your thing
+
+                            //Toast.makeText(BaseMeetingActivity.this, "Accuracyc " + location.getAccuracy() , Toast.LENGTH_SHORT).show();
+                        }
+                        Log.w(TAG, "No current location could be found");
+                    }
+                });
     }
 
     private LocationCallback mLocationCallback = new LocationCallback() {
@@ -2412,7 +2481,45 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
             /** Need to add a event here as well @ arul  */
             /*latitudeTextView.setText("Latitude: " + mLastLocation.getLatitude() + "");
             longitTextView.setText("Longitude: " + mLastLocation.getLongitude() + "");*/
-            //Toast.makeText(BaseMeetingActivity.this, "From New - lat = " + mLastLocation.getLatitude() + "\n" + "long = " + mLastLocation.getLongitude() + "\n accurecy = " + mLastLocation.getAccuracy()  , Toast.LENGTH_SHORT).show();
+
+            String latitude = String.format("%.6f", mLastLocation.getLatitude());
+            String longitude = String.format("%.6f", mLastLocation.getLongitude());
+
+            GetLocationItem getLocationItem = new GetLocationItem();
+            getLocationItem.setLatitude(mLastLocation.getLatitude());
+            getLocationItem.setLongitude(mLastLocation.getLongitude());
+            getLocationItem.setAccuracy(mLastLocation.getAccuracy());
+
+            getalllocationdata.add(getLocationItem);
+
+            accuracyList.add(mLastLocation.getAccuracy());
+
+            Log.e("accuracylist" , String.valueOf(mLastLocation.getAccuracy()));
+
+
+           // Toast.makeText(BaseMeetingActivity.this, "From New - lat = " + latitude + "\n" + "long = " + longitude , Toast.LENGTH_SHORT).show();
+            //Toast.makeText(BaseMeetingActivity.this, "From New - accuracy = " + mLastLocation.getAccuracy()  , Toast.LENGTH_SHORT).show();
+
+            Geocoder geocoder;
+            List<Address> addresses;
+            geocoder = new Geocoder(BaseMeetingActivity.this, Locale.getDefault());
+
+            try {
+                addresses = geocoder.getFromLocation(Double.parseDouble(latitude), Double.parseDouble(longitude), 1); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
+                String address = addresses.get(0).getAddressLine(0); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
+                String city = addresses.get(0).getLocality();
+                String state = addresses.get(0).getAdminArea();
+                String country = addresses.get(0).getCountryName();
+                String postalCode = addresses.get(0).getPostalCode();
+                String knownName = addresses.get(0).getFeatureName(); // Only if available else return NULL
+
+               // Toast.makeText(BaseMeetingActivity.this, "  " + address, Toast.LENGTH_SHORT).show();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+
+
         }
     };
 
@@ -2449,7 +2556,8 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
         if (requestCode == PERMISSION_ID) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                getLastLocation();
+                //getLastLocation();
+                requestNewLocationData();
             }
         }
     }

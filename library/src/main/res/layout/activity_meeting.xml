@@ -84,7 +84,7 @@
                         <TextView
                             android:id="@+id/sessionName"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
+                            android:layout_height="match_parent"
                             android:singleLine="true"
                             android:text="@string/session_name"
                             android:textColor="#FFFFFF"
