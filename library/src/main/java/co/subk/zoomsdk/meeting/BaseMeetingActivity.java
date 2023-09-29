@@ -11,6 +11,7 @@ import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_ALLOW_TO_TAKE_SCREENSHOT;
 import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_PASSWORD;
 import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_RENDER_TYPE;
 import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_SESSION_NAME;
+import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_TASK_ID;
 import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_TOKEN;
 import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_USERNAME;
 import static co.subk.zoomsdk.ZoomSdkHelper.RENDER_TYPE_OPENGLES;
@@ -204,6 +205,8 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     protected String meetingPwd = "";
     protected String sessionName;
 
+    protected String taskId;
+
     protected boolean allowToInviteAttendee = false;
     protected boolean allowToShareScreen = false;
     protected boolean allowToMuteAudio = false;
@@ -355,6 +358,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
             name = bundle.getString(PARAM_USERNAME);
             password = bundle.getString(PARAM_PASSWORD);
             sessionName = bundle.getString(PARAM_SESSION_NAME);
+            taskId = bundle.getString(PARAM_TASK_ID);
             token = bundle.getString(PARAM_TOKEN);
         }
 
@@ -410,6 +414,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
             myDisplayName = bundle.getString(PARAM_USERNAME);
             meetingPwd = bundle.getString(PARAM_PASSWORD);
             sessionName = bundle.getString(PARAM_SESSION_NAME);
+            taskId = bundle.getString(PARAM_TASK_ID);
             renderType = bundle.getInt(PARAM_RENDER_TYPE, RENDER_TYPE_ZOOMRENDERER);
             allowToInviteAttendee = bundle.getBoolean(PARAM_ALLOW_TO_INVITE_ATTENDEE);
             allowToShareScreen = bundle.getBoolean(PARAM_ALLOW_TO_SHARE_SCREEN);
@@ -511,7 +516,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
             actionBarScroll.scrollTo(0, 0);
         } else {
             params.topMargin = 0;
-//            params.gravity = Gravity.RIGHT | Gravity.BOTTOM;
+//            params.gravity = Gravity.RIGHT | Gravity.BOTTOM;  x
 //            params.bottomMargin = getResources().getDimensionPixelSize(R.dimen.toolbar_bottom_margin);
         }
         actionBar.setLayoutParams(params);
@@ -1094,31 +1099,6 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         return ZoomVideoSDK.getInstance().getAudioHelper().getSpeakerStatus();
     }
 
-
-    public void showInviteAttendeePopup() {
-        LayoutInflater inflater = this.getLayoutInflater();
-        View dialogView = inflater.inflate(R.layout.invite_attendee_popup, null);
-        AlertDialog alertDialog = new AlertDialog.Builder(BaseMeetingActivity.this).create();
-        alertDialog.setTitle("Invite Attendee");
-        alertDialog.setCancelable(false);
-
-        final EditText etmobile = dialogView.findViewById(R.id.etmobile);
-
-        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Invite", (dialog, which) -> {
-            if (etmobile.getText().toString().length() > 0) {
-                EventBus.getDefault().post(new InviteAttendeeEvent(etmobile.getText().toString()));
-                alertDialog.dismiss();
-            }
-        });
-
-
-        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Cancel", (dialog, which) -> alertDialog.dismiss());
-
-
-        alertDialog.setView(dialogView);
-        alertDialog.show();
-    }
-
     public void onClickMore(View view) {
         ZoomVideoSDKUser zoomSDKUserInfo = session.getMySelf();
         if (null == zoomSDKUserInfo)
@@ -1138,8 +1118,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
         llInviteAttendee.setOnClickListener(view1 -> {
             builder.dismiss();
-            EventBus.getDefault().post(new InviteAttendeeEvent(""));
-            //showInviteAttendeePopup();
+            EventBus.getDefault().post(new InviteAttendeeEvent(taskId));
         });
 
         if (allowToInviteAttendee) {
