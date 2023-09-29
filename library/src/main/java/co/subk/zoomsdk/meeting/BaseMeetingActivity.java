@@ -22,7 +22,6 @@ import static co.subk.zoomsdk.ZoomSdkHelper.REQUEST_SYSTEM_ALERT_WINDOW;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.Service;
 import android.content.BroadcastReceiver;
@@ -47,7 +46,6 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
@@ -62,7 +60,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -72,7 +69,6 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.Priority;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -243,7 +239,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     protected ZoomVideoSDKRecordingStatus status = ZoomVideoSDKRecordingStatus.Recording_Stop;
 
     private BroadcastReceiver mNetworkReceiver;
-    androidx.appcompat.app.AlertDialog internetAlertDialog;
+    private Dialog internetAlertDialog;
 
     int LOCATION_PERMISSION_ID = 44;
 
@@ -2191,22 +2187,19 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     }
 
     public void showOfflineDialog() {
-        Context context = new ContextThemeWrapper(BaseMeetingActivity.this, R.style.AppTheme);
-        MaterialAlertDialogBuilder internetAlertDialogBuilder = new MaterialAlertDialogBuilder(context);
-        internetAlertDialogBuilder.setTitle(R.string.internet_dialog_error_title);
-        internetAlertDialogBuilder.setMessage(R.string.internet_dialog_error_message);
-        internetAlertDialogBuilder.setIcon(R.drawable.internet_error);
-        internetAlertDialogBuilder.setCancelable(false);
-        internetAlertDialogBuilder.setPositiveButton(R.string.internet_dialog_error_try_again, (dialogInterface, i) -> {
+        internetAlertDialog = new Dialog(this, R.style.MyDialog);
+        internetAlertDialog.setCanceledOnTouchOutside(false);
+        internetAlertDialog.setCancelable(false);
+        internetAlertDialog.setContentView(R.layout.dialog_internet_error);
+        internetAlertDialog.findViewById(R.id.btn_retry).setOnClickListener(view -> {
             if (NetworkUtil.isOnline(BaseMeetingActivity.this)) {
                 internetAlertDialog.hide();
             }
             else {
                 Toast.makeText(BaseMeetingActivity.this, R.string.internet_toast_error_message, Toast.LENGTH_SHORT).show();
             }
-        }).show();
+        });
 
-        internetAlertDialog = internetAlertDialogBuilder.create();
         internetAlertDialog.show();
     }
 
