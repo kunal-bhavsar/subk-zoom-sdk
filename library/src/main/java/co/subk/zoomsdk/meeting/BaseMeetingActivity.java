@@ -1717,10 +1717,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                 if (bestAccuracyLocationEvent != null) {
                     EventBus.getDefault().post(bestAccuracyLocationEvent);
                 }
-
-                locationEvents = null; // remove it as it is not required anymore
             }, 30000);
-
         }
     }
 
