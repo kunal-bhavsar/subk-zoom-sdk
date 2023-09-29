@@ -1727,16 +1727,16 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
             LocationServices.getFusedLocationProviderClient(this).requestLocationUpdates(locationRequest, mLocationCallback, Looper.myLooper());
 
             new Handler().postDelayed(() -> {
-                LocationEvent highestAccuracyLocationEvent = null;
+                LocationEvent bestAccuracyLocationEvent = null;
                 for (LocationEvent locationEvent : locationEvents) {
-                    if (null == highestAccuracyLocationEvent || highestAccuracyLocationEvent.accuracy < locationEvent.accuracy) {
-                        highestAccuracyLocationEvent = locationEvent;
+                    if (null == bestAccuracyLocationEvent || locationEvent.accuracy < bestAccuracyLocationEvent.accuracy) {
+                        bestAccuracyLocationEvent = locationEvent;
                     }
                     Log.i("PUBLISH_LOCATION_EVENT", "Stored locations, latitude : " + locationEvent.latitude + ", longitude : " + locationEvent.longitude + ", accuracy : " + locationEvent.accuracy);
                 }
-                Log.i("PUBLISH_LOCATION_EVENT", "So highest accurate location have latitude : " + highestAccuracyLocationEvent.latitude + ", longitude : " + highestAccuracyLocationEvent.longitude + ", accuracy : " + highestAccuracyLocationEvent.accuracy);
-                if (highestAccuracyLocationEvent != null) {
-                    EventBus.getDefault().post(highestAccuracyLocationEvent);
+                Log.i("PUBLISH_LOCATION_EVENT", "So highest accurate location have latitude : " + bestAccuracyLocationEvent.latitude + ", longitude : " + bestAccuracyLocationEvent.longitude + ", accuracy : " + bestAccuracyLocationEvent.accuracy);
+                if (bestAccuracyLocationEvent != null) {
+                    EventBus.getDefault().post(bestAccuracyLocationEvent);
                 }
 
                 locationEvents = null; // remove it as it is not required anymore
