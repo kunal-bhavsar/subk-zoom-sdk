@@ -2456,7 +2456,8 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         @Override
         public void onLocationResult(LocationResult locationResult) {
             Location mLastLocation = locationResult.getLastLocation();
-            EventBus.getDefault().post(new SubkEvent("location ",String.valueOf(mLastLocation.getLatitude()),String.valueOf(mLastLocation.getLongitude()),String.valueOf(mLastLocation.getAccuracy())));
+          //
+            //  EventBus.getDefault().post(new SubkEvent("location ",String.valueOf(mLastLocation.getLatitude()),String.valueOf(mLastLocation.getLongitude()),String.valueOf(mLastLocation.getAccuracy())));
 
             /** Need to add a event here as well @ arul  */
             /*latitudeTextView.setText("Latitude: " + mLastLocation.getLatitude() + "");
