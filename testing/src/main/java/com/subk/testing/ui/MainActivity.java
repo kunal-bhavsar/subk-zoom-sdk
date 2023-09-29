@@ -1,4 +1,4 @@
-package com.subk.testing;
+package com.subk.testing.ui;
 
 import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_ALLOW_TO_END_MEETING;
 import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_ALLOW_TO_GET_LOCATION;
@@ -30,9 +30,13 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import com.subk.testing.R;
 import com.subk.testing.databinding.ActivityMainBinding;
+import com.subk.testing.service.EventManagementService;
 
 import co.subk.zoomsdk.MeetingActivity;
+import co.subk.zoomsdk.ZoomSdkInitializer;
+import co.subk.zoomsdk.meeting.exceptions.ZoomInitializationException;
 
 public class MainActivity extends AppCompatActivity {
     protected final static int REQUEST_VIDEO_AUDIO_CODE = 1010;
@@ -54,10 +58,10 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
 
         binding.fab.setOnClickListener(view -> {
-            String sessionName = "Location Getter - Arul";
-            String name = "Rajan Sanghvi";
-            String password = "789789789";
-            String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHBfa2V5IjoiSFRvZVBWVkhSbmhONEV5dmQxc3Q3RmJyN1hJZkJLc08xQmEzIiwicm9sZV90eXBlIjoxLCJ0cGMiOiJMb2NhdGlvbiBHZXR0ZXIgLSBBcnVsIiwidmVyc2lvbiI6MSwiaWF0IjoxNjk0ODUxMzUxLCJleHAiOjE2OTQ4NTg1NTEsInVzZXJfaWRlbnRpdHkiOiIzNTQ4Iiwic2Vzc2lvbl9rZXkiOiI5YzcyZDU5YS0zYmM4LTQ1MTUtYTVmNC00NTgwZDkzMzM4NzciLCJjbG91ZF9yZWNvcmRpbmdfb3B0aW9uIjowLCJjbG91ZF9yZWNvcmRpbmdfZWxlY3Rpb24iOjEsImFwcEtleSI6IkhUb2VQVlZIUm5oTjRFeXZkMXN0N0ZicjdYSWZCS3NPMUJhMyIsInRva2VuRXhwIjoxNjk0ODU4NTUxLCJwd2QiOiI3ODk3ODk3ODkifQ.5pKDPpCepF5PlUO7zq6ijRfMankJ0w2d8VyNrEJNsDY";
+            String sessionName = "Meeting on";
+            String name = "Kunal Bhavsar";
+            String password = "70369513";
+            String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHBfa2V5IjoiSFRvZVBWVkhSbmhONEV5dmQxc3Q3RmJyN1hJZkJLc08xQmEzIiwicm9sZV90eXBlIjoxLCJ0cGMiOiJNZWV0aW5nIG9uIiwidmVyc2lvbiI6MSwiaWF0IjoxNjk1OTg2Nzg3LCJleHAiOjE2OTU5OTM5ODcsInVzZXJfaWRlbnRpdHkiOiIzNTQ4Iiwic2Vzc2lvbl9rZXkiOiI2YjAzOTQ1Ny0yMzU3LTQyZDItODYzYy1lN2ExODE1MDhjNTIiLCJwd2QiOiI3MDM2OTUxMyIsImNsb3VkX3JlY29yZGluZ19vcHRpb24iOjAsImNsb3VkX3JlY29yZGluZ19lbGVjdGlvbiI6MX0.vc7dx3Mj11GsCf3SERmvaz1c-tdVhklugnZPzxM6D9U";
 
             Intent intent = new Intent(MainActivity.this, MeetingActivity.class);
             intent.putExtra(PARAM_USERNAME, name);
@@ -76,6 +80,15 @@ public class MainActivity extends AppCompatActivity {
         });
 
         requestPermission();
+
+        startService(new Intent(this, EventManagementService.class));
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        stopService(new Intent(this, EventManagementService.class));
     }
 
     protected boolean requestPermission() {

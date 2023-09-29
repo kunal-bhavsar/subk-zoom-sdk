@@ -87,4 +87,10 @@
 
     <string name="otp_hint" tools:ignore="ExtraTranslation">Enter Otp Hint</string>
     <string name="otp_error" tools:ignore="ExtraTranslation">Please enter valid OTP</string>
+
+    <!--   internet error handling   -->
+    <string name="internet_dialog_error_title">You are offline!!!</string>
+    <string name="internet_dialog_error_message">Please check your internet connectivity…</string>
+    <string name="internet_dialog_error_try_again">Retry</string>
+    <string name="internet_toast_error_message">Still no internet connectivity..</string>
 </resources>

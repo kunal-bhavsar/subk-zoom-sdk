@@ -25,10 +25,6 @@ public class ZoomSdkHelper {
     public final static String PARAM_ALLOW_TO_END_MEETING = "allow_to_end_meeting";
     public final static String PARAM_ALLOW_TO_TAKE_SCREENSHOT = "allow_to_take_screenshot";
     public final static String PARAM_ALLOW_TO_GET_LOCATION = "allow_to_get_location";
-    public final static String EVENT_INVITE_ATTENDEE = "invite_attendee";
-    public final static String EVENT_SHARE_LOCATION = "share_location";
-    public final static String EVENT_SHARE_SESSION_INFO = "share_session_info";
-    public final static String EVENT_INTERNET_CHANGE = "internet_change";
     public static int stopShare() {
         return ZoomVideoSDK.getInstance().getShareHelper().stopShare();
     }

@@ -1,9 +1,6 @@
 package co.subk.zoomsdk.meeting;
 
 
-import static co.subk.zoomsdk.ZoomSdkHelper.EVENT_INVITE_ATTENDEE;
-import static co.subk.zoomsdk.ZoomSdkHelper.EVENT_SHARE_LOCATION;
-import static co.subk.zoomsdk.ZoomSdkHelper.EVENT_SHARE_SESSION_INFO;
 import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_ALLOW_TO_END_MEETING;
 import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_ALLOW_TO_GET_LOCATION;
 import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_ALLOW_TO_HIDE_VIDEO;
@@ -29,7 +26,6 @@ import android.app.Dialog;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
@@ -39,7 +35,6 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.media.projection.MediaProjectionManager;
 import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -53,7 +48,6 @@ import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -67,10 +61,10 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -79,37 +73,42 @@ import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import co.subk.zoomsdk.NetworkChangeReceiver;
 import co.subk.zoomsdk.R;
-import co.subk.zoomsdk.model.InternetEvent;
-import co.subk.zoomsdk.model.InviteAttendeeEvent;
-import co.subk.zoomsdk.model.LocationEvent;
-import co.subk.zoomsdk.model.MobileAttendee;
-import co.subk.zoomsdk.model.SubkEvent;
 import co.subk.zoomsdk.cmd.CmdHandler;
 import co.subk.zoomsdk.cmd.CmdHelper;
 import co.subk.zoomsdk.cmd.CmdLowerThirdRequest;
 import co.subk.zoomsdk.cmd.CmdReactionRequest;
 import co.subk.zoomsdk.cmd.CmdRequest;
 import co.subk.zoomsdk.cmd.EmojiReactionType;
+import co.subk.zoomsdk.event.InternetEvent;
+import co.subk.zoomsdk.event.InviteAttendeeEvent;
+import co.subk.zoomsdk.event.LocationEvent;
+import co.subk.zoomsdk.event.SessionEndedEvent;
+import co.subk.zoomsdk.event.SessionJoinedEvent;
+import co.subk.zoomsdk.event.ShareScreenEvent;
+import co.subk.zoomsdk.event.SubkEvent;
 import co.subk.zoomsdk.meeting.feedback.data.FeedbackDataManager;
 import co.subk.zoomsdk.meeting.feedback.view.FeedbackResultDialog;
 import co.subk.zoomsdk.meeting.feedback.view.FeedbackSubmitDialog;
 import co.subk.zoomsdk.meeting.screenshare.ShareToolbar;
 import co.subk.zoomsdk.meeting.util.ErrorMsgUtil;
+import co.subk.zoomsdk.meeting.util.NetworkUtil;
 import co.subk.zoomsdk.meeting.util.SharePreferenceUtil;
+import co.subk.zoomsdk.meeting.util.UserHelper;
 import co.subk.zoomsdk.meeting.util.ZMAdapterOsBugHelper;
 import co.subk.zoomsdk.meeting.view.ChatMsgAdapter;
 import co.subk.zoomsdk.meeting.view.KeyBoardLayout;
 import co.subk.zoomsdk.meeting.view.UserVideoAdapter;
-import co.subk.zoomsdk.meeting.util.UserHelper;
 import us.zoom.sdk.ZoomVideoSDK;
 import us.zoom.sdk.ZoomVideoSDKAnnotationHelper;
 import us.zoom.sdk.ZoomVideoSDKAudioHelper;
@@ -123,7 +122,6 @@ import us.zoom.sdk.ZoomVideoSDKChatMessageDeleteType;
 import us.zoom.sdk.ZoomVideoSDKChatPrivilegeType;
 import us.zoom.sdk.ZoomVideoSDKDelegate;
 import us.zoom.sdk.ZoomVideoSDKErrors;
-import us.zoom.sdk.ZoomVideoSDKInitParams;
 import us.zoom.sdk.ZoomVideoSDKLiveStreamHelper;
 import us.zoom.sdk.ZoomVideoSDKLiveStreamStatus;
 import us.zoom.sdk.ZoomVideoSDKLiveTranscriptionHelper;
@@ -133,7 +131,6 @@ import us.zoom.sdk.ZoomVideoSDKPasswordHandler;
 import us.zoom.sdk.ZoomVideoSDKPhoneFailedReason;
 import us.zoom.sdk.ZoomVideoSDKPhoneStatus;
 import us.zoom.sdk.ZoomVideoSDKProxySettingHandler;
-import us.zoom.sdk.ZoomVideoSDKRawDataMemoryMode;
 import us.zoom.sdk.ZoomVideoSDKRawDataPipe;
 import us.zoom.sdk.ZoomVideoSDKRawDataPipeDelegate;
 import us.zoom.sdk.ZoomVideoSDKRecordingConsentHandler;
@@ -246,8 +243,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     protected ZoomVideoSDKRecordingStatus status = ZoomVideoSDKRecordingStatus.Recording_Stop;
 
     private BroadcastReceiver mNetworkReceiver;
-
-    androidx.appcompat.app.AlertDialog alertDialog;
+    androidx.appcompat.app.AlertDialog internetAlertDialog;
 
     FusedLocationProviderClient mFusedLocationClient;
     int PERMISSION_ID = 44;
@@ -706,19 +702,8 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
             shareToolbar = new ShareToolbar(this,this);
         }
 
-        EventBus.getDefault().post(new SubkEvent(EVENT_SHARE_SESSION_INFO));
+        EventBus.getDefault().post(new ShareScreenEvent());
 
-        /*if (Build.VERSION.SDK_INT >= 29) {
-            //MediaProjection  need service with foregroundServiceType mediaProjection in android Q
-            boolean hasForegroundNotification = NotificationMgr.hasNotification(NotificationMgr.PT_NOTICICATION_ID);
-            if (!hasForegroundNotification) {
-
-                EventBus.getDefault().post(new CartEvent("new Cart Item"));
-
-                *//*Intent intent = new Intent(this, NotificationService.class);
-                startForegroundService(intent);*//*
-            }
-        }*/
         int ret = ZoomVideoSDK.getInstance().getShareHelper().startShareScreen(data);
         if (ret == ZoomVideoSDKErrors.Errors_Success) {
             /**Added by arul to switch Camera Status*/
@@ -1169,21 +1154,18 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     }
 
 
-    public void showInviteAttendeePopup()
-    {
+    public void showInviteAttendeePopup() {
         LayoutInflater inflater = this.getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.invite_attendee_popup, null);
         AlertDialog alertDialog = new AlertDialog.Builder(BaseMeetingActivity.this).create();
         alertDialog.setTitle("Invite Attendee");
         alertDialog.setCancelable(false);
 
-
         final EditText etmobile = dialogView.findViewById(R.id.etmobile);
-
 
         alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Invite", (dialog, which) -> {
             if (etmobile.getText().toString().length()>0) {
-                EventBus.getDefault().post(new InviteAttendeeEvent(EVENT_INVITE_ATTENDEE, etmobile.getText().toString()));
+                EventBus.getDefault().post(new InviteAttendeeEvent(etmobile.getText().toString()));
                 alertDialog.dismiss();
             }
         });
@@ -1195,8 +1177,6 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         alertDialog.setView(dialogView);
         alertDialog.show();
     }
-
-
 
     public void onClickMore(View view) {
         ZoomVideoSDKUser zoomSDKUserInfo = session.getMySelf();
@@ -1217,7 +1197,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
         llInviteAttendee.setOnClickListener(view1 -> {
             builder.dismiss();
-            EventBus.getDefault().post(new InviteAttendeeEvent(EVENT_INVITE_ATTENDEE,""));
+            EventBus.getDefault().post(new InviteAttendeeEvent(""));
             //showInviteAttendeePopup();
         });
 
@@ -1777,14 +1757,34 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
         adapter.onUserJoin(UserHelper.getAllUsers());
         refreshUserListAdapter();
+        publishSessionJoinedEvent();
         hideLoader();
         // mtvInput.setVisibility(View.VISIBLE);
     }
 
 
+    private void publishLocationEvent(Location location) {
+        EventBus.getDefault().post(new LocationEvent(
+                        String.valueOf(location.getLatitude()),
+                        String.valueOf(location.getLongitude()),
+                        String.valueOf(location.getAccuracy())
+                )
+        );
+
+    }
+
+    public void publishSessionJoinedEvent() {
+        EventBus.getDefault().post(new SessionJoinedEvent(ZoomVideoSDK.getInstance().getSession().getSessionID()));
+    }
+
+    public void publishSessionEndedEvent() {
+        EventBus.getDefault().post(new SessionEndedEvent());
+    }
+
     @Override
     public void onSessionLeave() {
         Log.d(TAG, "onSessionLeave");
+        publishSessionEndedEvent();
         finish();
     }
 
@@ -2236,94 +2236,46 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
     }
 
-    public void showOfflineDialog()
-    {
-        final androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(BaseMeetingActivity.this,R.style.CustomAlertDialog);
-        ViewGroup viewGroup = findViewById(android.R.id.content);
-        View dialogView = LayoutInflater.from(iconMore.getContext()).inflate(R.layout.offline_layout, viewGroup, false);
-
-        TextView heading = dialogView.findViewById(R.id.heading);
-
-        heading.setText("You Are Offline!!!");
-
-        TextView pay = dialogView.findViewById(R.id.pay);
-
-        builder.setView(dialogView);
-        alertDialog = builder.create();
-        alertDialog.setCancelable(false);
-
-
-        pay.setText("Try Again");
-
-        pay.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                boolean isonline = isOnline(BaseMeetingActivity.this);
-                if (isonline)
-                {
-                    alertDialog.dismiss();
-                }
-                else
-                {
-                    Toast.makeText(BaseMeetingActivity.this, "No Internet Connection", Toast.LENGTH_SHORT).show();
-                }
-                //callDeleteInMailAPI();
+    public void showOfflineDialog() {
+        Context context = new ContextThemeWrapper(BaseMeetingActivity.this, R.style.AppTheme);
+        MaterialAlertDialogBuilder internetAlertDialogBuilder = new MaterialAlertDialogBuilder(context);
+        internetAlertDialogBuilder.setTitle(R.string.internet_dialog_error_title);
+        internetAlertDialogBuilder.setMessage(R.string.internet_dialog_error_message);
+        internetAlertDialogBuilder.setIcon(R.drawable.internet_error);
+        internetAlertDialogBuilder.setCancelable(false);
+        internetAlertDialogBuilder.setPositiveButton(R.string.internet_dialog_error_try_again, (dialogInterface, i) -> {
+            if (NetworkUtil.isOnline(BaseMeetingActivity.this)) {
+                internetAlertDialog.hide();
             }
-        });
+            else {
+                Toast.makeText(BaseMeetingActivity.this, R.string.internet_toast_error_message, Toast.LENGTH_SHORT).show();
+            }
+        }).show();
 
-
-        alertDialog.show();
+        internetAlertDialog = internetAlertDialogBuilder.create();
+        internetAlertDialog.show();
     }
 
 
-    @Subscribe
-    public void onInternetChange(InternetEvent internetEvent){
-        /*cartEventList.add(cartEvent);
-        String cartTotalItems = "Cart Items: "+cartEventList.size();
-        cartTextView.setText(cartTotalItems);*/
-        //  Toast.makeText(this, "Item added to cart.", Toast.LENGTH_SHORT).show();
-
-        if (internetEvent.isOnline)
-        {
-            if (alertDialog!=null)
-            {
-                if (alertDialog.isShowing())
-                {
-                    alertDialog.dismiss();
-                }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onInternetChange(InternetEvent internetEvent) {
+        Log.d(TAG,"InternetChangeEvent received, with isOnline as " + internetEvent.isOnline);
+        if (internetEvent.isOnline) {
+            if (internetAlertDialog != null) {
+                internetAlertDialog.hide();
             }
-
         }
-        else
-        {
-            if (alertDialog!=null)
-            {
-                if (!alertDialog.isShowing())
-                {
+        else {
+            if (internetAlertDialog != null) {
+                if (!internetAlertDialog.isShowing()) {
                     showOfflineDialog();
                 }
             }
-            else
-            {
+            else {
                 showOfflineDialog();
             }
         }
-
     }
-
-
-    private boolean isOnline(Context context) {
-        try {
-            ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-            NetworkInfo netInfo = cm.getActiveNetworkInfo();
-            //should check null because in airplane mode it will be null
-            return (netInfo != null && netInfo.isConnected());
-        } catch (NullPointerException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
 
     /** Added by arul for location functionality - 16/09/23 all below code*/
 
@@ -2346,14 +2298,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                         if (location == null) {
                             requestNewLocationData();
                         } else {
-                            EventBus.getDefault().post(
-                                new LocationEvent(
-                                    EVENT_SHARE_LOCATION,
-                                    String.valueOf(location.getLatitude()),
-                                    String.valueOf(location.getLongitude()),
-                                    String.valueOf(location.getAccuracy())
-                                )
-                            );
+                            publishLocationEvent(location);
                         }
                     }
                 });
@@ -2391,14 +2336,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         @Override
         public void onLocationResult(LocationResult locationResult) {
             Location mLastLocation = locationResult.getLastLocation();
-            EventBus.getDefault().post(
-                new LocationEvent(
-                    EVENT_SHARE_LOCATION,
-                    String.valueOf(mLastLocation.getLatitude()),
-                    String.valueOf(mLastLocation.getLongitude()),
-                    String.valueOf(mLastLocation.getAccuracy())
-                )
-            );
+            publishLocationEvent(mLastLocation);
         }
     };
 

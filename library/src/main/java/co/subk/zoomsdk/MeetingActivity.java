@@ -4,9 +4,7 @@ import static co.subk.zoomsdk.ZoomSdkHelper.RENDER_TYPE_OPENGLES;
 import static co.subk.zoomsdk.ZoomSdkHelper.RENDER_TYPE_ZOOMRENDERER;
 
 import android.Manifest;
-import android.content.ComponentName;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -15,7 +13,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
-import android.os.IBinder;
 import android.os.Looper;
 import android.text.format.DateFormat;
 import android.util.Log;
@@ -102,7 +99,6 @@ public class MeetingActivity extends BaseMeetingActivity {
     public void onSessionJoin() {
         super.onSessionJoin();
 //        audioRawDataUtil.subscribeAudio();
-        startMeetingService();
     }
 
     @Override
@@ -125,69 +121,6 @@ public class MeetingActivity extends BaseMeetingActivity {
         }
     }
 
-    private ServiceConnection serviceConnection= new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            Log.d(TAG,"onServiceConnected:");
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            Log.d(TAG,"onServiceDisconnected:");
-        }
-    };
-
-    private void startMeetingService() {
-
-       /* try {
-            Intent myIntent = new Intent(this,Class.forName("co.subk.sarthi.NotificationService"));
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                startForegroundService(myIntent);
-            } else {
-                startService(myIntent);
-            }
-
-            if(null!=serviceConnection){
-                bindService(myIntent,serviceConnection, BIND_AUTO_CREATE);
-            }
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }*/
-        /*Intent intent = new Intent(this, NotificationService.class);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            startForegroundService(intent);
-        } else {
-            startService(intent);
-        }
-
-        if(null!=serviceConnection){
-            bindService(intent,serviceConnection, BIND_AUTO_CREATE);
-        }*/
-    }
-
-    private void stopMeetingService() {
-        /*Intent intent = new Intent(this, NotificationService.class);
-        stopService(intent);*/
-        /*try {
-            Intent myIntent = new Intent(this,Class.forName("co.subk.sarthi.NotificationService"));
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                stopService(myIntent);
-            } else {
-                stopService(myIntent);
-            }
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }*/
-        try {
-            if (null != serviceConnection) {
-                unbindService(serviceConnection);
-            }
-            serviceConnection = null;
-        } catch (Exception e) {
-            Log.e(TAG,e.toString());
-        }
-    }
-
     @Override
     public void onSessionLeave() {
         super.onSessionLeave();
@@ -200,7 +133,6 @@ public class MeetingActivity extends BaseMeetingActivity {
     @Override
     public void finish() {
         super.finish();
-        stopMeetingService();
     }
 
     @Override
