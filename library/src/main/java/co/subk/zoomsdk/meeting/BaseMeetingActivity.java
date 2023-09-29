@@ -66,13 +66,11 @@ import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
+import com.google.android.gms.location.Priority;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import org.greenrobot.eventbus.EventBus;
@@ -96,7 +94,6 @@ import co.subk.zoomsdk.event.LocationEvent;
 import co.subk.zoomsdk.event.SessionEndedEvent;
 import co.subk.zoomsdk.event.SessionJoinedEvent;
 import co.subk.zoomsdk.event.ShareScreenEvent;
-import co.subk.zoomsdk.event.SubkEvent;
 import co.subk.zoomsdk.meeting.feedback.data.FeedbackDataManager;
 import co.subk.zoomsdk.meeting.feedback.view.FeedbackResultDialog;
 import co.subk.zoomsdk.meeting.feedback.view.FeedbackSubmitDialog;
@@ -235,9 +232,9 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
     protected ZoomVideoSDKSession session;
 
-    protected boolean renderWithSurfaceView=true;
+    protected boolean renderWithSurfaceView = true;
 
-    protected boolean showCameraControl=false;
+    protected boolean showCameraControl = false;
 
     protected LinearLayout panelRecordBtn;
     protected ZoomVideoSDKRecordingStatus status = ZoomVideoSDKRecordingStatus.Recording_Stop;
@@ -245,8 +242,9 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     private BroadcastReceiver mNetworkReceiver;
     androidx.appcompat.app.AlertDialog internetAlertDialog;
 
-    FusedLocationProviderClient mFusedLocationClient;
-    int PERMISSION_ID = 44;
+    int LOCATION_PERMISSION_ID = 44;
+
+    ArrayList<LocationEvent> locationEvents = new ArrayList<>();
     @NonNull
     private List<CmdLowerThirdRequest> lowerThirdRequests = new ArrayList<>();
     // private LowerThirdLayout lowerThirdLayout;
@@ -255,7 +253,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         @Override
         public void onCmdReceived(final CmdRequest request) {
             if (request instanceof CmdReactionRequest) {
-                final CmdReactionRequest cmdReactionRequest = (CmdReactionRequest)request;
+                final CmdReactionRequest cmdReactionRequest = (CmdReactionRequest) request;
                 new Handler().post(new Runnable() {
                     @Override
                     public void run() {
@@ -273,7 +271,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         @Override
         public void onCmdReceived(CmdRequest request) {
             if (request instanceof CmdLowerThirdRequest) {
-                final CmdLowerThirdRequest cmdLowerThirdRequest = (CmdLowerThirdRequest)request;
+                final CmdLowerThirdRequest cmdLowerThirdRequest = (CmdLowerThirdRequest) request;
                 new Handler().post(new Runnable() {
                     @Override
                     public void run() {
@@ -303,6 +301,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     };
 
     boolean isVisitFirstTime = false;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -350,29 +349,14 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         }
     }
 
-    public void setupZoom(Bundle bundle)
-    {
-        String sessionName = "",name = "",password = "",tokens = "";
+    public void setupZoom(Bundle bundle) {
+        String sessionName = "", name = "", password = "", token = "";
         if (null != bundle) {
             name = bundle.getString(PARAM_USERNAME);
             password = bundle.getString(PARAM_PASSWORD);
             sessionName = bundle.getString(PARAM_SESSION_NAME);
-            tokens = bundle.getString(PARAM_TOKEN);
+            token = bundle.getString(PARAM_TOKEN);
         }
-
-        // String tokens = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHBfa2V5IjoiSFRvZVBWVkhSbmhONEV5dmQxc3Q3RmJyN1hJZkJLc08xQmEzIiwidHBjIjoiTVkgVEFzayBhbmRyb2lkIiwic2Vzc2lvbl9rZXkiOiI4MDEyNmEwNS0zZDQ4LTRlODQtOTA0YS0zZTI3NzZjZmZhN2UiLCJ1c2VyX2lkZW50aXR5IjoiOTc2OTcxNTU1OSIsInJvbGVfdHlwZSI6MSwiaWF0IjoxNjgzNDczOTQ5LCJleHAiOjE2ODM0ODExNDksImFwcEtleSI6IkhUb2VQVlZIUm5oTjRFeXZkMXN0N0ZicjdYSWZCS3NPMUJhMyIsInRva2VuRXhwIjoxNjgzNDgxMTQ5LCJwd2QiOiIxNzU3MDUyNCIsImNsb3VkX3JlY29yZGluZ19vcHRpb24iOjB9.YvTZU4_4KiT5aWvX_al_JSDE_oIMAUBx4I2UrIaOyGc";
-       /* myDisplayName = "9769715559";
-        meetingPwd = "17570524";
-        sessionName = "MY TAsk android";
-        renderType = 0;*/
-
-        // String sessionName = "MY TAsk android";//joinMeetingResponse.getTask().getTitle();
-        //UserDetails userDetails = PreferenceHandler.getInstance().readUserDetails();
-        //  String name = "9769715559";//userDetails.getUserName();
-        //AdditionalInfo additionalInfo = joinMeetingResponse.getMeeting().getAdditionalInfo();
-        //  String password = "17570524";//additionalInfo.getPassword();
-        String token =  tokens;//additionalInfo.getSignature();
-
 
         ZoomVideoSDKAudioOption audioOption = new ZoomVideoSDKAudioOption();
         audioOption.connect = true;
@@ -398,7 +382,6 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
             Log.i(BaseMeetingActivity.class.getName(), "Token :" + sessionContext.token);
             Log.i(BaseMeetingActivity.class.getName(), "Session password :" + sessionContext.sessionPassword);
             Log.e(BaseMeetingActivity.class.getName(), "Session is NULL");
-            return;
         }
     }
 
@@ -415,13 +398,11 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         isActivityPaused = true;
         unSubscribe();
         adapter.clear(false);
-        Log.d(TAG, "onPause");
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        Log.d(TAG, "onStop");
     }
 
     protected void parseIntent(Bundle bundle) {
@@ -438,15 +419,6 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
             allowToTakeScreenshot = bundle.getBoolean(PARAM_ALLOW_TO_TAKE_SCREENSHOT);
             allowToCaptureLocation = bundle.getBoolean(PARAM_ALLOW_TO_GET_LOCATION);
         }
-
-        /* sessionContext.userName = "Arull"*//*name*//*;
-        sessionContext.token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHBfa2V5IjoiSFRvZVBWVkhSbmhONEV5dmQxc3Q3RmJyN1hJZkJLc08xQmEzIiwidHBjIjoiQXJ1bCBOZXcgTWVldGluZyIsInNlc3Npb25fa2V5IjoiY2ExODIzZmQtNTZiOS00MThjLWFjNjQtZDYyZTU1MDJhYWE0IiwidXNlcl9pZGVudGl0eSI6Ijk3Njk3MTU1NTkiLCJyb2xlX3R5cGUiOjEsImlhdCI6MTY4NzU5MjU4MSwiZXhwIjoxNjg3NTk5NzgxLCJhcHBLZXkiOiJIVG9lUFZWSFJuaE40RXl2ZDFzdDdGYnI3WElmQktzTzFCYTMiLCJ0b2tlbkV4cCI6MTY4NzU5OTc4MSwicHdkIjoiNDg1OTAwMTIiLCJjbG91ZF9yZWNvcmRpbmdfb3B0aW9uIjowfQ.UAqKbXnjnmD9lDP4u-PwVZoXiWRMMJ-2wRcQBLJ1EpI"*//*token*//*;
-        sessionContext.sessionPassword = "48590012"*//*password*//*;*/
-       /* String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHBfa2V5IjoiSFRvZVBWVkhSbmhONEV5dmQxc3Q3RmJyN1hJZkJLc08xQmEzIiwidHBjIjoiTGF0ZXN0IE1lZXRpZ24gQXJ1bCIsInNlc3Npb25fa2V5IjoiODQ1MzhlODAtYjRkZC00MWY4LWI1YzUtM2JmYTZlMWMwNjRhIiwidXNlcl9pZGVudGl0eSI6Ijc1OTczNzEwMTMiLCJyb2xlX3R5cGUiOjEsImlhdCI6MTY4ODQ3MDg3NywiZXhwIjoxNjg4NDc4MDc3LCJhcHBLZXkiOiJIVG9lUFZWSFJuaE40RXl2ZDFzdDdGYnI3WElmQktzTzFCYTMiLCJ0b2tlbkV4cCI6MTY4ODQ3ODA3NywicHdkIjoiNDEwODA5NDUiLCJjbG91ZF9yZWNvcmRpbmdfb3B0aW9uIjowfQ.htwJBF77m-jiUtMoSv2bjSV2UkXE_msI8l2XwyEmBsc";
-        myDisplayName = "7597371013";
-        meetingPwd = "41080945";
-        sessionName = "Latest Meetign Arul";
-        renderType = 0;*/
     }
 
     @Override
@@ -468,12 +440,6 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                 refreshUserListAdapter();
             }
         }
-
-        /** Added by arul for location functionality - 16/09/23*/
-
-       /* if (checkPermissions()) {
-            getLastLocation();
-        }*/
     }
 
     protected void resumeSubscribe() {
@@ -568,9 +534,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
             shareToolbar.destroy();
         }
         if (ZMAdapterOsBugHelper.getInstance().isNeedListenOverlayPermissionChanged()) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                ZMAdapterOsBugHelper.getInstance().stopListenOverlayPermissionChange(this);
-            }
+            ZMAdapterOsBugHelper.getInstance().stopListenOverlayPermissionChange(this);
         }
         ZoomVideoSDK.getInstance().removeListener(this);
         adapter.onDestroyed();
@@ -589,9 +553,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                 break;
             case REQUEST_SYSTEM_ALERT_WINDOW:
                 if (ZMAdapterOsBugHelper.getInstance().isNeedListenOverlayPermissionChanged()) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        ZMAdapterOsBugHelper.getInstance().stopListenOverlayPermissionChange(this);
-                    }
+                    ZMAdapterOsBugHelper.getInstance().stopListenOverlayPermissionChange(this);
                 }
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                     if ((!Settings.canDrawOverlays(this)) && (!ZMAdapterOsBugHelper.getInstance().isNeedListenOverlayPermissionChanged() || !ZMAdapterOsBugHelper.getInstance().ismCanDraw())) {
@@ -609,7 +571,6 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                                 shareImageView.setImageURI(selectedImage);
                                 shareViewGroup.setVisibility(View.VISIBLE);
                                 int ret = ZoomVideoSDK.getInstance().getShareHelper().startShareView(shareImageView);
-                                Log.d(TAG, "start share " + ret);
                                 if (ret == ZoomVideoSDKErrors.Errors_Success) {
                                     onStartShareView();
                                 } else {
@@ -626,9 +587,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-
                 }
-
                 break;
             }
         }
@@ -643,19 +602,15 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     }
 
     public void onSingleTap(ZoomVideoSDKUser user) {
-//        if (user != mActiveUser) {
-
         List<ZoomVideoSDKUser> all = UserHelper.getAllUsers();
 
-        if (all.contains(user))
-        {
+        if (all.contains(user)) {
             all.remove(user);
         }
 
         adapter.RefreshMyList(all);
 
         subscribeVideoByUser(user);
-//        }
     }
 
     protected void onUserActive(ZoomVideoSDKUser user) {
@@ -699,7 +654,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
     protected void onStartShareScreen(Intent data) {
         if (null == shareToolbar) {
-            shareToolbar = new ShareToolbar(this,this);
+            shareToolbar = new ShareToolbar(this, this);
         }
 
         EventBus.getDefault().post(new ShareScreenEvent());
@@ -763,10 +718,6 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         ZoomVideoSDK.getInstance().getVideoHelper().rotateMyVideo(displayRotation);
     }
 
-    protected void initMeeting() {
-
-    }
-
     public void updateFps(final ZoomVideoSDKVideoStatisticInfo statisticInfo) {
         if (null == statisticInfo) {
             return;
@@ -800,7 +751,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         videoListContain = findViewById(R.id.video_list_contain);
         adapter = new UserVideoAdapter(this, this, renderType);
         userVideoList.setItemViewCacheSize(0);
-        LinearLayoutManager layoutManager=new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
         layoutManager.setItemPrefetchEnabled(false);
         userVideoList.setLayoutManager(layoutManager);
         userVideoList.setAdapter(adapter);
@@ -810,32 +761,20 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         iconVideo = findViewById(R.id.icon_video);
         if (allowToHideVideo) {
             iconVideo.setVisibility(View.VISIBLE);
-        }
-        else {
+        } else {
             iconVideo.setVisibility(View.GONE);
         }
         iconAudio = findViewById(R.id.icon_audio);
         if (allowToMuteAudio) {
             iconAudio.setVisibility(View.VISIBLE);
-        }
-        else {
+        } else {
             iconAudio.setVisibility(View.GONE);
         }
 
         if (!allowToTakeScreenshot) {
             getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE,
-				WindowManager.LayoutParams.FLAG_SECURE);
+                    WindowManager.LayoutParams.FLAG_SECURE);
         }
-
-        /** Added by arul for location functionality - 16/09/23*/
-        if (allowToCaptureLocation)
-        {
-            mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-
-            // method to get the location
-            getLastLocation();
-        }
-
 
         iconMore = findViewById(R.id.icon_more);
         practiceText = findViewById(R.id.text_meeting_user_size);
@@ -856,8 +795,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         iconShare = findViewById(R.id.icon_share);
         if (allowToShareScreen) {
             iconShare.setVisibility(View.VISIBLE);
-        }
-        else {
+        } else {
             iconShare.setVisibility(View.GONE);
         }
 
@@ -921,6 +859,8 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         });
     }
 
+    protected void initMeeting() {}
+
     public void showLoader() {
         loader.setVisibility(View.VISIBLE);
     }
@@ -928,6 +868,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     public void hideLoader() {
         loader.setVisibility(View.GONE);
     }
+
     @Override
     public void onItemClick() {
 
@@ -1145,7 +1086,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     private void onClickStartCloudRecord() {
         int error = ZoomVideoSDK.getInstance().getRecordingHelper().startCloudRecording();
         if (error != ZoomVideoSDKErrors.Errors_Success) {
-            Toast.makeText(this, "start cloud record error: " + ErrorMsgUtil.getMsgByErrorCode(error) + ". Error code: "+error, Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "start cloud record error: " + ErrorMsgUtil.getMsgByErrorCode(error) + ". Error code: " + error, Toast.LENGTH_LONG).show();
         }
     }
 
@@ -1164,7 +1105,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         final EditText etmobile = dialogView.findViewById(R.id.etmobile);
 
         alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Invite", (dialog, which) -> {
-            if (etmobile.getText().toString().length()>0) {
+            if (etmobile.getText().toString().length() > 0) {
                 EventBus.getDefault().post(new InviteAttendeeEvent(etmobile.getText().toString()));
                 alertDialog.dismiss();
             }
@@ -1203,8 +1144,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
         if (allowToInviteAttendee) {
             llInviteAttendee.setVisibility(View.VISIBLE);
-        }
-        else {
+        } else {
             llInviteAttendee.setVisibility(View.GONE);
         }
 
@@ -1364,7 +1304,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                         return;
                     }
                     ZoomVideoSDKUser user = feccUser;
-                    int ret=0;
+                    int ret = 0;
                     if (null == user && view.getId() != R.id.btn_request) {
                         Toast.makeText(BaseMeetingActivity.this, "need request and approve ", Toast.LENGTH_SHORT).show();
                         return;
@@ -1372,11 +1312,10 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                     int range = 100;
 
 
-
                     if (null == user) {
                         user = users.get(0);
                     }
-                    ret=user.getRemoteCameraControlHelper().requestControlRemoteCamera();
+                    ret = user.getRemoteCameraControlHelper().requestControlRemoteCamera();
 
                 }
             });
@@ -1389,7 +1328,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                         return;
                     }
                     ZoomVideoSDKUser user = feccUser;
-                    int ret=0;
+                    int ret = 0;
                     if (null == user && view.getId() != R.id.btn_request) {
                         Toast.makeText(BaseMeetingActivity.this, "need request and approve ", Toast.LENGTH_SHORT).show();
                         return;
@@ -1397,7 +1336,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                     int range = 100;
 
 
-                    ret=user.getRemoteCameraControlHelper().giveUpControlRemoteCamera();
+                    ret = user.getRemoteCameraControlHelper().giveUpControlRemoteCamera();
                     if (ret == 0) {
                         feccUser = null;
                     }
@@ -1412,7 +1351,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                         return;
                     }
                     ZoomVideoSDKUser user = feccUser;
-                    int ret=0;
+                    int ret = 0;
                     if (null == user && view.getId() != R.id.btn_request) {
                         Toast.makeText(BaseMeetingActivity.this, "need request and approve ", Toast.LENGTH_SHORT).show();
                         return;
@@ -1420,7 +1359,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                     int range = 100;
 
 
-                    ret=user.getRemoteCameraControlHelper().turnLeft(range);
+                    ret = user.getRemoteCameraControlHelper().turnLeft(range);
                 }
             });
             builder.findViewById(R.id.btn_right).setOnClickListener(new View.OnClickListener() {
@@ -1431,7 +1370,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                         return;
                     }
                     ZoomVideoSDKUser user = feccUser;
-                    int ret=0;
+                    int ret = 0;
                     if (null == user && view.getId() != R.id.btn_request) {
                         Toast.makeText(BaseMeetingActivity.this, "need request and approve ", Toast.LENGTH_SHORT).show();
                         return;
@@ -1439,7 +1378,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                     int range = 100;
 
 
-                    ret=user.getRemoteCameraControlHelper().turnRight(range);
+                    ret = user.getRemoteCameraControlHelper().turnRight(range);
                 }
             });
             builder.findViewById(R.id.btn_up).setOnClickListener(new View.OnClickListener() {
@@ -1450,7 +1389,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                         return;
                     }
                     ZoomVideoSDKUser user = feccUser;
-                    int ret=0;
+                    int ret = 0;
                     if (null == user && view.getId() != R.id.btn_request) {
                         Toast.makeText(BaseMeetingActivity.this, "need request and approve ", Toast.LENGTH_SHORT).show();
                         return;
@@ -1458,7 +1397,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                     int range = 100;
 
 
-                    ret=user.getRemoteCameraControlHelper().turnUp(range);
+                    ret = user.getRemoteCameraControlHelper().turnUp(range);
                 }
             });
             builder.findViewById(R.id.btn_down).setOnClickListener(new View.OnClickListener() {
@@ -1469,7 +1408,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                         return;
                     }
                     ZoomVideoSDKUser user = feccUser;
-                    int ret=0;
+                    int ret = 0;
                     if (null == user && view.getId() != R.id.btn_request) {
                         Toast.makeText(BaseMeetingActivity.this, "need request and approve ", Toast.LENGTH_SHORT).show();
                         return;
@@ -1477,7 +1416,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                     int range = 100;
 
 
-                    ret= user.getRemoteCameraControlHelper().turnDown(range);
+                    ret = user.getRemoteCameraControlHelper().turnDown(range);
                 }
             });
             builder.findViewById(R.id.btn_zoom_in).setOnClickListener(new View.OnClickListener() {
@@ -1488,7 +1427,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                         return;
                     }
                     ZoomVideoSDKUser user = feccUser;
-                    int ret=0;
+                    int ret = 0;
                     if (null == user && view.getId() != R.id.btn_request) {
                         Toast.makeText(BaseMeetingActivity.this, "need request and approve ", Toast.LENGTH_SHORT).show();
                         return;
@@ -1496,7 +1435,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                     int range = 100;
 
 
-                    ret=user.getRemoteCameraControlHelper().zoomIn(range);
+                    ret = user.getRemoteCameraControlHelper().zoomIn(range);
                 }
             });
             builder.findViewById(R.id.btn_zoom_out).setOnClickListener(new View.OnClickListener() {
@@ -1507,7 +1446,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                         return;
                     }
                     ZoomVideoSDKUser user = feccUser;
-                    int ret=0;
+                    int ret = 0;
                     if (null == user && view.getId() != R.id.btn_request) {
                         Toast.makeText(BaseMeetingActivity.this, "need request and approve ", Toast.LENGTH_SHORT).show();
                         return;
@@ -1515,11 +1454,10 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                     int range = 100;
 
 
-                    ret=user.getRemoteCameraControlHelper().zoomOut(range);
+                    ret = user.getRemoteCameraControlHelper().zoomOut(range);
                 }
             });
         }
-
 
 
         builder.setCanceledOnTouchOutside(true);
@@ -1759,23 +1697,63 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         refreshUserListAdapter();
         publishSessionJoinedEvent();
         hideLoader();
+        publishLocationEvent();
         // mtvInput.setVisibility(View.VISIBLE);
-    }
-
-
-    private void publishLocationEvent(Location location) {
-        EventBus.getDefault().post(new LocationEvent(
-                        String.valueOf(location.getLatitude()),
-                        String.valueOf(location.getLongitude()),
-                        String.valueOf(location.getAccuracy())
-                )
-        );
-
     }
 
     public void publishSessionJoinedEvent() {
         EventBus.getDefault().post(new SessionJoinedEvent(ZoomVideoSDK.getInstance().getSession().getSessionID()));
     }
+
+    private void publishLocationEvent() {
+        if (!allowToCaptureLocation) {
+            return;
+        }
+
+        // setting LocationRequest on FusedLocationClient
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_ID);
+            return;
+        }
+
+        if (isLocationEnabled()) {
+            LocationRequest locationRequest = new LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 5000)
+                    .setMinUpdateIntervalMillis(2000)
+                    .setMaxUpdateDelayMillis(5000)
+                    .setMaxUpdates(5)
+                    .build();
+
+            LocationServices.getFusedLocationProviderClient(this).requestLocationUpdates(locationRequest, mLocationCallback, Looper.myLooper());
+
+            new Handler().postDelayed(() -> {
+                LocationEvent highestAccuracyLocationEvent = null;
+                for (LocationEvent locationEvent : locationEvents) {
+                    if (null == highestAccuracyLocationEvent || highestAccuracyLocationEvent.accuracy < locationEvent.accuracy) {
+                        highestAccuracyLocationEvent = locationEvent;
+                    }
+                    Log.i("PUBLISH_LOCATION_EVENT", "Stored locations, latitude : " + locationEvent.latitude + ", longitude : " + locationEvent.longitude + ", accuracy : " + locationEvent.accuracy);
+                }
+                Log.i("PUBLISH_LOCATION_EVENT", "So highest accurate location have latitude : " + highestAccuracyLocationEvent.latitude + ", longitude : " + highestAccuracyLocationEvent.longitude + ", accuracy : " + highestAccuracyLocationEvent.accuracy);
+                if (highestAccuracyLocationEvent != null) {
+                    EventBus.getDefault().post(highestAccuracyLocationEvent);
+                }
+
+                locationEvents = null; // remove it as it is not required anymore
+            }, 30000);
+
+        }
+    }
+
+    private LocationCallback mLocationCallback = new LocationCallback() {
+
+        @Override
+        public void onLocationResult(LocationResult locationResult) {
+            Location mLastLocation = locationResult.getLastLocation();
+
+            locationEvents.add(new LocationEvent(mLastLocation.getLatitude(), mLastLocation.getLongitude(), mLastLocation.getAccuracy()));
+        }
+    };
 
     public void publishSessionEndedEvent() {
         EventBus.getDefault().post(new SessionEndedEvent());
@@ -2277,87 +2255,6 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         }
     }
 
-    /** Added by arul for location functionality - 16/09/23 all below code*/
-
-    @SuppressLint("MissingPermission")
-    private void getLastLocation() {
-        // check if permissions are given
-        if (checkPermissions()) {
-
-            // check if location is enabled
-            if (isLocationEnabled()) {
-
-                // getting last
-                // location from
-                // FusedLocationClient
-                // object
-                mFusedLocationClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Location> task) {
-                        Location location = task.getResult();
-                        if (location == null) {
-                            requestNewLocationData();
-                        } else {
-                            publishLocationEvent(location);
-                        }
-                    }
-                });
-            } else {
-                Toast.makeText(this, "Please turn on" + " your location...", Toast.LENGTH_LONG).show();
-                Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                startActivity(intent);
-            }
-        } else {
-            // if permissions aren't available,
-            // request for permissions
-            requestPermissions();
-        }
-    }
-
-    @SuppressLint("MissingPermission")
-    private void requestNewLocationData() {
-
-        // Initializing LocationRequest
-        // object with appropriate methods
-        LocationRequest mLocationRequest = new LocationRequest();
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        mLocationRequest.setInterval(5);
-        mLocationRequest.setFastestInterval(0);
-        mLocationRequest.setNumUpdates(1);
-
-        // setting LocationRequest
-        // on FusedLocationClient
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-        mFusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper());
-    }
-
-    private LocationCallback mLocationCallback = new LocationCallback() {
-
-        @Override
-        public void onLocationResult(LocationResult locationResult) {
-            Location mLastLocation = locationResult.getLastLocation();
-            publishLocationEvent(mLastLocation);
-        }
-    };
-
-
-    // method to check for permissions
-    private boolean checkPermissions() {
-        return ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
-
-        // If we want background location
-        // on Android 10.0 and higher,
-        // use:
-        // ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_GRANTED
-    }
-
-    // method to request for permissions
-    private void requestPermissions() {
-        ActivityCompat.requestPermissions(this, new String[]{
-                Manifest.permission.ACCESS_COARSE_LOCATION,
-                Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_ID);
-    }
-
     // method to check
     // if location is enabled
     private boolean isLocationEnabled() {
@@ -2371,15 +2268,11 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-        if (requestCode == PERMISSION_ID) {
+        if (requestCode == LOCATION_PERMISSION_ID) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                getLastLocation();
+                publishLocationEvent();
             }
         }
     }
-
-
-
-
 }
 
