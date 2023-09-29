@@ -18,6 +18,7 @@ public class ZoomSdkHelper {
     public final static String PARAM_PASSWORD = "password";
     public final static String PARAM_SESSION_NAME = "session_name";
     public final static String PARAM_RENDER_TYPE = "render_type";
+    public final static String PARAM_TASK_ID = "task_id";
     public final static String PARAM_ALLOW_TO_INVITE_ATTENDEE = "allow_to_invite_attendee";
     public final static String PARAM_ALLOW_TO_SHARE_SCREEN = "allow_to_share_screen";
     public final static String PARAM_ALLOW_TO_MUTE_AUDIO = "allow_to_mute_audio";
