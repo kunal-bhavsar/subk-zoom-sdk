@@ -12,7 +12,7 @@ import us.zoom.sdk.ZoomVideoSDKRawDataMemoryMode;
 public class ZoomSdkInitializer {
     public static String initialize(Context context, boolean enableLog) throws ZoomInitializationException {
         ZoomVideoSDKInitParams params = new ZoomVideoSDKInitParams();
-        params.domain = "subk.co.in";
+        params.domain = "zoom.us";
         params.logFilePrefix = "subk";
         params.enableLog = enableLog;
         params.videoRawDataMemoryMode = ZoomVideoSDKRawDataMemoryMode.ZoomVideoSDKRawDataMemoryModeHeap;

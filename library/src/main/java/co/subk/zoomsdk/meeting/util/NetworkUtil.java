@@ -37,4 +37,16 @@ public class NetworkUtil {
 
         return connected;
     }
+
+    public static boolean isOnline(Context context) {
+        try {
+            ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+            //should check null because in airplane mode it will be null
+            return (networkInfo != null && networkInfo.isConnected());
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }

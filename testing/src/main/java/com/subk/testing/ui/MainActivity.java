@@ -1,5 +1,17 @@
-package com.subk.testing;
+package com.subk.testing.ui;
 
+import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_ALLOW_TO_END_MEETING;
+import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_ALLOW_TO_GET_LOCATION;
+import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_ALLOW_TO_HIDE_VIDEO;
+import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_ALLOW_TO_INVITE_ATTENDEE;
+import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_ALLOW_TO_MUTE_AUDIO;
+import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_ALLOW_TO_SHARE_SCREEN;
+import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_ALLOW_TO_TAKE_SCREENSHOT;
+import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_PASSWORD;
+import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_RENDER_TYPE;
+import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_SESSION_NAME;
+import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_TOKEN;
+import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_USERNAME;
 import static co.subk.zoomsdk.ZoomSdkHelper.RENDER_TYPE_ZOOMRENDERER;
 
 import android.Manifest;
@@ -18,9 +30,13 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import com.subk.testing.R;
 import com.subk.testing.databinding.ActivityMainBinding;
+import com.subk.testing.service.EventManagementService;
 
 import co.subk.zoomsdk.MeetingActivity;
+import co.subk.zoomsdk.ZoomSdkInitializer;
+import co.subk.zoomsdk.meeting.exceptions.ZoomInitializationException;
 
 public class MainActivity extends AppCompatActivity {
     protected final static int REQUEST_VIDEO_AUDIO_CODE = 1010;
@@ -42,28 +58,37 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
 
         binding.fab.setOnClickListener(view -> {
-            String sessionName = "Location Getter - Arul";
-            String name = "Rajan Sanghvi";
-            String password = "789789789";
-            String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHBfa2V5IjoiSFRvZVBWVkhSbmhONEV5dmQxc3Q3RmJyN1hJZkJLc08xQmEzIiwicm9sZV90eXBlIjoxLCJ0cGMiOiJMb2NhdGlvbiBHZXR0ZXIgLSBBcnVsIiwidmVyc2lvbiI6MSwiaWF0IjoxNjk1OTEzOTQyLCJleHAiOjE2OTU5MjExNDIsInVzZXJfaWRlbnRpdHkiOiIzNTQ4Iiwic2Vzc2lvbl9rZXkiOiI5YzcyZDU5YS0zYmM4LTQ1MTUtYTVmNC00NTgwZDkzMzM4NzciLCJwd2QiOiI3ODk3ODk3ODkiLCJjbG91ZF9yZWNvcmRpbmdfb3B0aW9uIjowLCJjbG91ZF9yZWNvcmRpbmdfZWxlY3Rpb24iOjF9._-f85ns4W50LLbTzw5CinhKdvNjx88_0atzWmbQHf28";
+            String sessionName = "Meeting on";
+            String name = "Kunal Bhavsar";
+            String password = "70369513";
+            String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHBfa2V5IjoiSFRvZVBWVkhSbmhONEV5dmQxc3Q3RmJyN1hJZkJLc08xQmEzIiwicm9sZV90eXBlIjoxLCJ0cGMiOiJNZWV0aW5nIG9uIiwidmVyc2lvbiI6MSwiaWF0IjoxNjk1OTk1ODM5LCJleHAiOjE2OTYwMDMwMzksInVzZXJfaWRlbnRpdHkiOiIzNTQ4Iiwic2Vzc2lvbl9rZXkiOiI2YjAzOTQ1Ny0yMzU3LTQyZDItODYzYy1lN2ExODE1MDhjNTIiLCJwd2QiOiI3MDM2OTUxMyIsImNsb3VkX3JlY29yZGluZ19vcHRpb24iOjAsImNsb3VkX3JlY29yZGluZ19lbGVjdGlvbiI6MX0.BdW-d98jtTOSEw3axPgiJVhoLxLX9KG6A6FIrZS2FS4";
 
             Intent intent = new Intent(MainActivity.this, MeetingActivity.class);
-            intent.putExtra("name", name);
-            intent.putExtra("tokens", token);
-            intent.putExtra("password", password);
-            intent.putExtra("sessionName", sessionName);
-            intent.putExtra("render_type", RENDER_TYPE_ZOOMRENDERER);
-            intent.putExtra("allow_to_invite_attendee", true);
-            intent.putExtra("allow_to_share_screen", true);
-            intent.putExtra("allow_to_mute_audio", true);
-            intent.putExtra("allow_to_hide_video", true);
-            intent.putExtra("allow_to_end_meeting", true);
-            intent.putExtra("allow_to_take_screenshot", true);
-            intent.putExtra("allow_to_get_location", true);
+            intent.putExtra(PARAM_USERNAME, name);
+            intent.putExtra(PARAM_TOKEN, token);
+            intent.putExtra(PARAM_PASSWORD, password);
+            intent.putExtra(PARAM_SESSION_NAME, sessionName);
+            intent.putExtra(PARAM_RENDER_TYPE, RENDER_TYPE_ZOOMRENDERER);
+            intent.putExtra(PARAM_ALLOW_TO_INVITE_ATTENDEE, true);
+            intent.putExtra(PARAM_ALLOW_TO_SHARE_SCREEN, true);
+            intent.putExtra(PARAM_ALLOW_TO_MUTE_AUDIO, true);
+            intent.putExtra(PARAM_ALLOW_TO_HIDE_VIDEO, true);
+            intent.putExtra(PARAM_ALLOW_TO_END_MEETING, true);
+            intent.putExtra(PARAM_ALLOW_TO_TAKE_SCREENSHOT, true);
+            intent.putExtra(PARAM_ALLOW_TO_GET_LOCATION, true);
             startActivity(intent);
         });
 
         requestPermission();
+
+        startService(new Intent(this, EventManagementService.class));
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        stopService(new Intent(this, EventManagementService.class));
     }
 
     protected boolean requestPermission() {

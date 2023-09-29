@@ -1,7 +1,7 @@
-package co.subk.zoomsdk.model;
+package co.subk.zoomsdk.event;
 
 public class InternetEvent {
-    public boolean isOnline;
+    public final boolean isOnline;
 
     public InternetEvent(boolean isOnline) {
         this.isOnline = isOnline;

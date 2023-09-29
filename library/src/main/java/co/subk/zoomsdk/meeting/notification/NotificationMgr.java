@@ -76,12 +76,9 @@ public class NotificationMgr {
                 .setContentText(contentText)
                 .setOnlyAlertOnce(true)
                 .setContentIntent(contentIntent);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Bitmap largeIcon = BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher);
-            builder.setLargeIcon(largeIcon);
-        }
-        Notification notification = builder.build();
-        return notification;
+        Bitmap largeIcon = BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher);
+        builder.setLargeIcon(largeIcon);
+        return builder.build();
     }
 
     public static void removeConfNotification() {
