@@ -5,12 +5,12 @@ public class LocationEvent {
     public final double longitude;
     public final float accuracy;
 
-    public final String meetingId;
+    public final String meetingEntityId;
 
-    public LocationEvent(double latitude, double longitude, float accuracy, String meetingId) {
+    public LocationEvent(double latitude, double longitude, float accuracy, String meetingEntityId) {
         this.latitude = latitude;
         this.longitude = longitude;
         this.accuracy = accuracy;
-        this.meetingId = meetingId;
+        this.meetingEntityId = meetingEntityId;
     }
 }

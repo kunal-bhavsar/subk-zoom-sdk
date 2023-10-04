@@ -8,7 +8,7 @@ import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_ALLOW_TO_INVITE_ATTENDEE;
 import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_ALLOW_TO_MUTE_AUDIO;
 import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_ALLOW_TO_SHARE_SCREEN;
 import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_ALLOW_TO_TAKE_SCREENSHOT;
-import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_MEETING_ID;
+import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_MEETING_ENTITY_ID;
 import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_PASSWORD;
 import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_RENDER_TYPE;
 import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_SESSION_NAME;
@@ -203,7 +203,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     protected String sessionName;
 
     protected String taskId;
-    protected String meetingId;
+    protected String meetingEntityId;
 
     protected boolean allowToInviteAttendee = false;
     protected boolean allowToShareScreen = false;
@@ -357,7 +357,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
             password = bundle.getString(PARAM_PASSWORD);
             sessionName = bundle.getString(PARAM_SESSION_NAME);
             taskId = bundle.getString(PARAM_TASK_ID);
-            meetingId = bundle.getString(PARAM_MEETING_ID);
+            meetingEntityId = bundle.getString(PARAM_MEETING_ENTITY_ID);
             token = bundle.getString(PARAM_TOKEN);
         }
 
@@ -414,7 +414,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
             meetingPwd = bundle.getString(PARAM_PASSWORD);
             sessionName = bundle.getString(PARAM_SESSION_NAME);
             taskId = bundle.getString(PARAM_TASK_ID);
-            meetingId = bundle.getString(PARAM_MEETING_ID);
+            meetingEntityId = bundle.getString(PARAM_MEETING_ENTITY_ID);
             renderType = bundle.getInt(PARAM_RENDER_TYPE, RENDER_TYPE_ZOOMRENDERER);
             allowToInviteAttendee = bundle.getBoolean(PARAM_ALLOW_TO_INVITE_ATTENDEE);
             allowToShareScreen = bundle.getBoolean(PARAM_ALLOW_TO_SHARE_SCREEN);
@@ -516,7 +516,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
             actionBarScroll.scrollTo(0, 0);
         } else {
             params.topMargin = 0;
-//            params.gravity = Gravity.RIGHT | Gravity.BOTTOM;  x
+//            params.gravity = Gravity.RIGHT | Gravity.BOTTOM;
 //            params.bottomMargin = getResources().getDimensionPixelSize(R.dimen.toolbar_bottom_margin);
         }
         actionBar.setLayoutParams(params);
@@ -1727,7 +1727,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         public void onLocationResult(LocationResult locationResult) {
             Location mLastLocation = locationResult.getLastLocation();
 
-            locationEvents.add(new LocationEvent(mLastLocation.getLatitude(), mLastLocation.getLongitude(), mLastLocation.getAccuracy(), meetingId));
+            locationEvents.add(new LocationEvent(mLastLocation.getLatitude(), mLastLocation.getLongitude(), mLastLocation.getAccuracy(), meetingEntityId));
         }
     };
 

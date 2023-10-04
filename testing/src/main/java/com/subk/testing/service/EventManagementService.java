@@ -39,7 +39,7 @@ public class EventManagementService extends Service {
     public void onDestroy() {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
-        stopMeetingService();
+//        stopMeetingService();
     }
 
     @Nullable
@@ -51,13 +51,13 @@ public class EventManagementService extends Service {
     @Subscribe
     public void onSessionStarted(SessionJoinedEvent sessionJoinedEvent) {
         Toast.makeText(this, "SessionJoinedEvent received with sessionId : " + sessionJoinedEvent.sessionId, Toast.LENGTH_SHORT).show();
-        startMeetingService();
+//        startMeetingService();
     }
 
     @Subscribe
     public void onSessionEnded(SessionEndedEvent sessionEndedEvent) {
         Toast.makeText(this, "SessionEndedEvent received", Toast.LENGTH_SHORT).show();
-        stopMeetingService();
+//        stopMeetingService();
     }
 
     @Subscribe
@@ -67,13 +67,13 @@ public class EventManagementService extends Service {
 
     @Subscribe
     public void onShareScreenEventReceived(ShareScreenEvent shareScreenEvent) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            boolean hasForegroundNotification = NotificationMgr.hasNotification(NotificationMgr.PT_NOTICICATION_ID);
-            if (!hasForegroundNotification) {
-                Intent intent = new Intent(this, NotificationService.class);
-                startForegroundService(intent);
-            }
-        }
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//            boolean hasForegroundNotification = NotificationMgr.hasNotification(NotificationMgr.PT_NOTICICATION_ID);
+//            if (!hasForegroundNotification) {
+//                Intent intent = new Intent(this, NotificationService.class);
+//                startForegroundService(intent);
+//            }
+//        }
     }
     private ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
