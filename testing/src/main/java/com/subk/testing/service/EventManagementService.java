@@ -75,40 +75,40 @@ public class EventManagementService extends Service {
 //            }
 //        }
     }
-    private ServiceConnection serviceConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            Log.d(TAG, "onServiceConnected:");
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            Log.d(TAG, "onServiceDisconnected:");
-        }
-    };
-
-    private void startMeetingService() {
-        Intent intent = new Intent(this, NotificationService.class);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            startForegroundService(intent);
-        } else {
-            startService(intent);
-        }
-        if (null != serviceConnection) {
-            bindService(intent, serviceConnection, BIND_AUTO_CREATE);
-        }
-    }
-
-    private void stopMeetingService() {
-        Intent intent = new Intent(this, NotificationService.class);
-        stopService(intent);
-        try {
-            if (null != serviceConnection) {
-                unbindService(serviceConnection);
-            }
-            serviceConnection = null;
-        } catch (Exception e) {
-            Log.e(TAG, e.toString());
-        }
-    }
+//    private ServiceConnection serviceConnection = new ServiceConnection() {
+//        @Override
+//        public void onServiceConnected(ComponentName name, IBinder service) {
+//            Log.d(TAG, "onServiceConnected:");
+//        }
+//
+//        @Override
+//        public void onServiceDisconnected(ComponentName name) {
+//            Log.d(TAG, "onServiceDisconnected:");
+//        }
+//    };
+//
+//    private void startMeetingService() {
+//        Intent intent = new Intent(this, NotificationService.class);
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//            startForegroundService(intent);
+//        } else {
+//            startService(intent);
+//        }
+//        if (null != serviceConnection) {
+//            bindService(intent, serviceConnection, BIND_AUTO_CREATE);
+//        }
+//    }
+//
+//    private void stopMeetingService() {
+//        Intent intent = new Intent(this, NotificationService.class);
+//        stopService(intent);
+//        try {
+//            if (null != serviceConnection) {
+//                unbindService(serviceConnection);
+//            }
+//            serviceConnection = null;
+//        } catch (Exception e) {
+//            Log.e(TAG, e.toString());
+//        }
+//    }
 }

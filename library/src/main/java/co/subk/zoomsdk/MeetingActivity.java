@@ -48,6 +48,7 @@ import co.subk.zoomsdk.meeting.util.AudioRawDataUtil;
 import co.subk.zoomsdk.meeting.util.SharePreferenceUtil;
 import us.zoom.sdk.ZoomVideoSDK;
 import us.zoom.sdk.ZoomVideoSDKErrors;
+import us.zoom.sdk.ZoomVideoSDKRawDataPipeDelegate;
 import us.zoom.sdk.ZoomVideoSDKShareHelper;
 import us.zoom.sdk.ZoomVideoSDKShareStatus;
 import us.zoom.sdk.ZoomVideoSDKUser;
@@ -57,7 +58,7 @@ import us.zoom.sdk.ZoomVideoSDKVideoHelper;
 import us.zoom.sdk.ZoomVideoSDKVideoResolution;
 import us.zoom.sdk.ZoomVideoSDKVideoView;
 
-public class MeetingActivity extends BaseMeetingActivity {
+public class MeetingActivity extends BaseMeetingActivity implements RawDataRenderer.RawDataStatusChangedDelegate {
 
     private static final String TAG = "MeetingActivity";
 
@@ -236,18 +237,12 @@ public class MeetingActivity extends BaseMeetingActivity {
         }
 
         ZoomVideoSDKUser mySelf = ZoomVideoSDK.getInstance().getSession().getMySelf();
-
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                username.setText(mySelf.getUserName());
-            }
-        }, 5000);
-
         subscribeVideoByUser(mySelf);
         refreshFps();
         CmdHelper.getInstance().addListener(lowerThirdHandler);
         CmdHelper.getInstance().addListener(emojiHandler);
+
+        new Handler().postDelayed(() -> username.setText(mySelf.getUserName()), 5000);
     }
 
     Runnable runnable = new Runnable() {
@@ -334,6 +329,8 @@ public class MeetingActivity extends BaseMeetingActivity {
             }
             user.getVideoPipe().unSubscribe(rawDataRenderer);
             int ret= user.getVideoPipe().subscribe(ZoomVideoSDKVideoResolution.VideoResolution_1080P, rawDataRenderer);
+            rawDataRenderer.setDelegate(this);
+            rawDataRenderer.setUser(user);
             if(ret!= ZoomVideoSDKErrors.Errors_Success)
             {
                 Toast.makeText(this,"subscribe error:"+ret,Toast.LENGTH_LONG).show();
@@ -360,14 +357,27 @@ public class MeetingActivity extends BaseMeetingActivity {
                 mActiveUser.getVideoCanvas().unSubscribe(zoomCanvas);
                 mActiveUser.getShareCanvas().unSubscribe(zoomCanvas);
             }
-            user.getShareCanvas().subscribe(zoomCanvas, ZoomVideoSDKVideoAspect.ZoomVideoSDKVideoAspect_Original);
+
+            if (ZoomVideoSDK.getInstance().getShareHelper().isOtherSharing()) {
+                user.getShareCanvas().subscribe(zoomCanvas, ZoomVideoSDKVideoAspect.ZoomVideoSDKVideoAspect_Original);
+            }
         } else {
             rawDataRenderer.setVideoAspectModel(RawDataRenderer.VideoAspect_Original);
             rawDataRenderer.subscribe(user, ZoomVideoSDKVideoResolution.VideoResolution_1080P, true);
         }
+
         mActiveUser = user;
         onUserActive(mActiveUser);
         btnViewShare.setVisibility(View.GONE);
+    }
+
+    public void onRawDataStatusChanged(ZoomVideoSDKRawDataPipeDelegate.RawDataStatus status, ZoomVideoSDKUser user) {
+        if (user == mActiveUser) {
+            if (status == ZoomVideoSDKRawDataPipeDelegate.RawDataStatus.RawData_On) {
+                refreshRotation();
+            }
+            updateVideoAvatar(status == ZoomVideoSDKRawDataPipeDelegate.RawDataStatus.RawData_On);
+        }
     }
 
     private void updateVideoAvatar(boolean isOn) {

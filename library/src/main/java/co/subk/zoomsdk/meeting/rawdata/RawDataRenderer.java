@@ -30,6 +30,20 @@ public class RawDataRenderer extends ZoomSurfaceViewRender implements ZoomVideoS
 
     private boolean isSubscribeShare = false;
 
+    private RawDataStatusChangedDelegate delegate;
+
+    public interface RawDataStatusChangedDelegate {
+        void onRawDataStatusChanged(RawDataStatus status, ZoomVideoSDKUser user);
+    }
+
+    public void setDelegate(RawDataStatusChangedDelegate delegate) {
+        this.delegate = delegate;
+    }
+
+    public void setUser(ZoomVideoSDKUser user) {
+        this.user = user;
+    }
+
     public RawDataRenderer(Context context) {
         super(context);
         mContext = context;
@@ -75,6 +89,9 @@ public class RawDataRenderer extends ZoomSurfaceViewRender implements ZoomVideoS
     public void onRawDataStatusChanged(RawDataStatus status) {
         if (status == RawDataStatus.RawData_Off) {
             clearImage(0.0F, 0.0F, 0.0F, 1.0F);
+        }
+        if (null != delegate) {
+            delegate.onRawDataStatusChanged(status, user);
         }
     }
 
