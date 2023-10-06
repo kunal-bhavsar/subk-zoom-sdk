@@ -1932,11 +1932,18 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                 iconShare.setImageResource(R.drawable.icon_stop_share);
             }
         } else if (status == ZoomVideoSDKShareStatus.ZoomVideoSDKShareStatus_Stop) {
-            currentShareUser = null;
-            iconShare.setImageResource(R.drawable.icon_share);
-            shareViewGroup.setVisibility(View.GONE);
-            if (null != shareToolbar) {
-                shareToolbar.destroy();
+             if (userInfo == session.getMySelf()) {
+                /* only self share stop should update the ui */
+                iconShare.setImageResource(R.drawable.icon_share);
+                shareViewGroup.setVisibility(View.GONE);
+
+                if (null != shareToolbar) {
+                    shareToolbar.destroy();
+                }
+            }
+
+            if (currentShareUser == userInfo) {
+                currentShareUser = null;
             }
         }
     }
