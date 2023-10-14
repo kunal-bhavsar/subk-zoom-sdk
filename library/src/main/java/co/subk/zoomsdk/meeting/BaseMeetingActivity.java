@@ -32,6 +32,7 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Rect;
+import android.hardware.display.DisplayManager;
 import android.location.Location;
 import android.location.LocationManager;
 import android.media.projection.MediaProjectionManager;
@@ -95,6 +96,8 @@ import co.subk.zoomsdk.event.ShareScreenEvent;
 import co.subk.zoomsdk.meeting.feedback.data.FeedbackDataManager;
 import co.subk.zoomsdk.meeting.feedback.view.FeedbackResultDialog;
 import co.subk.zoomsdk.meeting.feedback.view.FeedbackSubmitDialog;
+import co.subk.zoomsdk.meeting.notification.NotificationMgr;
+import co.subk.zoomsdk.meeting.notification.NotificationService;
 import co.subk.zoomsdk.meeting.screenshare.ShareToolbar;
 import co.subk.zoomsdk.meeting.util.ErrorMsgUtil;
 import co.subk.zoomsdk.meeting.util.NetworkUtil;
@@ -103,6 +106,7 @@ import co.subk.zoomsdk.meeting.util.UserHelper;
 import co.subk.zoomsdk.meeting.util.ZMAdapterOsBugHelper;
 import co.subk.zoomsdk.meeting.view.ChatMsgAdapter;
 import co.subk.zoomsdk.meeting.view.KeyBoardLayout;
+import co.subk.zoomsdk.meeting.view.LowerThirdLayout;
 import co.subk.zoomsdk.meeting.view.UserVideoAdapter;
 import us.zoom.sdk.ZoomVideoSDK;
 import us.zoom.sdk.ZoomVideoSDKAnnotationHelper;
@@ -237,8 +241,8 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
     protected boolean showCameraControl = false;
 
-    protected LinearLayout panelRecordBtn;
-    protected ZoomVideoSDKRecordingStatus status = ZoomVideoSDKRecordingStatus.Recording_Stop;
+//    protected LinearLayout panelRecordBtn;
+//    protected ZoomVideoSDKRecordingStatus status = ZoomVideoSDKRecordingStatus.Recording_Stop;
 
     private BroadcastReceiver mNetworkReceiver;
     private Dialog internetAlertDialog;
@@ -248,7 +252,8 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     ArrayList<LocationEvent> locationEvents = new ArrayList<>();
     @NonNull
     private List<CmdLowerThirdRequest> lowerThirdRequests = new ArrayList<>();
-    // private LowerThirdLayout lowerThirdLayout;
+
+    private LowerThirdLayout lowerThirdLayout;
 
     protected CmdHandler emojiHandler = new CmdHandler() {
         @Override
@@ -319,12 +324,11 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         displayMetrics = new DisplayMetrics();
         display.getMetrics(displayMetrics);
 
-        Bundle bundle = getIntent().getExtras();
-        setupZoom(bundle);
+        setupZoom();
 
         session = ZoomVideoSDK.getInstance().getSession();
         ZoomVideoSDK.getInstance().addListener(BaseMeetingActivity.this);
-        parseIntent(bundle);
+        parseIntent();
         initView();
         initMeeting();
         updateSessionInfo();
@@ -350,7 +354,8 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         }
     }
 
-    public void setupZoom(Bundle bundle) {
+    public void setupZoom() {
+        Bundle bundle = getIntent().getExtras();
         String sessionName = "", name = "", password = "", token = "";
         if (null != bundle) {
             name = bundle.getString(PARAM_USERNAME);
@@ -388,11 +393,26 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         }
     }
 
+    DisplayManager.DisplayListener mDisplayListener = new DisplayManager.DisplayListener() {
+        @Override
+        public void onDisplayAdded(int displayId) {
+        }
+
+        @Override
+        public void onDisplayChanged(int displayId) {
+            refreshRotation();
+        }
+
+        @Override
+        public void onDisplayRemoved(int displayId) {
+        }
+    };
+
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         Bundle bundle = intent.getExtras();
-        parseIntent(bundle);
+        parseIntent();
     }
 
     @Override
@@ -401,6 +421,8 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         isActivityPaused = true;
         unSubscribe();
         adapter.clear(false);
+        DisplayManager displayManager = (DisplayManager) getSystemService(Context.DISPLAY_SERVICE);
+        displayManager.unregisterDisplayListener(mDisplayListener);
     }
 
     @Override
@@ -408,7 +430,8 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         super.onStop();
     }
 
-    protected void parseIntent(Bundle bundle) {
+    protected void parseIntent() {
+        Bundle bundle = getIntent().getExtras();
         if (null != bundle) {
             myDisplayName = bundle.getString(PARAM_USERNAME);
             meetingPwd = bundle.getString(PARAM_PASSWORD);
@@ -445,6 +468,8 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                 refreshUserListAdapter();
             }
         }
+        DisplayManager displayManager = (DisplayManager) getSystemService(Context.DISPLAY_SERVICE);
+        displayManager.registerDisplayListener(mDisplayListener, handler);
     }
 
     protected void resumeSubscribe() {
@@ -631,12 +656,12 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
     private void showLowerThird(@Nullable CmdLowerThirdRequest request) {
         if (request != null && SharePreferenceUtil.readBoolean(this, LowerThirdSettingBottomFragment.LOWER_THIRD_KEY, false)) {
-            // lowerThirdLayout.setVisibility(View.VISIBLE);
-            // lowerThirdLayout.updateNameTv(request.name);
-            // lowerThirdLayout.updateCompanyTv(request.companyName);
-            // lowerThirdLayout.updateColor(request.rgb);
+             lowerThirdLayout.setVisibility(View.GONE); // set to GONE here to remove this ViewGroup from UI
+             lowerThirdLayout.updateNameTv(request.name);
+             lowerThirdLayout.updateCompanyTv(request.companyName);
+             lowerThirdLayout.updateColor(request.rgb);
         } else {
-            // lowerThirdLayout.setVisibility(View.GONE);
+             lowerThirdLayout.setVisibility(View.GONE);
         }
     }
 
@@ -663,11 +688,19 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         }
 
         EventBus.getDefault().post(new ShareScreenEvent());
+        if (Build.VERSION.SDK_INT >= 29) {
+            //MediaProjection  need service with foregroundServiceType mediaProjection in android Q
+            boolean hasForegroundNotification = NotificationMgr.hasNotification(getApplicationContext(), NotificationMgr.PT_NOTICICATION_ID);
+            if (!hasForegroundNotification) {
+                Intent intent = new Intent(this, NotificationService.class);
+                startForegroundService(intent);
+            }
+        }
 
         int ret = ZoomVideoSDK.getInstance().getShareHelper().startShareScreen(data);
         if (ret == ZoomVideoSDKErrors.Errors_Success) {
             /**Added by arul to switch Camera Status*/
-            switchVideoStatusonScreenShare();
+            switchVideoStatusOnScreenShare();
             shareToolbar.showToolbar();
             showDesktop();
         }
@@ -813,10 +846,10 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         shareViewGroup = findViewById(R.id.share_view_group);
         shareImageView = findViewById(R.id.share_image);
 
-        panelRecordBtn = findViewById(R.id.panelRecordBtn);
+//        panelRecordBtn = findViewById(R.id.panelRecordBtn);
 
-        // lowerThirdLayout = findViewById(R.id.layout_lower_third);
-        // lowerThirdLayout.setVisibility(View.GONE);
+        lowerThirdLayout = findViewById(R.id.layout_lower_third);
+        lowerThirdLayout.setVisibility(View.GONE);
 
         onKeyBoardChange(false, 0, 30);
         final int margin = (int) (5 * displayMetrics.scaledDensity);
@@ -975,7 +1008,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         }
     }
 
-    public void switchVideoStatusonScreenShare() {
+    public void switchVideoStatusOnScreenShare() {
         ZoomVideoSDKUser zoomSDKUserInfo = session.getMySelf();
         if (null == zoomSDKUserInfo)
             return;
@@ -985,7 +1018,6 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
             ZoomVideoSDK.getInstance().getVideoHelper().startVideo();
         }
     }
-
 
     public void onClickShare(View view) {
         ZoomVideoSDKShareHelper sdkShareHelper = ZoomVideoSDK.getInstance().getShareHelper();
@@ -1003,7 +1035,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         if (currentShareUser == session.getMySelf()) {
             sdkShareHelper.stopShare();
             /**Added by arul to switch Camera Status*/
-            switchVideoStatusonScreenShare();
+            switchVideoStatusOnScreenShare();
             return;
         }
 
@@ -1055,9 +1087,6 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     }
 
     public void onClickAudio(View view) {
-
-        // EventBus.getDefault().post(new CartEvent("new Cart Item audio"));
-
         ZoomVideoSDKUser zoomSDKUserInfo = session.getMySelf();
         if (null == zoomSDKUserInfo)
             return;
@@ -1075,7 +1104,6 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     public void onClickMoreSpeaker() {
         boolean speaker = ZoomVideoSDK.getInstance().getAudioHelper().getSpeakerStatus();
         ZoomVideoSDK.getInstance().getAudioHelper().setSpeaker(!speaker);
-
     }
 
     public void onClickMoreSwitchCamera() {
@@ -1088,12 +1116,12 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         }
     }
 
-    private void onClickStartCloudRecord() {
-        int error = ZoomVideoSDK.getInstance().getRecordingHelper().startCloudRecording();
-        if (error != ZoomVideoSDKErrors.Errors_Success) {
-            Toast.makeText(this, "start cloud record error: " + ErrorMsgUtil.getMsgByErrorCode(error) + ". Error code: " + error, Toast.LENGTH_LONG).show();
-        }
-    }
+//    private void onClickStartCloudRecord() {
+//        int error = ZoomVideoSDK.getInstance().getRecordingHelper().startCloudRecording();
+//        if (error != ZoomVideoSDKErrors.Errors_Success) {
+//            Toast.makeText(this, "start cloud record error: " + ErrorMsgUtil.getMsgByErrorCode(error) + ". Error code: " + error, Toast.LENGTH_LONG).show();
+//        }
+//    }
 
     private boolean isSpeakerOn() {
         return ZoomVideoSDK.getInstance().getAudioHelper().getSpeakerStatus();
@@ -1249,7 +1277,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
             feedbackText = getResources().getString(R.string.more_feedback_session);
         }
         tvFeedback.setText(feedbackText);
-        llFeedback.setVisibility(View.GONE);
+        llFeedback.setVisibility(View.GONE); // added this to hide feedback section
         llFeedback.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -1272,172 +1300,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
             builder.findViewById(R.id.btn_down).setOnClickListener(cameraControlListener);
             builder.findViewById(R.id.btn_zoom_in).setOnClickListener(cameraControlListener);
             builder.findViewById(R.id.btn_zoom_out).setOnClickListener(cameraControlListener);*/
-
-
-            builder.findViewById(R.id.btn_request).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-
-                    List<ZoomVideoSDKUser> users = session.getRemoteUsers();
-                    if (null == users || users.isEmpty()) {
-                        return;
-                    }
-                    ZoomVideoSDKUser user = feccUser;
-                    int ret = 0;
-                    if (null == user && view.getId() != R.id.btn_request) {
-                        Toast.makeText(BaseMeetingActivity.this, "need request and approve ", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                    int range = 100;
-
-
-                    if (null == user) {
-                        user = users.get(0);
-                    }
-                    ret = user.getRemoteCameraControlHelper().requestControlRemoteCamera();
-
-                }
-            });
-            builder.findViewById(R.id.btn_give_up).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-
-                    List<ZoomVideoSDKUser> users = session.getRemoteUsers();
-                    if (null == users || users.isEmpty()) {
-                        return;
-                    }
-                    ZoomVideoSDKUser user = feccUser;
-                    int ret = 0;
-                    if (null == user && view.getId() != R.id.btn_request) {
-                        Toast.makeText(BaseMeetingActivity.this, "need request and approve ", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                    int range = 100;
-
-
-                    ret = user.getRemoteCameraControlHelper().giveUpControlRemoteCamera();
-                    if (ret == 0) {
-                        feccUser = null;
-                    }
-                }
-            });
-            builder.findViewById(R.id.btn_left).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-
-                    List<ZoomVideoSDKUser> users = session.getRemoteUsers();
-                    if (null == users || users.isEmpty()) {
-                        return;
-                    }
-                    ZoomVideoSDKUser user = feccUser;
-                    int ret = 0;
-                    if (null == user && view.getId() != R.id.btn_request) {
-                        Toast.makeText(BaseMeetingActivity.this, "need request and approve ", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                    int range = 100;
-
-
-                    ret = user.getRemoteCameraControlHelper().turnLeft(range);
-                }
-            });
-            builder.findViewById(R.id.btn_right).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    List<ZoomVideoSDKUser> users = session.getRemoteUsers();
-                    if (null == users || users.isEmpty()) {
-                        return;
-                    }
-                    ZoomVideoSDKUser user = feccUser;
-                    int ret = 0;
-                    if (null == user && view.getId() != R.id.btn_request) {
-                        Toast.makeText(BaseMeetingActivity.this, "need request and approve ", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                    int range = 100;
-
-
-                    ret = user.getRemoteCameraControlHelper().turnRight(range);
-                }
-            });
-            builder.findViewById(R.id.btn_up).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    List<ZoomVideoSDKUser> users = session.getRemoteUsers();
-                    if (null == users || users.isEmpty()) {
-                        return;
-                    }
-                    ZoomVideoSDKUser user = feccUser;
-                    int ret = 0;
-                    if (null == user && view.getId() != R.id.btn_request) {
-                        Toast.makeText(BaseMeetingActivity.this, "need request and approve ", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                    int range = 100;
-
-
-                    ret = user.getRemoteCameraControlHelper().turnUp(range);
-                }
-            });
-            builder.findViewById(R.id.btn_down).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    List<ZoomVideoSDKUser> users = session.getRemoteUsers();
-                    if (null == users || users.isEmpty()) {
-                        return;
-                    }
-                    ZoomVideoSDKUser user = feccUser;
-                    int ret = 0;
-                    if (null == user && view.getId() != R.id.btn_request) {
-                        Toast.makeText(BaseMeetingActivity.this, "need request and approve ", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                    int range = 100;
-
-
-                    ret = user.getRemoteCameraControlHelper().turnDown(range);
-                }
-            });
-            builder.findViewById(R.id.btn_zoom_in).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    List<ZoomVideoSDKUser> users = session.getRemoteUsers();
-                    if (null == users || users.isEmpty()) {
-                        return;
-                    }
-                    ZoomVideoSDKUser user = feccUser;
-                    int ret = 0;
-                    if (null == user && view.getId() != R.id.btn_request) {
-                        Toast.makeText(BaseMeetingActivity.this, "need request and approve ", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                    int range = 100;
-
-
-                    ret = user.getRemoteCameraControlHelper().zoomIn(range);
-                }
-            });
-            builder.findViewById(R.id.btn_zoom_out).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    List<ZoomVideoSDKUser> users = session.getRemoteUsers();
-                    if (null == users || users.isEmpty()) {
-                        return;
-                    }
-                    ZoomVideoSDKUser user = feccUser;
-                    int ret = 0;
-                    if (null == user && view.getId() != R.id.btn_request) {
-                        Toast.makeText(BaseMeetingActivity.this, "need request and approve ", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                    int range = 100;
-
-
-                    ret = user.getRemoteCameraControlHelper().zoomOut(range);
-                }
-            });
         }
-
 
         builder.setCanceledOnTouchOutside(true);
         builder.setCancelable(true);
@@ -1519,9 +1382,9 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     }
 
 
-    private boolean canStartRecord() {
-        return ZoomVideoSDK.getInstance().getRecordingHelper().canStartRecording() == ZoomVideoSDKErrors.Errors_Success;
-    }
+//    private boolean canStartRecord() {
+//        return ZoomVideoSDK.getInstance().getRecordingHelper().canStartRecording() == ZoomVideoSDKErrors.Errors_Success;
+//    }
 
     private void showRaiseHand(final Dialog dialog) {
         final LinearLayout llRaiseHand = dialog.findViewById(R.id.llRaiseHand);
@@ -1590,7 +1453,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
     private void showLowerThirdBtn(@NonNull final Dialog dialog) {
         final View llLowerThird = dialog.findViewById(R.id.llLowerThird);
-        llLowerThird.setVisibility(View.GONE);
+        llLowerThird.setVisibility(View.GONE); // setting this to GONE to hide it on stakeholders request
         llLowerThird.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -1684,6 +1547,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         EventBus.getDefault().post(new SessionJoinedEvent(taskId, ZoomVideoSDK.getInstance().getSession().getSessionID()));
     }
 
+    @SuppressLint("MissingPermission")
     private void publishLocationEvent() {
         if (!allowToCaptureLocation) {
             return;
@@ -1756,7 +1620,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
             btnViewShare.setVisibility(View.GONE);
         } else if (errorcode == ZoomVideoSDKErrors.Errors_Session_Reconncting) {
             //start preview
-            subscribeVideoByUser(session.getMySelf());
+//            subscribeVideoByUser(session.getMySelf());
         } else {
             ZoomVideoSDK.getInstance().leaveSession(false);
             finish();
@@ -1776,7 +1640,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     public void onUserJoin(ZoomVideoSDKUserHelper userHelper, List<ZoomVideoSDKUser> userList) {
 
         Log.d(TAG, "onUserJoin " + userList.size());
-        //updateVideoListLayout();
+//        updateVideoListLayout();
         if (!isActivityPaused) {
             adapter.onUserJoin(userList);
         }
@@ -1903,8 +1767,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
             checkMoreAction();
         }
 
-        if (isVisitFirstTime)
-        {
+        if (isVisitFirstTime) {
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -1913,15 +1776,9 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                 }
             }, 3000);
         }
-        else
-        {
+        else {
             adapter.onUserMuteUnmuteChanged(userList,userVideoList);
         }
-
-
-
-
-
     }
 
     @Override
@@ -1969,7 +1826,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
     @Override
     public void onChatPrivilegeChanged(ZoomVideoSDKChatHelper chatHelper, ZoomVideoSDKChatPrivilegeType currentPrivilege) {
-
+        Log.d(TAG, "onChatPrivilegeChanged currentPrivilege: " + currentPrivilege);
     }
 
     @Override
@@ -2066,7 +1923,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
     @Override
     public void onCloudRecordingStatus(ZoomVideoSDKRecordingStatus status, ZoomVideoSDKRecordingConsentHandler handler) {
-
+        Log.d(TAG, "onCloudRecordingStatus status: " + status + ", handle: " + handler);
     }
 
     /*@Override
@@ -2094,6 +1951,8 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                 videoPipe.subscribe(ZoomVideoSDKVideoResolution.VideoResolution_720P, getMultiStreamDelegate());
             } else {
                 videoPipe.unSubscribe(getMultiStreamDelegate());
+                //subscribe main user
+                subscribeVideoByUser(user);
             }
         }
     }
@@ -2106,6 +1965,8 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                 canvas.subscribe(getMultiStreamVideoView(), ZoomVideoSDKVideoAspect.ZoomVideoSDKVideoAspect_PanAndScan);
             } else {
                 canvas.unSubscribe(getMultiStreamVideoView());
+                //subscribe main user
+                subscribeVideoByUser(user);
             }
         }
     }
@@ -2169,22 +2030,23 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
     @Override
     public void onUserRecordingConsent(ZoomVideoSDKUser user) {
-
+        Log.d(TAG, "onUserRecordingConsent:" + user.getUserName());
     }
 
     @Override
     public void onCallCRCDeviceStatusChanged(ZoomVideoSDKCRCCallStatus status) {
-
+        Log.d(TAG, "onCallOutCRCDeviceStateChanged:" + status);
     }
 
     @Override
     public void onVideoCanvasSubscribeFail(ZoomVideoSDKVideoSubscribeFailReason fail_reason, ZoomVideoSDKUser pUser, ZoomVideoSDKVideoView view) {
+        Log.d(TAG, "onVideoCanvasSubscribeFail:" + fail_reason + ":" + view + ":" + pUser.getUserName());
 
     }
 
     @Override
     public void onShareCanvasSubscribeFail(ZoomVideoSDKVideoSubscribeFailReason fail_reason, ZoomVideoSDKUser pUser, ZoomVideoSDKVideoView view) {
-
+        Log.d(TAG, "onShareCanvasSubscribeFail:" + fail_reason + ":" + view + ":" + pUser.getUserName());
     }
 
     @Override

@@ -18,8 +18,8 @@
 
         <ImageView
             android:id="@+id/img_share_audio"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:src="@drawable/zm_screenshare_audio_disable" />
 
         <TextView
@@ -39,8 +39,8 @@
         android:orientation="vertical">
 
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:src="@drawable/zm_screenshare_stop" />
 
         <TextView

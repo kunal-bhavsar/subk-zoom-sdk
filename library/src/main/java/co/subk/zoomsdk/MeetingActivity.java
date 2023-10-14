@@ -4,7 +4,9 @@ import static co.subk.zoomsdk.ZoomSdkHelper.RENDER_TYPE_OPENGLES;
 import static co.subk.zoomsdk.ZoomSdkHelper.RENDER_TYPE_ZOOMRENDERER;
 
 import android.Manifest;
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -13,6 +15,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.Looper;
 import android.text.format.DateFormat;
 import android.util.Log;
@@ -43,6 +46,7 @@ import co.subk.zoomsdk.meeting.BaseMeetingActivity;
 import co.subk.zoomsdk.meeting.LowerThirdSettingFragment;
 import co.subk.zoomsdk.meeting.feedback.data.FeedbackDataManager;
 import co.subk.zoomsdk.meeting.feedback.view.FeedbackSubmitDialog;
+import co.subk.zoomsdk.meeting.notification.NotificationService;
 import co.subk.zoomsdk.meeting.rawdata.RawDataRenderer;
 import co.subk.zoomsdk.meeting.util.AudioRawDataUtil;
 import co.subk.zoomsdk.meeting.util.SharePreferenceUtil;
@@ -100,6 +104,7 @@ public class MeetingActivity extends BaseMeetingActivity implements RawDataRende
     public void onSessionJoin() {
         super.onSessionJoin();
 //        audioRawDataUtil.subscribeAudio();
+        startMeetingService();
     }
 
     @Override
@@ -122,6 +127,43 @@ public class MeetingActivity extends BaseMeetingActivity implements RawDataRende
         }
     }
 
+    private ServiceConnection serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            Log.d(TAG, "onServiceConnected:");
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            Log.d(TAG, "onServiceDisconnected:");
+        }
+    };
+
+    private void startMeetingService() {
+        Intent intent = new Intent(this, NotificationService.class);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(intent);
+        } else {
+            startService(intent);
+        }
+        if (null != serviceConnection) {
+            bindService(intent, serviceConnection, BIND_AUTO_CREATE);
+        }
+    }
+
+    private void stopMeetingService() {
+        Intent intent = new Intent(this, NotificationService.class);
+        stopService(intent);
+        try {
+            if (null != serviceConnection) {
+                unbindService(serviceConnection);
+            }
+            serviceConnection = null;
+        } catch (Exception e) {
+            Log.e(TAG, e.toString());
+        }
+    }
+
     @Override
     public void onSessionLeave() {
         super.onSessionLeave();
@@ -134,6 +176,7 @@ public class MeetingActivity extends BaseMeetingActivity implements RawDataRende
     @Override
     public void finish() {
         super.finish();
+        stopMeetingService();
     }
 
     @Override
@@ -188,18 +231,27 @@ public class MeetingActivity extends BaseMeetingActivity implements RawDataRende
         }
     };
 
+    private int resolution = -1;
+    private int aspectMode = -1;
+
     private void changeResolution() {
+        resolution++;
+        if (resolution > ZoomVideoSDKVideoResolution.VideoResolution_1080P.getValue()) {
+            resolution = 0;
+        }
+        aspectMode++;
+        if (aspectMode >= ZoomVideoSDKVideoAspect.values().length) {
+            aspectMode = 0;
+        }
+        ZoomVideoSDKVideoResolution size = ZoomVideoSDKVideoResolution.fromValue(resolution);
+        Log.d(TAG, "changeResolution:" + size + " aspectMode:" + aspectMode);
         if (renderType == RENDER_TYPE_OPENGLES) {
-            int resolution = new Random().nextInt(3);
-            resolution++;
-            if (resolution > ZoomVideoSDKVideoResolution.VideoResolution_360P.getValue()) {
-                resolution = 0;
-            }
-            ZoomVideoSDKVideoResolution size = ZoomVideoSDKVideoResolution.fromValue(resolution);
-            Log.d(TAG, "changeResolution:" + size);
             if (null == currentShareUser && null != mActiveUser) {
                 mActiveUser.getVideoPipe().subscribe(size, rawDataRenderer);
             }
+        } else if (renderType == RENDER_TYPE_ZOOMRENDERER) {
+            mActiveUser.getVideoCanvas().setResolution(zoomCanvas, size);
+            mActiveUser.getVideoCanvas().setAspectMode(zoomCanvas, ZoomVideoSDKVideoAspect.values()[aspectMode]);
         }
     }
 
@@ -313,10 +365,8 @@ public class MeetingActivity extends BaseMeetingActivity implements RawDataRende
             }
             user.getVideoCanvas().unSubscribe(zoomCanvas);
             int ret=user.getVideoCanvas().subscribe(zoomCanvas, aspect);
-            if(ret!= ZoomVideoSDKErrors.Errors_Success)
-
-            {
-                Toast.makeText(this,"subscribe error:"+ret,Toast.LENGTH_LONG).show();
+            if(ret!= ZoomVideoSDKErrors.Errors_Success) {
+                Toast.makeText(this,"subscribe error:" + ret, Toast.LENGTH_LONG).show();
             }
         } else {
             if (ZoomVideoSDK.getInstance().isInSession()) {
@@ -331,8 +381,7 @@ public class MeetingActivity extends BaseMeetingActivity implements RawDataRende
             int ret= user.getVideoPipe().subscribe(ZoomVideoSDKVideoResolution.VideoResolution_1080P, rawDataRenderer);
             rawDataRenderer.setDelegate(this);
             rawDataRenderer.setUser(user);
-            if(ret!= ZoomVideoSDKErrors.Errors_Success)
-            {
+            if(ret!= ZoomVideoSDKErrors.Errors_Success) {
                 Toast.makeText(this,"subscribe error:"+ret,Toast.LENGTH_LONG).show();
             }
         }
@@ -381,6 +430,9 @@ public class MeetingActivity extends BaseMeetingActivity implements RawDataRende
     }
 
     private void updateVideoAvatar(boolean isOn) {
+        if (!ZoomVideoSDK.getInstance().isInSession()) {
+            isOn = true;//show preview
+        }
         if (isOn) {
             videoOffView.setVisibility(View.GONE);
         } else {
@@ -487,7 +539,9 @@ public class MeetingActivity extends BaseMeetingActivity implements RawDataRende
                 }
             }
         } else if (status == ZoomVideoSDKShareStatus.ZoomVideoSDKShareStatus_Stop) {
-            currentShareUser = null;
+            if (currentShareUser == userInfo) {
+                currentShareUser = null;
+            }
             subscribeVideoByUser(userInfo);
             if (adapter.getItemCount() == 0) {
                 adapter.addAll();
@@ -576,13 +630,13 @@ public class MeetingActivity extends BaseMeetingActivity implements RawDataRende
     public void onBackPressed() {
     }
 
-//    @Override
-//    protected ZoomVideoSDKRawDataPipeDelegate getMultiStreamDelegate() {
-//        return rawDataRenderer;
-//    }
-//
-//    @Override
-//    protected ZoomVideoSDKVideoView getMultiStreamVideoView() {
-//        return zoomCanvas;
-//    }
+    @Override
+    protected ZoomVideoSDKRawDataPipeDelegate getMultiStreamDelegate() {
+        return rawDataRenderer;
+    }
+
+    @Override
+    protected ZoomVideoSDKVideoView getMultiStreamVideoView() {
+        return zoomCanvas;
+    }
 }

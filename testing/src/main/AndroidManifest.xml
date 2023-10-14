@@ -76,10 +76,10 @@
         <service
             android:name=".service.EventManagementService"
             android:exported="false" />
-<!--        <service-->
-<!--            android:name=".service.NotificationService"-->
-<!--            android:exported="false"-->
-<!--            android:foregroundServiceType="mediaProjection|microphone" />-->
+        <service
+            android:name="co.subk.zoomsdk.meeting.notification.NotificationService"
+            android:exported="false"
+            android:foregroundServiceType="mediaProjection|microphone" />
         <receiver
             android:name="co.subk.zoomsdk.NetworkChangeReceiver"
             android:exported="true" >
