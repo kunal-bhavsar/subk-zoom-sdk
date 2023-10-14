@@ -15,7 +15,6 @@ import android.service.notification.StatusBarNotification;
 import androidx.core.app.NotificationCompat;
 
 import co.subk.zoomsdk.R;
-import co.subk.zoomsdk.ZoomApplication;
 import co.subk.zoomsdk.meeting.IntegrationActivity;
 
 
@@ -25,10 +24,9 @@ public class NotificationMgr {
 
     public static final String ZOOM_NOTIFICATION_CHANNEL_ID = "Video_sdk_notification_channel_id";
 
-    public static boolean hasNotification(int notificationId) {
+    public static boolean hasNotification(Context context, int notificationId) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             try {
-                Context context = ZoomApplication.getInstance();
                 NotificationManager notificationMgr = (NotificationManager) context
                         .getSystemService(Activity.NOTIFICATION_SERVICE);
                 if (notificationMgr != null) {
@@ -46,11 +44,7 @@ public class NotificationMgr {
         return false;
     }
 
-    public static Notification getConfNotification() {
-
-        Context context = ZoomApplication.getInstance();
-        if (context == null)
-            return null;
+    public static Notification getConfNotification(Context context) {
         Intent clickIntent = new Intent(context, IntegrationActivity.class);
         clickIntent.setAction(IntegrationActivity.ACTION_RETURN_TO_CONF);
         int flags=PendingIntent.FLAG_CANCEL_CURRENT;
@@ -81,10 +75,7 @@ public class NotificationMgr {
         return builder.build();
     }
 
-    public static void removeConfNotification() {
-        Context context = ZoomApplication.getInstance();
-        if (context == null)
-            return;
+    public static void removeConfNotification(Context context) {
         NotificationManager notificationMgr = (NotificationManager) context.getSystemService(Activity.NOTIFICATION_SERVICE);
         notificationMgr.cancel(NotificationMgr.PT_NOTICICATION_ID);
     }

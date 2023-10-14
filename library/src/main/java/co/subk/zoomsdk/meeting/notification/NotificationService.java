@@ -1,4 +1,4 @@
-package com.subk.testing.service;
+package co.subk.zoomsdk.meeting.notification;
 
 import android.app.Notification;
 import android.app.Service;
@@ -7,8 +7,7 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
 
-import co.subk.zoomsdk.ZoomSdkHelper;
-import co.subk.zoomsdk.meeting.notification.NotificationMgr;
+import us.zoom.sdk.ZoomVideoSDK;
 
 public class NotificationService extends Service {
     private static final String TAG="NotificationService";
@@ -21,10 +20,12 @@ public class NotificationService extends Service {
         }
     }
 
+
+
     @Override
     public void onCreate() {
         super.onCreate();
-        Notification notification = NotificationMgr.getConfNotification();
+        Notification notification = NotificationMgr.getConfNotification(getApplicationContext());
         if (null != notification) {
             startForeground(NotificationMgr.PT_NOTICICATION_ID, notification);
         } else {
@@ -41,10 +42,9 @@ public class NotificationService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        NotificationMgr.removeConfNotification();
-        stopSelf();
-        ZoomSdkHelper.stopShare();
-        ZoomSdkHelper.leaveSession(false);
+        Log.d(TAG, "service onDestroy isInSession=:" + ZoomVideoSDK.getInstance().isInSession());
+//        ZoomVideoSDK.getInstance().getShareHelper().stopShare();
+//        ZoomVideoSDK.getInstance().leaveSession(false);
     }
 
     @Override
@@ -54,9 +54,10 @@ public class NotificationService extends Service {
 
     public void onTaskRemoved(Intent rootIntent) {
         Log.d(TAG, "service onTaskRemoved:"+rootIntent);
-        NotificationMgr.removeConfNotification();
+        NotificationMgr.removeConfNotification(getApplicationContext());
         stopSelf();
-        ZoomSdkHelper.stopShare();
-        ZoomSdkHelper.leaveSession(false);
+        ZoomVideoSDK.getInstance().getShareHelper().stopShare();
+        ZoomVideoSDK.getInstance().leaveSession(false);
     }
 }
+
