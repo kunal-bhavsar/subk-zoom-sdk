@@ -1136,8 +1136,8 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
         final View llSwitchCamera = builder.findViewById(R.id.llSwitchCamera);
         final View llSpeaker = builder.findViewById(R.id.llSpeaker);
-//        final View llStartRecord = builder.findViewById(R.id.llStartRecord);
-//        final View llRecording = builder.findViewById(R.id.llRecordStatus);
+        final View llStartRecord = builder.findViewById(R.id.llStartRecord);
+        final View llRecording = builder.findViewById(R.id.llRecordStatus);
         final View llFeedback = builder.findViewById(R.id.llFeedback);
         View llInviteAttendee = builder.findViewById(R.id.llinviteattendee);
         final TextView tvFeedback = builder.findViewById(R.id.tvFeedback);
@@ -1180,8 +1180,8 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
             llSpeaker.setVisibility(View.GONE);
         }
 
-//        llRecording.setVisibility(View.GONE);
-//        llStartRecord.setVisibility(View.GONE);
+        llRecording.setVisibility(View.GONE);
+        llStartRecord.setVisibility(View.GONE);
 //        if (
 //                canStartRecord() && status != ZoomVideoSDKRecordingStatus.Recording_DiskFull) {
 //            if (status == ZoomVideoSDKRecordingStatus.Recording_Stop) {
