@@ -1577,8 +1577,8 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                     }
                     Log.i("PUBLISH_LOCATION_EVENT", "Stored locations, latitude : " + locationEvent.latitude + ", longitude : " + locationEvent.longitude + ", accuracy : " + locationEvent.accuracy);
                 }
-                Log.i("PUBLISH_LOCATION_EVENT", "So highest accurate location have latitude : " + bestAccuracyLocationEvent.latitude + ", longitude : " + bestAccuracyLocationEvent.longitude + ", accuracy : " + bestAccuracyLocationEvent.accuracy);
                 if (bestAccuracyLocationEvent != null) {
+                    Log.i("PUBLISH_LOCATION_EVENT", "So highest accurate location have latitude : " + bestAccuracyLocationEvent.latitude + ", longitude : " + bestAccuracyLocationEvent.longitude + ", accuracy : " + bestAccuracyLocationEvent.accuracy);
                     EventBus.getDefault().post(bestAccuracyLocationEvent);
                 }
             }, 30000);
@@ -1590,8 +1590,10 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         @Override
         public void onLocationResult(LocationResult locationResult) {
             Location mLastLocation = locationResult.getLastLocation();
-
-            locationEvents.add(new LocationEvent(mLastLocation.getLatitude(), mLastLocation.getLongitude(), mLastLocation.getAccuracy(), meetingEntityId));
+            if (mLastLocation!=null)
+            {
+                locationEvents.add(new LocationEvent(mLastLocation.getLatitude(), mLastLocation.getLongitude(), mLastLocation.getAccuracy(), meetingEntityId));
+            }
         }
     };
 
