@@ -1556,7 +1556,11 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         // setting LocationRequest on FusedLocationClient
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_ID);
+           /** this line is commented by arul on 07/12/23 becasuse we will ask user to enalbe location at join meeting button and
+            * if location is disable we will send -1 as lat lon in event */
+            // ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_ID);
+            LocationEvent bestAccuracyLocationEvent = new LocationEvent(-1,-1,-1,meetingEntityId);
+            EventBus.getDefault().post(bestAccuracyLocationEvent);
             return;
         }
 
