@@ -1,0 +1,217 @@
+
+g
+java:S1192¦"IDefine a constant instead of duplicating this literal "status: " 3 times.(áÉÑ„8¾•íÑ1
+R
+java:S1066Í"/Merge this if statement with the enclosing one.(‚Ë«ıÿÿÿÿ8¾•íÑ1
+M
+java:S1066Ü"/Merge this if statement with the enclosing one.(©§¹8¾•íÑ1
+m	java:S117Š"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(§‹X8¾•íÑ1
+s	java:S117"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(³Ä—şÿÿÿÿ8¾•íÑ1
+K
+java:S1604ˆ"(Make this anonymous inner class a lambda(‚úã™ÿÿÿÿÿ8œıØëÑ1
+F
+java:S1604ƒ"(Make this anonymous inner class a lambda(šæ°½8œıØëÑ1
+K
+java:S1604š"(Make this anonymous inner class a lambda(‚úã™ÿÿÿÿÿ8œıØëÑ1
+F
+java:S1604•"(Make this anonymous inner class a lambda(§ÇØ¼8œıØëÑ1
+K
+java:S1604…"(Make this anonymous inner class a lambda(Šî´åúÿÿÿÿ8¾•íÑ1
+E
+java:S1604Ë"(Make this anonymous inner class a lambda(¢òÃY8¾•íÑ1
+F
+java:S1604Û"(Make this anonymous inner class a lambda(åµà8¾•íÑ1
+K
+java:S1604 "(Make this anonymous inner class a lambda(Å¸±ºøÿÿÿÿ8¾•íÑ1
+F
+java:S1604¯"(Make this anonymous inner class a lambda(¦îó¥8¾•íÑ1
+K
+java:S1604‘	"(Make this anonymous inner class a lambda(µçóùÿÿÿÿ8Î•íÑ1
+F
+java:S1604	"(Make this anonymous inner class a lambda(ÎŠ‘¢8Î•íÑ1
+F
+java:S1604Š
+"(Make this anonymous inner class a lambda(¬¡·Ÿ8Î•íÑ1
+K
+java:S1604"(Make this anonymous inner class a lambda(ò¨ÌÃÿÿÿÿÿ8Î•íÑ1
+K
+java:S1604º"(Make this anonymous inner class a lambda(÷Í‘’ıÿÿÿÿ8Î•íÑ1
+F
+java:S1604—"(Make this anonymous inner class a lambda(†£°î8Î•íÑ1
+F
+java:S1604û"(Make this anonymous inner class a lambda(„ÑñŒ8Î•íÑ1
+K
+java:S1604Ì"(Make this anonymous inner class a lambda(¸ìŒ‘øÿÿÿÿ8Î•íÑ1
+F
+java:S1604×"(Make this anonymous inner class a lambda(ë¸îä8Î•íÑ1
+p	java:S116å"SRename this field "text_fps" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(«¶˜Ï8¸€ÙëÑ1
+~	java:S116û"aRename this field "LOCATION_PERMISSION_ID" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ªİ÷ğ8¸€ÙëÑ1
+¤
+java:S1186ò"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(ïÁç×ÿÿÿÿÿ8ˆ’•íÑ1
+Ÿ
+java:S1186"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(™·ç»8ˆ’•íÑ1
+Ÿ
+java:S1186˜"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(§—ª8ˆ’•íÑ1
+Ÿ
+java:S1186œ"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(ŸÍ°‚8’•íÑ1
+¤
+java:S1186Á"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(™¬Ãµûÿÿÿÿ8’•íÑ1
+Ÿ
+java:S1186ı"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(ô“å©8’•íÑ1
+¤
+java:S1186ï"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(Çñµ¨øÿÿÿÿ8’•íÑ1
+Ÿ
+java:S1186ó"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(Ñ‚ 8’•íÑ1
+¤
+java:S1186¢"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(Íˆóßùÿÿÿÿ8’•íÑ1
+Ÿ
+java:S1186ñ"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(‚èœÙ8’•íÑ1
+Ÿ
+java:S1186ö"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(¬ªÛà8’•íÑ1
+Ÿ
+java:S1186†"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(·Ä8’•íÑ1
+Ÿ
+java:S1186Ç"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(•“ºö8˜’•íÑ1
+¤
+java:S1186Ì"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(º„ß—øÿÿÿÿ8š’•íÑ1
+Ÿ
+java:S1186Ñ"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(ä¶Š¤8š’•íÑ1
+Ÿ
+java:S1186Ö"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(—Ø»Ÿ8š’•íÑ1
+
+java:S1186Û"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(€÷Î-8§’•íÑ1
+Ÿ
+java:S1186à"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(µ½ªØ8§’•íÑ1
+¤
+java:S1186å"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(êËÆôıÿÿÿÿ8§’•íÑ1
+Ÿ
+java:S1186•"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(ôşÀ8§’•íÑ1
+¤
+java:S1186š"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(Ã¬±ïùÿÿÿÿ8§’•íÑ1
+Ÿ
+java:S1186Ÿ"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(Éùü¦8§’•íÑ1
+Ÿ
+java:S1186¤"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(Ë¡Ç8§’•íÑ1
+^	java:S125¼"<This block of commented-out lines of code should be removed.(˜úõ¡ÿÿÿÿÿ8Ø€ÙëÑ1
+X	java:S125õ"<This block of commented-out lines of code should be removed.( —ÕK8Ø€ÙëÑ1
+R
+java:S1874ˆ"/Remove this use of "Handler"; it is deprecated.(‚úã™ÿÿÿÿÿ8Ø€ÙëÑ1
+R
+java:S1874š"/Remove this use of "Handler"; it is deprecated.(‚úã™ÿÿÿÿÿ8Ø€ÙëÑ1
+d
+java:S3252Ä"FUse static access with "android.content.Context" for "WINDOW_SERVICE".(‡ìô8Ø€ÙëÑ1
+W
+java:S1874Ä"9Remove this use of "getDefaultDisplay"; it is deprecated.(‡ìô8Ø€ÙëÑ1
+P
+java:S1874Æ"2Remove this use of "getMetrics"; it is deprecated.(–ˆ”•8Ø€ÙëÑ1
+Y
+java:S1874×";Remove this use of "CONNECTIVITY_ACTION"; it is deprecated.(ˆ¦øø8è€ÙëÑ1
+Y
+java:S1874Ú";Remove this use of "CONNECTIVITY_ACTION"; it is deprecated.(ˆ¦øø8è€ÙëÑ1
+_
+java:S1659è"ADeclare "name" and all following declarations on a separate line.(‘÷î8è€ÙëÑ1
+^
+java:S1117è"@Rename "sessionName" which hides the field declared at line 208.(‘÷î8è€ÙëÑ1
+_
+java:S1117ƒ"<Rename "session" which hides the field declared at line 239.(Òô¦Ÿıÿÿÿÿ8è€ÙëÑ1
+¤
+java:S1186"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(Î›™²ûÿÿÿÿ8è€ÙëÑ1
+Ÿ
+java:S1186˜"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(•¿öô8è€ÙëÑ1
+K
+java:S1185­"(Remove this method to simply inherit it.(èüù±ùÿÿÿÿ8Ö’•íÑ1
+\
+java:S1155ä">Use isEmpty() to check whether the collection is empty or not.(²§©ë8¼”•íÑ1
+S
+java:S1874š"5Remove this use of "scaledDensity"; it is deprecated.(‹‘Ì¡8Á”•íÑ1
+^	java:S125›"<This block of commented-out lines of code should be removed.(ä˜õÜùÿÿÿÿ8Á”•íÑ1
+^	java:S125 "<This block of commented-out lines of code should be removed.(ä˜õÜùÿÿÿÿ8Á”•íÑ1
+h
+java:S1874¾"JDon't override a deprecated method or explicitly mark it as "@Deprecated".(ŸŒ¹Ñ8Ñ”•íÑ1
+p
+java:S3776¾"RRefactor this method to reduce its Cognitive Complexity from 31 to the 15 allowed.(ŸŒ¹Ñ8Ñ”•íÑ1
+D	java:S131Á""Add a default case to this switch.(×ö³–úÿÿÿÿ8Ñ”•íÑ1
+N
+java:S1172ö"+Remove this unused method parameter "view".(çïøƒûÿÿÿÿ8Ñ”•íÑ1
+
+java:S3252’"aUse static access with "co.subk.zoomsdk.meeting.LowerThirdSettingFragment" for "LOWER_THIRD_KEY".(¹ô¥ï8á”•íÑ1
+[
+java:S1874ô">Remove this use of "startActivityForResult"; it is deprecated.(­Ñ¿8ö”•íÑ1
+u
+java:S3776—"RRefactor this method to reduce its Cognitive Complexity from 33 to the 15 allowed.(îÔ˜÷ùÿÿÿÿ8ö”•íÑ1
+X	java:S125œ"<This block of commented-out lines of code should be removed.(¯ËÍ$8ö”•íÑ1
+^	java:S125Ú"<This block of commented-out lines of code should be removed.(ˆä„ôùÿÿÿÿ8…••íÑ1
+X
+java:S1874à"5Remove this use of "scaledDensity"; it is deprecated.(Ÿ¬¦Íıÿÿÿÿ8…••íÑ1
+N
+java:S1172¤"+Remove this unused method parameter "view".(—ïÇ¾úÿÿÿÿ8¸••íÑ1
+g
+java:S1117¨"DRename "sessionNameText" which hides the field declared at line 186.(Ê¢Ôêúÿÿÿÿ8Ç••íÑ1
+N
+java:S1874·"0Remove this use of "getColor"; it is deprecated.(¸äºö8Ç••íÑ1
+I
+java:S1172Ä"+Remove this unused method parameter "view".(§ëî”8Ç••íÑ1
+Y	java:S125î"<This block of commented-out lines of code should be removed.(ò¨´¸8×••íÑ1
+I
+java:S1172ñ"+Remove this unused method parameter "view".(ÛØ•8×••íÑ1
+T
+java:S1874õ"6Remove this use of "getVideoStatus"; it is deprecated.(¨õ’“8×••íÑ1
+T
+java:S1874€"6Remove this use of "getVideoStatus"; it is deprecated.(¨õ’“8×••íÑ1
+N
+java:S1172‡"+Remove this unused method parameter "view".(µ›±üÿÿÿÿÿ8×••íÑ1
+a
+java:S1874¾">Remove this use of "startActivityForResult"; it is deprecated.(ô”£´ùÿÿÿÿ8ç••íÑ1
+I
+java:S1172Å"+Remove this unused method parameter "view".(Î¨Ô8ö••íÑ1
+I
+java:S1172Ê"+Remove this unused method parameter "view".(Êî‘8ö••íÑ1
+Y
+java:S1874â"6Remove this use of "getVideoStatus"; it is deprecated.(­°™Òüÿÿÿÿ8„–•íÑ1
+Y
+java:S1874â"6Remove this use of "getVideoStatus"; it is deprecated.(­°™Òüÿÿÿÿ8„–•íÑ1
+^	java:S125è"<This block of commented-out lines of code should be removed.(àşÕùÿÿÿÿ8†–•íÑ1
+u
+java:S3776ó"RRefactor this method to reduce its Cognitive Complexity from 17 to the 15 allowed.(ÜÌçêûÿÿÿÿ8†–•íÑ1
+N
+java:S1172ó"+Remove this unused method parameter "view".(ÜÌçêûÿÿÿÿ8†–•íÑ1
+T
+java:S1874	"6Remove this use of "getVideoStatus"; it is deprecated.(¨õ’“8––•íÑ1
+^	java:S125ª	"<This block of commented-out lines of code should be removed.(ì°¶·şÿÿÿÿ8––•íÑ1
+^	java:S125˜
+"<This block of commented-out lines of code should be removed.(à“‘òúÿÿÿÿ8¢–•íÑ1
+^	java:S125§
+"<This block of commented-out lines of code should be removed.(ğĞüÿÿÿÿ8›˜•íÑ1
+Y	java:S125ò
+"<This block of commented-out lines of code should be removed.(Àßßï8›˜•íÑ1
+Y	java:S125"<This block of commented-out lines of code should be removed.(Ö£€È8«˜•íÑ1
+^	java:S125®"<This block of commented-out lines of code should be removed.(§¨¢ùúÿÿÿÿ8«˜•íÑ1
+a
+java:S1874Ø">Remove this use of "startActivityForResult"; it is deprecated.(ÖÑç›ÿÿÿÿÿ8±˜•íÑ1
+Y	java:S125è"<This block of commented-out lines of code should be removed.(±÷šˆ8±˜•íÑ1
+Y	java:S125ğ"<This block of commented-out lines of code should be removed.(ò¨´¸8»˜•íÑ1
+Y	java:S125"<This block of commented-out lines of code should be removed.(±÷šˆ8»˜•íÑ1
+z
+java:S3252"WUse static access with "androidx.core.content.ContextCompat" for "checkSelfPermission".(Ìîş½ùÿÿÿÿ8øÙëÑ1
+z
+java:S3252Ÿ"WUse static access with "androidx.core.content.ContextCompat" for "checkSelfPermission".(ó„Âœüÿÿÿÿ8š•íÑ1
+Y	java:S125¢"<This block of commented-out lines of code should be removed.(à™­ë8š•íÑ1
+R
+java:S1874±"/Remove this use of "Handler"; it is deprecated.(’àŞ–úÿÿÿÿ8¢š•íÑ1
+X	java:S125ç"<This block of commented-out lines of code should be removed.(Ë‘Ÿ"8¬š•íÑ1
+X	java:S125û"<This block of commented-out lines of code should be removed.(£§·!8¬š•íÑ1
+s
+java:S3252½"PUse static access with "android.view.ViewGroup$LayoutParams" for "WRAP_CONTENT".(òÑ±äÿÿÿÿÿ8¶š•íÑ1
+S
+java:S1874¿"5Remove this use of "scaledDensity"; it is deprecated.(æìì¿8¼š•íÑ1
+T
+java:S1874à"6Remove this use of "getVideoStatus"; it is deprecated.(¶¨˜8Àš•íÑ1
+^	java:S125ê"<This block of commented-out lines of code should be removed.(·¶•¬ıÿÿÿÿ8Àš•íÑ1
+M
+java:S1874û"/Remove this use of "Handler"; it is deprecated.(„ÑñŒ8Àš•íÑ1
+^	java:S125ì"<This block of commented-out lines of code should be removed.(¦‡’˜ıÿÿÿÿ8Ìš•íÑ1
+^	java:S125š"<This block of commented-out lines of code should be removed.(¨¡¹›ùÿÿÿÿ8Õš•íÑ1
+T
+java:S1874½"1Remove this use of "subscribe"; it is deprecated.(» áÈøÿÿÿÿ8Õš•íÑ1
+m
+java:S1874Ø"JDon't override a deprecated method or explicitly mark it as "@Deprecated".(üú…ûÿÿÿÿ8ßš•íÑ1

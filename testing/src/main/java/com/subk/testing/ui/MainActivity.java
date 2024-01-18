@@ -35,8 +35,6 @@ import com.subk.testing.databinding.ActivityMainBinding;
 import com.subk.testing.service.EventManagementService;
 
 import co.subk.zoomsdk.MeetingActivity;
-import co.subk.zoomsdk.ZoomSdkInitializer;
-import co.subk.zoomsdk.meeting.exceptions.ZoomInitializationException;
 
 public class MainActivity extends AppCompatActivity {
     protected final static int REQUEST_VIDEO_AUDIO_CODE = 1010;
@@ -91,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
         stopService(new Intent(this, EventManagementService.class));
     }
 
-    protected boolean requestPermission() {
+    protected void requestPermission() {
 
         String[] permissions = new String[]{
                 Manifest.permission.CAMERA,
@@ -100,7 +98,19 @@ public class MainActivity extends AppCompatActivity {
                 Manifest.permission.ACCESS_COARSE_LOCATION,
                 Manifest.permission.ACCESS_FINE_LOCATION
         };
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            permissions = new String[]{
+                    android.Manifest.permission.CAMERA,
+                    Manifest.permission.RECORD_AUDIO,
+                    Manifest.permission.READ_MEDIA_IMAGES,
+                    Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED,
+                    Manifest.permission.READ_PHONE_STATE,
+                    Manifest.permission.BLUETOOTH_CONNECT,
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.POST_NOTIFICATIONS
+            };
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             permissions = new String[]{
                     Manifest.permission.CAMERA,
                     Manifest.permission.RECORD_AUDIO,
@@ -112,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
                     Manifest.permission.BLUETOOTH_CONNECT,
                     Manifest.permission.POST_NOTIFICATIONS
             };
-        } else if (Build.VERSION.SDK_INT >= 31) {
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             permissions = new String[]{
                     android.Manifest.permission.CAMERA,
                     android.Manifest.permission.RECORD_AUDIO,
@@ -127,10 +137,9 @@ public class MainActivity extends AppCompatActivity {
         for (String permission : permissions) {
             if (checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(this, permissions, REQUEST_VIDEO_AUDIO_CODE);
-                return false;
+                return;
             }
         }
-        return true;
     }
 
     @Override

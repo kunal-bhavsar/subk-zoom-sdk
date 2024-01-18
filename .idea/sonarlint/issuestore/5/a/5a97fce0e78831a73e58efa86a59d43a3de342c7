@@ -1,0 +1,82 @@
+
+F
+java:S1066"/Merge this if statement with the enclosing one.(äùÛ»
+=
+java:S1604R"(Make this anonymous inner class a lambda(âï»>
+D
+java:S1604Ë"(Make this anonymous inner class a lambda(‹€º‘ùÿÿÿÿ
+D
+java:S1604Ü"(Make this anonymous inner class a lambda(ˆ©ˆûÿÿÿÿ
+D
+java:S1604¬"(Make this anonymous inner class a lambda(äë¬±üÿÿÿÿ
+t	java:S116M"ZRename this field "icon_screenshot" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(Î‡”üÿÿÿÿ
+—
+java:S1186€"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(³¨ß?
+¤
+java:S1186ö"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(œƒƒ©ùÿÿÿÿ8¢ÕÄíÑ1
+`
+java:S1124N"EReorder the modifiers to comply with the Java Language Specification.(Âûûûûÿÿÿÿ
+V	java:S125j"<This block of commented-out lines of code should be removed.(üó¥¥şÿÿÿÿ
+R	java:S125»"<This block of commented-out lines of code should be removed.(ƒğÏ
+H
+java:S1602Ö",Remove useless curly braces around statement(ìøâĞúÿÿÿÿ
+W	java:S125ä"<This block of commented-out lines of code should be removed.(æ²Ç´øÿÿÿÿ
+V
+java:S1161‹":Add the "@Override" annotation above this method signature(™¬Ãµûÿÿÿÿ
+g
+java:S3252š"PUse static access with "android.view.ViewGroup$LayoutParams" for "MATCH_PARENT".(şÎö’
+g
+java:S3252š"PUse static access with "android.view.ViewGroup$LayoutParams" for "MATCH_PARENT".(şÎö’
+F
+java:S1874©"/Remove this use of "Handler"; it is deprecated.(íçÛ
+Q
+java:S1161Ğ":Add the "@Override" annotation above this method signature(ô“å©
+n
+java:S3776ä"RRefactor this method to reduce its Cognitive Complexity from 18 to the 15 allowed.(Çñµ¨øÿÿÿÿ
+]
+java:S1161ä":Add the "@Override" annotation above this method signature(Çñµ¨øÿÿÿÿ8øÌ†äÑ1
+O
+java:S1874ï"1Remove this use of "subscribe"; it is deprecated.(ıĞ‚É8ŠÍ†äÑ1
+~
+java:S3252õ"`Use static access with "us.zoom.rawdatarender.ZoomSurfaceViewRender" for "VideoAspect_Original".(ÅÒ8ŠÍ†äÑ1
+€
+java:S3252÷"cUse static access with "us.zoom.rawdatarender.ZoomSurfaceViewRender" for "VideoAspect_Full_Filled".(­‹¨p8ŠÍ†äÑ1
+Y
+java:S1874‡"6Remove this use of "getVideoStatus"; it is deprecated.(¿şÈøÿÿÿÿ8ŠÍ†äÑ1
+Y
+java:S1874ˆ"6Remove this use of "getVideoStatus"; it is deprecated.(¸àê¡ûÿÿÿÿ8ŠÍ†äÑ1
+X
+java:S1161“":Add the "@Override" annotation above this method signature(Ñ‚ 8ŠÍ†äÑ1
+T
+java:S1874›"1Remove this use of "subscribe"; it is deprecated.(åÂÄªıÿÿÿÿ8ŠÍ†äÑ1
+~
+java:S3252"`Use static access with "us.zoom.rawdatarender.ZoomSurfaceViewRender" for "VideoAspect_Original".(ÅÒ8ŠÍ†äÑ1
+T
+java:S1874Ì"6Remove this use of "getVideoStatus"; it is deprecated.(ïÀÇñ8—Í†äÑ1
+R	java:S125Í"<This block of commented-out lines of code should be removed.(íùÆù
+>
+java:S1185×"(Remove this method to simply inherit it.(ºŠñ=
+R	java:S125Ú"<This block of commented-out lines of code should be removed.(™²ú¿
+m
+java:S1874ò"JDon't override a deprecated method or explicitly mark it as "@Deprecated".(Ó»×¶şÿÿÿÿ8—Í†äÑ1
+W	java:S125ª"<This block of commented-out lines of code should be removed.(èó’³úÿÿÿÿ
+R	java:S125±"<This block of commented-out lines of code should be removed.(œî¹
+W	java:S125µ"<This block of commented-out lines of code should be removed.(Ì—Ÿûÿÿÿÿ
+d
+java:S5361¾"HReplace this call to "replaceAll()" by a call to the "replace()" method.(‰¹Ïëüÿÿÿÿ
+H
+java:S1181å"%Catch Exception instead of Throwable.(‡˜ÚÚøÿÿÿÿ8¦Í†äÑ1
+B
+java:S1075Â"&Remove this hard-coded path-delimiter.(Ä»¼‡ûÿÿÿÿ
+Z
+java:S1874Æ">Remove this use of "setDrawingCacheEnabled"; it is deprecated.(ğâ§›øÿÿÿÿ
+W	java:S125Ç"<This block of commented-out lines of code should be removed.(¾¨öÊùÿÿÿÿ
+R	java:S125Ï"<This block of commented-out lines of code should be removed.(€ÿóŞ
+Z
+java:S1874Ú">Remove this use of "setDrawingCacheEnabled"; it is deprecated.(İïŸâúÿÿÿÿ
+m
+java:S1874ö"JDon't override a deprecated method or explicitly mark it as "@Deprecated".(œƒƒ©ùÿÿÿÿ8¦Í†äÑ1
+Q
+java:S1144í"5Remove this unused private "changeResolution" method.(­î¶Çüÿÿÿÿ
+O
+java:S1144¹"3Remove this unused private "takeScreenshot" method.(ÖµÚüÿÿÿÿ

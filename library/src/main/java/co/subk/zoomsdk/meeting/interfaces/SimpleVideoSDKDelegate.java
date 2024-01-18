@@ -26,6 +26,7 @@ import us.zoom.sdk.ZoomVideoSDKRecordingStatus;
 import us.zoom.sdk.ZoomVideoSDKSSLCertificateInfo;
 import us.zoom.sdk.ZoomVideoSDKShareHelper;
 import us.zoom.sdk.ZoomVideoSDKShareStatus;
+import us.zoom.sdk.ZoomVideoSDKTestMicStatus;
 import us.zoom.sdk.ZoomVideoSDKUser;
 import us.zoom.sdk.ZoomVideoSDKUserHelper;
 import us.zoom.sdk.ZoomVideoSDKVideoCanvas;
@@ -252,6 +253,16 @@ public class SimpleVideoSDKDelegate implements ZoomVideoSDKDelegate {
 
     @Override
     public void onAnnotationPrivilegeChange(boolean enable, ZoomVideoSDKUser shareOwner) {
+
+    }
+
+    @Override
+    public void onTestMicStatusChanged(ZoomVideoSDKTestMicStatus status) {
+
+    }
+
+    @Override
+    public void onMicSpeakerVolumeChanged(int micVolume, int speakerVolume) {
 
     }
 }
