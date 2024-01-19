@@ -139,6 +139,7 @@ import us.zoom.sdk.ZoomVideoSDKSession;
 import us.zoom.sdk.ZoomVideoSDKSessionContext;
 import us.zoom.sdk.ZoomVideoSDKShareHelper;
 import us.zoom.sdk.ZoomVideoSDKShareStatus;
+import us.zoom.sdk.ZoomVideoSDKTestMicStatus;
 import us.zoom.sdk.ZoomVideoSDKUser;
 import us.zoom.sdk.ZoomVideoSDKUserHelper;
 import us.zoom.sdk.ZoomVideoSDKVideoAspect;
@@ -411,7 +412,6 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        Bundle bundle = intent.getExtras();
         parseIntent();
     }
 
@@ -690,10 +690,19 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         EventBus.getDefault().post(new ShareScreenEvent());
         if (Build.VERSION.SDK_INT >= 29) {
             //MediaProjection  need service with foregroundServiceType mediaProjection in android Q
-            boolean hasForegroundNotification = NotificationMgr.hasNotification(getApplicationContext(), NotificationMgr.PT_NOTICICATION_ID);
-            if (!hasForegroundNotification) {
-                Intent intent = new Intent(this, NotificationService.class);
+            boolean hasForegroundNotification = NotificationMgr.hasNotification(getApplicationContext(), NotificationMgr.PT_NOTIFICATION_ID);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                Bundle args = new Bundle();
+                Intent intent = new Intent(getApplicationContext(), NotificationService.class);
+                args.putInt(NotificationService.ARG_COMMAND_TYPE, NotificationService.COMMAND_MEDIA_PROJECTION_START);
+                intent.putExtra(NotificationService.ARGS_EXTRA, args);
+                intent.setClassName(getPackageName(), "co.subk.zoomsdk.meeting.notification.NotificationService");
                 startForegroundService(intent);
+            } else {
+                if (!hasForegroundNotification) {
+                    Intent intent = new Intent(this, NotificationService.class);
+                    startForegroundService(intent);
+                }
             }
         }
 
@@ -2063,6 +2072,16 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
     @Override
     public void onAnnotationPrivilegeChange(boolean enable, ZoomVideoSDKUser shareOwner) {
+
+    }
+
+    @Override
+    public void onTestMicStatusChanged(ZoomVideoSDKTestMicStatus status) {
+
+    }
+
+    @Override
+    public void onMicSpeakerVolumeChanged(int micVolume, int speakerVolume) {
 
     }
 

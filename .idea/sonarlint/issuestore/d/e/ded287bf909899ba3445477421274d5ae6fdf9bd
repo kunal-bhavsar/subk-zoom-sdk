@@ -1,0 +1,11 @@
+
+M
+java:S1066•"/Merge this if statement with the enclosing one.(ñì©€8á‰›îÑ1
+Ÿ
+java:S1186¡"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(¹‹Û8­Š›îÑ1
+s
+java:S1450+"VRemove the "binding" field and declare it as a local variable in the relevant methods.(¶ÃÊ8¾Š›îÑ1
+g
+java:S1124("EReorder the modifiers to comply with the Java Language Specification.(Âûûûûÿÿÿÿ8ÔŠ›îÑ1
+m
+java:S1874’"JDon't override a deprecated method or explicitly mark it as "@Deprecated".(Ó»×¶şÿÿÿÿ8ƒ‹›îÑ1

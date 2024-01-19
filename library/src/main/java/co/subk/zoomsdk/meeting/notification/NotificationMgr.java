@@ -1,6 +1,5 @@
 package co.subk.zoomsdk.meeting.notification;
 
-import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -20,26 +19,26 @@ import co.subk.zoomsdk.meeting.IntegrationActivity;
 
 public class NotificationMgr {
 
-    public final static int PT_NOTICICATION_ID = 4;
+    public static final int PT_NOTIFICATION_ID = 4;
 
     public static final String ZOOM_NOTIFICATION_CHANNEL_ID = "Video_sdk_notification_channel_id";
 
+    private NotificationMgr() {}
+
     public static boolean hasNotification(Context context, int notificationId) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            try {
-                NotificationManager notificationMgr = (NotificationManager) context
-                        .getSystemService(Activity.NOTIFICATION_SERVICE);
-                if (notificationMgr != null) {
-                    StatusBarNotification[] statusBarNotifications = notificationMgr.getActiveNotifications();
-                    for (StatusBarNotification notification : statusBarNotifications) {
-                        if (notification.getId() == notificationId) {
-                            return true;
-                        }
+        try {
+            NotificationManager notificationMgr = (NotificationManager) context
+                    .getSystemService(Context.NOTIFICATION_SERVICE);
+            if (notificationMgr != null) {
+                StatusBarNotification[] statusBarNotifications = notificationMgr.getActiveNotifications();
+                for (StatusBarNotification notification : statusBarNotifications) {
+                    if (notification.getId() == notificationId) {
+                        return true;
                     }
                 }
-            } catch (Exception e) {
-                return false;
             }
+        } catch (Exception e) {
+            return false;
         }
         return false;
     }
@@ -76,8 +75,8 @@ public class NotificationMgr {
     }
 
     public static void removeConfNotification(Context context) {
-        NotificationManager notificationMgr = (NotificationManager) context.getSystemService(Activity.NOTIFICATION_SERVICE);
-        notificationMgr.cancel(NotificationMgr.PT_NOTICICATION_ID);
+        NotificationManager notificationMgr = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationMgr.cancel(NotificationMgr.PT_NOTIFICATION_ID);
     }
 
 
@@ -85,7 +84,7 @@ public class NotificationMgr {
         NotificationCompat.Builder builder = null;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationManager notificationMgr = (NotificationManager) context
-                    .getSystemService(Activity.NOTIFICATION_SERVICE);
+                    .getSystemService(Context.NOTIFICATION_SERVICE);
             NotificationChannel notificationChannel = notificationMgr.getNotificationChannel(getNotificationChannelId());
             if (notificationChannel == null) {
                 notificationChannel = new NotificationChannel(getNotificationChannelId(),
@@ -96,9 +95,7 @@ public class NotificationMgr {
                     notificationChannel.setShowBadge(false);
             }
 
-            if (notificationMgr != null) {
-                notificationMgr.createNotificationChannel(notificationChannel);
-            }
+            notificationMgr.createNotificationChannel(notificationChannel);
             builder = new NotificationCompat.Builder(context, getNotificationChannelId());
         } else {
             builder = new NotificationCompat.Builder(context);
