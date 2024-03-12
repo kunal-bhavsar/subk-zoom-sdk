@@ -56,10 +56,10 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
 
         binding.fab.setOnClickListener(view -> {
-            String sessionName = "Android 14 Test Arul";
-            String name = "Rajan Sanghvi";
+            String sessionName = "Kunal meet";
+            String name = "Kunal Bhavsar";
             String password = "789789789";
-            String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHBfa2V5IjoiSFRvZVBWVkhSbmhONEV5dmQxc3Q3RmJyN1hJZkJLc08xQmEzIiwicm9sZV90eXBlIjowLCJ0cGMiOiJBbmRyb2lkIDE0IFRlc3QgQXJ1bCIsInZlcnNpb24iOjEsImlhdCI6MTcwNTU4MTE3OCwiZXhwIjoxNzA1NTg4Mzc4LCJ1c2VyX2lkZW50aXR5IjoiODQ1NCIsInNlc3Npb25fa2V5IjoiM2Y4MzYyNmItZWNkNC00ZWY3LTk2ZmUtOTFjMWM5YjgwNmVjIiwicHdkIjoiNzg5Nzg5Nzg5In0.53tXoUqJ_OOJl8GzO2FsssvIILMu-cF_j0SkUeahJ4E";
+            String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHBfa2V5IjoiSFRvZVBWVkhSbmhONEV5dmQxc3Q3RmJyN1hJZkJLc08xQmEzIiwicm9sZV90eXBlIjowLCJ0cGMiOiJLdW5hbCBtZWV0IiwidmVyc2lvbiI6MSwiaWF0IjoxNzA5ODg2NDk1LCJleHAiOjE3MDk4OTM2OTUsInVzZXJfaWRlbnRpdHkiOiI4NDU0Iiwic2Vzc2lvbl9rZXkiOiJmM2Q0MjFmNy1mMDE0LTQwMmYtYTI4Yi1iZTk4MmIyYzhiNGUiLCJwd2QiOiI3ODk3ODk3ODkifQ.VH1QEivY8-efMEJYJ0JPfwYqeR4BdDD1rCcdhIwg9c0";
 
             Intent intent = new Intent(MainActivity.this, MeetingActivity.class);
             intent.putExtra(PARAM_USERNAME, name);

@@ -31,6 +31,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.hardware.display.DisplayManager;
 import android.location.Location;
@@ -40,6 +42,7 @@ import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
@@ -76,6 +79,9 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -793,6 +799,15 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         showLoader();
 
         sessionNameText = findViewById(R.id.sessionName);
+
+        sessionNameText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(BaseMeetingActivity.this, "Test CLick", Toast.LENGTH_SHORT).show();
+
+                captureScreenshot(getWindow().getDecorView().getRootView());
+            }
+        });
         // mtvInput = findViewById(R.id.tv_input);
         userVideoList = findViewById(R.id.userVideoList);
         videoListContain = findViewById(R.id.video_list_contain);
@@ -2142,5 +2157,44 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
             }
         }
     }
+
+
+    public void captureScreenshot(View view) {
+        // Get the root view of the current activity
+        View rootView = getWindow().getDecorView().getRootView();
+
+        // Create a Bitmap with the same dimensions as the root view
+        Bitmap screenshot = Bitmap.createBitmap(rootView.getWidth(), rootView.getHeight(), Bitmap.Config.ARGB_8888);
+
+        // Create a Canvas and draw the root view onto the Bitmap
+        Canvas canvas = new Canvas(screenshot);
+        rootView.draw(canvas);
+
+        Toast.makeText(this, "Capture DOne", Toast.LENGTH_SHORT).show();
+        // Save the Bitmap to a file
+        saveScreenshotToFile(screenshot);
+    }
+
+    private void saveScreenshotToFile(Bitmap screenshot) {
+        // Create a directory to store the screenshots
+        File directory = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), "Screenshots");
+        if (!directory.exists()) {
+            directory.mkdirs();
+        }
+
+        // Create a unique file name for the screenshot
+        String fileName = "screenshot_" + System.currentTimeMillis() + ".png";
+
+        // Save the screenshot to the file
+        File file = new File(directory, fileName);
+        try (FileOutputStream outputStream = new FileOutputStream(file)) {
+            screenshot.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
+            Toast.makeText(this, "Saved", Toast.LENGTH_SHORT).show();
+        } catch (IOException e) {
+            Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
+        }
+    }
+
 }
 
