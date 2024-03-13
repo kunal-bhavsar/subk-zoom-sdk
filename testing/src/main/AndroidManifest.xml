@@ -86,7 +86,7 @@
         <service
             android:name="co.subk.zoomsdk.meeting.notification.NotificationService"
             android:exported="false"
-            android:foregroundServiceType="mediaProjection|microphone" />
+            android:foregroundServiceType="mediaProjection|microphone|mediaPlayback|connectedDevice" />
         <receiver
             android:name="co.subk.zoomsdk.NetworkChangeReceiver"
             android:exported="true" >
