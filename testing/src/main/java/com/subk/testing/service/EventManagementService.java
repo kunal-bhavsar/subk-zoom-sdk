@@ -3,6 +3,7 @@ package com.subk.testing.service;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -20,7 +21,8 @@ public class EventManagementService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        return super.onStartCommand(intent, flags, startId);
+        Log.i(TAG, "STARTING " + TAG);
+        return START_STICKY;
     }
 
     @Override
@@ -31,8 +33,9 @@ public class EventManagementService extends Service {
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
         EventBus.getDefault().unregister(this);
+        Log.i(TAG, "STOPPING " + TAG);
+        super.onDestroy();
 //        stopMeetingService();
     }
 
