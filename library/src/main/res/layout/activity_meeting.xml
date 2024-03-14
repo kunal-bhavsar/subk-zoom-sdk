@@ -287,6 +287,8 @@
         android:visibility="visible"
         android:layout_gravity="center" />
 
+    <include layout="@layout/layout_capture_data_form" />
+
     <include layout="@layout/layout_bottom_action_bar" />
 
     <co.subk.zoomsdk.meeting.view.KeyBoardLayout

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/customRadioButton"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_capture_data"
+    android:textColor="#FFFFFF"
+    android:layout_margin="@dimen/dp_5"
+    android:text="Yes"
+    android:textAllCaps="true"
+    android:gravity="center"
+    android:paddingHorizontal="@dimen/dp_10"
+    android:paddingVertical="@dimen/dp_10"/>

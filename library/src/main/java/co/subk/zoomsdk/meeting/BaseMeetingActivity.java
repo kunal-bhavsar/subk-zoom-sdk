@@ -51,6 +51,7 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
@@ -58,6 +59,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RadioGroup;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -314,7 +316,27 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     };
 
     boolean isVisitFirstTime = false;
+    protected TextView questionTextView;
+    protected RadioGroup optionRadioGroup;
+    protected LinearLayout ll_question_form;
+    private String[] questions = {
+            "Q1: House Ownership: Of Customer?",
+            "Q2: Other outstanding loan or debts?",
+            "Q3: Risk status as per conversational experience with customer?",
+            "Q4: Whether loan amount reduced for the customer?",
+            "Q5: Whether customer dropped from the group?"
+    };
 
+    private String[][] options = {
+            {"Self", "Relative", "Rented"},
+            {"Yes", "No"},
+            {"Low", "Medium", "High"},
+            {"Yes", "No"},
+            {"Yes", "No"}
+    };
+
+    private int currentQuestionIndex = 0;
+    private float dX, dY;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -342,8 +364,76 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
         mNetworkReceiver = new NetworkChangeReceiver();
         registerNetworkBroadcastForNougat();
+
+        ll_question_form = findViewById(R.id.ll_question_form);
+        questionTextView = findViewById(R.id.questionTextView);
+        optionRadioGroup = findViewById(R.id.optionRadioGroup);
+
+        showQuestion(currentQuestionIndex);
     }
 
+    private void showQuestion(final int index) {
+        questionTextView.setText(questions[index]);
+
+        optionRadioGroup.removeAllViews();
+
+        for (int i = 0; i < options[index].length; i++) {
+            TextView radioButton = (TextView) getLayoutInflater().inflate(R.layout.item_answer, null);
+            radioButton.setText(options[index][i]);
+            radioButton.setId(i);
+            radioButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    TextView selectedOption = (TextView) view;
+                    // Process the selected option
+                    // For demonstration purposes, just printing the selected option
+                    System.out.println("Selected option: " + selectedOption.getText());
+
+                    if (index < questions.length - 1) {
+                        currentQuestionIndex++;
+                        showQuestion(currentQuestionIndex);
+                    } else {
+                        // Proceed to next activity or process data
+                        ll_question_form.setVisibility(View.GONE);
+                    }
+                }
+            });
+            optionRadioGroup.addView(radioButton);
+        }
+
+        ll_question_form.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        dX = view.getX() - event.getRawX();
+                        dY = view.getY() - event.getRawY();
+                        break;
+                    case MotionEvent.ACTION_MOVE:
+                        float newX = event.getRawX() + dX;
+                        float newY = event.getRawY() + dY;
+
+                        // Restrict movement within activity bounds
+                        if (newX > 0 && newX < (getWindow().getDecorView().getWidth() - view.getWidth())) {
+                            view.animate()
+                                    .x(newX)
+                                    .setDuration(0)
+                                    .start();
+                        }
+                        if (newY > 0 && newY < (getWindow().getDecorView().getHeight() - view.getHeight())) {
+                            view.animate()
+                                    .y(newY)
+                                    .setDuration(0)
+                                    .start();
+                        }
+                        break;
+                    default:
+                        return false;
+                }
+                return true;
+            }
+        });
+    }
     private void registerNetworkBroadcastForNougat() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             registerReceiver(mNetworkReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
@@ -1164,13 +1254,20 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         final View llRecording = builder.findViewById(R.id.llRecordStatus);
         final View llFeedback = builder.findViewById(R.id.llFeedback);
         View llInviteAttendee = builder.findViewById(R.id.llinviteattendee);
+        View llCaptureData = builder.findViewById(R.id.llCaptureData);
         final TextView tvFeedback = builder.findViewById(R.id.tvFeedback);
         final TextView tvSpeaker = builder.findViewById(R.id.tvSpeaker);
+        final TextView tvCaptureData = builder.findViewById(R.id.tvCaptureData);
         final ImageView ivSpeaker = builder.findViewById(R.id.ivSpeaker);
+        final ImageView ivCaptureData = builder.findViewById(R.id.ivCaptureData);
 
         llInviteAttendee.setOnClickListener(view1 -> {
             builder.dismiss();
             EventBus.getDefault().post(new InviteAttendeeEvent(taskId));
+        });
+
+        llCaptureData.setOnClickListener(view1 -> {
+            builder.dismiss();
         });
 
         if (allowToInviteAttendee) {
