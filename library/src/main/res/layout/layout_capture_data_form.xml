@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/ll_question_form"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:orientation="vertical"
+    android:layout_marginBottom="120dp"
+    android:layout_gravity="center_horizontal"
+    android:gravity="center_horizontal"
+    android:visibility="visible"
+    android:padding="@dimen/dp_10">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_capture_data"
+        android:orientation="vertical"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:layout_margin="@dimen/dp_5"
+        android:paddingHorizontal="@dimen/dp_10"
+        android:paddingVertical="@dimen/dp_10">
+
+        <TextView
+            android:id="@+id/questionTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/session_name"
+            android:textColor="#FFFFFF"
+            android:textAllCaps="true"
+            android:textSize="@dimen/textsize_12" />
+
+    </LinearLayout>
+
+    <RadioGroup
+        android:id="@+id/optionRadioGroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_5">
+
+        <!-- You can add RadioButtons programmatically based on options -->
+
+    </RadioGroup>
+
+</LinearLayout>

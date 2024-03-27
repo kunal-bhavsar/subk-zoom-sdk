@@ -1,6 +1,6 @@
 package co.subk.zoomsdk.meeting;
 
-
+import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_ALLOW_TO_CAPTURE_CE_FORM_DATA;
 import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_ALLOW_TO_END_MEETING;
 import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_ALLOW_TO_GET_LOCATION;
 import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_ALLOW_TO_HIDE_VIDEO;
@@ -10,6 +10,7 @@ import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_ALLOW_TO_SHARE_SCREEN;
 import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_ALLOW_TO_TAKE_SCREENSHOT;
 import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_MEETING_ENTITY_ID;
 import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_PASSWORD;
+import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_QUESTION_ANSWER;
 import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_RENDER_TYPE;
 import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_SESSION_NAME;
 import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_TASK_ID;
@@ -29,6 +30,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
@@ -46,11 +48,13 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
+import android.text.InputType;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
@@ -58,6 +62,8 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -66,6 +72,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -74,6 +81,8 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.Priority;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -82,6 +91,7 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -93,6 +103,8 @@ import co.subk.zoomsdk.cmd.CmdLowerThirdRequest;
 import co.subk.zoomsdk.cmd.CmdReactionRequest;
 import co.subk.zoomsdk.cmd.CmdRequest;
 import co.subk.zoomsdk.cmd.EmojiReactionType;
+import co.subk.zoomsdk.event.AnswerDataEvent;
+import co.subk.zoomsdk.event.QuestionDataEvent;
 import co.subk.zoomsdk.event.InternetEvent;
 import co.subk.zoomsdk.event.InviteAttendeeEvent;
 import co.subk.zoomsdk.event.LocationEvent;
@@ -102,6 +114,8 @@ import co.subk.zoomsdk.event.ShareScreenEvent;
 import co.subk.zoomsdk.meeting.feedback.data.FeedbackDataManager;
 import co.subk.zoomsdk.meeting.feedback.view.FeedbackResultDialog;
 import co.subk.zoomsdk.meeting.feedback.view.FeedbackSubmitDialog;
+import co.subk.zoomsdk.meeting.models.Answer;
+import co.subk.zoomsdk.meeting.models.Question;
 import co.subk.zoomsdk.meeting.notification.NotificationMgr;
 import co.subk.zoomsdk.meeting.notification.NotificationService;
 import co.subk.zoomsdk.meeting.screenshare.ShareToolbar;
@@ -211,9 +225,11 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
     protected String myDisplayName = "";
     protected String meetingPwd = "";
+    protected String questionAnswer = "";
     protected String sessionName;
 
     protected String taskId;
+    protected String token = "";
     protected String meetingEntityId;
 
     protected boolean allowToInviteAttendee = false;
@@ -224,6 +240,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     protected boolean allowToTakeScreenshot = false;
 
     protected boolean allowToCaptureLocation = false;
+    protected boolean allowToCaptureData = false;
     protected int renderType;
 
     protected ImageView videoOffView;
@@ -314,6 +331,36 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     };
 
     boolean isVisitFirstTime = false;
+    protected TextView questionTextView;
+    protected RadioGroup optionRadioGroup;
+    protected LinearLayout llEnterValue;
+    protected EditText etAnswer;
+    protected LinearLayout btnNext;
+    protected TextView tvNext;
+    protected LinearLayout ll_question_form;
+    protected Boolean responseFailed = false;
+    private List<Question> questions;
+
+    private List<Answer> answers = new ArrayList<>();
+
+    private int currentQuestionIndex = 0;
+    private float dX, dY;
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onQuestionResponseReceived(List<Question> questionResponses) {
+        // Handle the received question responses here
+        // Update UI or perform any required actions
+        questions = questionResponses;
+        Log.e("print new", "onQuestionResponseReceived: " + questions);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onQuestionResponseReceived(Boolean response) {
+        // Handle the received question responses here
+        // Update UI or perform any required actions
+        responseFailed = response;
+        Log.e("print boolean", "onQuestionResponseReceived: " + response);
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -342,6 +389,112 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
         mNetworkReceiver = new NetworkChangeReceiver();
         registerNetworkBroadcastForNougat();
+
+    }
+
+    private TextView selectedTextView = null;
+
+
+    // Method to display the current question
+    private void showQuestion(int index) {
+        Question question = questions.get(index);
+        questionTextView.setText(question.getQuestion());
+
+        // Clear existing options in the RadioGroup
+        optionRadioGroup.removeAllViews();
+
+        // Update UI components based on the answer type
+        switch (question.getAnswerType()) {
+            case "text":
+                llEnterValue.setVisibility(View.VISIBLE);
+                optionRadioGroup.setVisibility(View.GONE);
+                etAnswer.setInputType(question.getAnswerType().equals("number") ? InputType.TYPE_CLASS_NUMBER : InputType.TYPE_CLASS_TEXT);
+                etAnswer.setText("");
+                etAnswer.setHint("Enter answer");
+                break;
+            case "number":
+                llEnterValue.setVisibility(View.VISIBLE);
+                optionRadioGroup.setVisibility(View.GONE);
+                etAnswer.setInputType(InputType.TYPE_CLASS_NUMBER);
+                etAnswer.setText("");
+                etAnswer.setHint("Enter number");
+                break;
+            case "mcq":
+                llEnterValue.setVisibility(View.GONE);
+                optionRadioGroup.setVisibility(View.VISIBLE);
+                for (int i = 0; i < question.getAvailableAnswers().size(); i++) {
+                    LinearLayout linearLayout = new LinearLayout(this);
+                    LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.MATCH_PARENT,
+                            LinearLayout.LayoutParams.WRAP_CONTENT
+                    );
+                    layoutParams.setMargins(10, 15, 10, 15);
+                    linearLayout.setLayoutParams(layoutParams);
+                    linearLayout.setOrientation(LinearLayout.VERTICAL);
+                    TextView radioButton = (TextView) getLayoutInflater().inflate(R.layout.item_answer, null);
+                    radioButton.setText(question.getAvailableAnswers().get(i));
+                    radioButton.setId(i);
+                    radioButton.setLayoutParams(new LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.MATCH_PARENT,
+                            LinearLayout.LayoutParams.WRAP_CONTENT
+                    ));
+                    radioButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            if (selectedTextView != null) {
+                                selectedTextView.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.bg_capture_data));
+                            }
+                            view.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.bg_radio_button));
+                            // Set background color of clicked TextView to green
+//                            Update the selected TextView
+                            selectedTextView = (TextView) view;
+                        }
+                    });
+
+                    linearLayout.addView(radioButton);
+                    optionRadioGroup.addView(linearLayout);
+                }
+                break;
+        }
+
+        if (index == questions.size() - 1) {
+            tvNext.setText("Submit");
+        } else {
+            tvNext.setText("Next");
+        }
+
+        ll_question_form.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        dX = view.getX() - event.getRawX();
+                        dY = view.getY() - event.getRawY();
+                        break;
+                    case MotionEvent.ACTION_MOVE:
+                        float newX = event.getRawX() + dX;
+                        float newY = event.getRawY() + dY;
+
+                        // Restrict movement within activity bounds
+                        if (newX > 0 && newX < (getWindow().getDecorView().getWidth() - view.getWidth())) {
+                            view.animate()
+                                    .x(newX)
+                                    .setDuration(0)
+                                    .start();
+                        }
+                        if (newY > 0 && newY < (getWindow().getDecorView().getHeight() - view.getHeight())) {
+                            view.animate()
+                                    .y(newY)
+                                    .setDuration(0)
+                                    .start();
+                        }
+                        break;
+                    default:
+                        return false;
+                }
+                return true;
+            }
+        });
     }
 
     private void registerNetworkBroadcastForNougat() {
@@ -363,7 +516,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
     public void setupZoom() {
         Bundle bundle = getIntent().getExtras();
-        String sessionName = "", name = "", password = "", token = "";
+        String sessionName = "", name = "", password = "";
         if (null != bundle) {
             name = bundle.getString(PARAM_USERNAME);
             password = bundle.getString(PARAM_PASSWORD);
@@ -452,6 +605,8 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
             allowToEndMeeting = bundle.getBoolean(PARAM_ALLOW_TO_END_MEETING);
             allowToTakeScreenshot = bundle.getBoolean(PARAM_ALLOW_TO_TAKE_SCREENSHOT);
             allowToCaptureLocation = bundle.getBoolean(PARAM_ALLOW_TO_GET_LOCATION);
+            allowToCaptureData = bundle.getBoolean(PARAM_ALLOW_TO_CAPTURE_CE_FORM_DATA);
+            questionAnswer = bundle.getString(PARAM_QUESTION_ANSWER);
         }
     }
 
@@ -662,12 +817,12 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
     private void showLowerThird(@Nullable CmdLowerThirdRequest request) {
         if (request != null && SharePreferenceUtil.readBoolean(this, LowerThirdSettingBottomFragment.LOWER_THIRD_KEY, false)) {
-             lowerThirdLayout.setVisibility(View.GONE); // set to GONE here to remove this ViewGroup from UI
-             lowerThirdLayout.updateNameTv(request.name);
-             lowerThirdLayout.updateCompanyTv(request.companyName);
-             lowerThirdLayout.updateColor(request.rgb);
+            lowerThirdLayout.setVisibility(View.GONE); // set to GONE here to remove this ViewGroup from UI
+            lowerThirdLayout.updateNameTv(request.name);
+            lowerThirdLayout.updateCompanyTv(request.companyName);
+            lowerThirdLayout.updateColor(request.rgb);
         } else {
-             lowerThirdLayout.setVisibility(View.GONE);
+            lowerThirdLayout.setVisibility(View.GONE);
         }
     }
 
@@ -875,6 +1030,62 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         lowerThirdLayout = findViewById(R.id.layout_lower_third);
         lowerThirdLayout.setVisibility(View.GONE);
 
+        ll_question_form = findViewById(R.id.ll_question_form);
+        questionTextView = findViewById(R.id.questionTextView);
+        optionRadioGroup = findViewById(R.id.optionRadioGroup);
+        llEnterValue = findViewById(R.id.llEnterValue);
+        etAnswer = findViewById(R.id.etAnswer);
+        btnNext = findViewById(R.id.btnNext);
+        tvNext = findViewById(R.id.tvNext);
+
+        if (questions == null) {
+            questions = new Gson().fromJson(questionAnswer, new TypeToken<List<Question>>() {
+            }.getType());
+            Log.e("print new0", "initView: " + questions);
+        }
+
+        showQuestion(currentQuestionIndex);
+        // Restore saved answers when the activity is created
+        btnNext.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (responseFailed) {
+                    currentQuestionIndex++;
+                }
+                // Show the next question or hide the form if there are no more questions
+                for (int i = 0; i < questions.size(); i++) {
+                    Question question = questions.get(i);
+                    String questionId = question.getId();
+                    String answer;
+
+                    // Check answer type and collect answer accordingly
+                    switch (question.getAnswerType()) {
+                        case "text":
+                        case "number":
+                            answer = etAnswer.getText().toString().trim();
+                            break;
+                        case "mcq":
+                            int selectedRadioButtonId = optionRadioGroup.getCheckedRadioButtonId();
+                            RadioButton selectedRadioButton = findViewById(selectedRadioButtonId);
+                            answer = selectedRadioButton != null ? selectedRadioButton.getText().toString() : "";
+                            break;
+                        default:
+                            answer = "";
+                    }
+                    // Create QuestionAnswer object and add to list
+                    answers.add(new Answer(questionId, answer));
+                }
+                EventBus.getDefault().post(new AnswerDataEvent(taskId, token, answers));
+
+                if (currentQuestionIndex < questions.size()) {
+                    showQuestion(currentQuestionIndex);
+                } else {
+                    ll_question_form.setVisibility(View.GONE);
+                }
+            }
+        });
+
+
         onKeyBoardChange(false, 0, 30);
         final int margin = (int) (5 * displayMetrics.scaledDensity);
         userVideoList.addItemDecoration(new RecyclerView.ItemDecoration() {
@@ -919,9 +1130,12 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                 }
             }
         });
+
+
     }
 
-    protected void initMeeting() {}
+    protected void initMeeting() {
+    }
 
     public void showLoader() {
         loader.setVisibility(View.VISIBLE);
@@ -1018,6 +1232,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         unSubscribe();
         adapter.clear(true);
         actionBar.setVisibility(View.GONE);
+        ll_question_form.setVisibility(View.GONE);
         // mtvInput.setVisibility(View.GONE);
     }
 
@@ -1164,13 +1379,27 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         final View llRecording = builder.findViewById(R.id.llRecordStatus);
         final View llFeedback = builder.findViewById(R.id.llFeedback);
         View llInviteAttendee = builder.findViewById(R.id.llinviteattendee);
+        final View llCaptureData = builder.findViewById(R.id.llCaptureData);
         final TextView tvFeedback = builder.findViewById(R.id.tvFeedback);
         final TextView tvSpeaker = builder.findViewById(R.id.tvSpeaker);
+        final TextView tvCaptureData = builder.findViewById(R.id.tvCaptureData);
         final ImageView ivSpeaker = builder.findViewById(R.id.ivSpeaker);
 
         llInviteAttendee.setOnClickListener(view1 -> {
             builder.dismiss();
             EventBus.getDefault().post(new InviteAttendeeEvent(taskId));
+        });
+
+        if (allowToCaptureData) {
+            llCaptureData.setVisibility(View.VISIBLE);
+        } else {
+            llCaptureData.setVisibility(View.GONE);
+        }
+
+        llCaptureData.setOnClickListener(view1 -> {
+            builder.dismiss();
+            ll_question_form.setVisibility(View.VISIBLE);
+
         });
 
         if (allowToInviteAttendee) {
@@ -1532,6 +1761,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                 return;
             }
             actionBar.setVisibility(View.GONE);
+            ll_question_form.setVisibility(View.GONE);
             // mtvInput.setVisibility(View.GONE);
             text_fps.setVisibility(View.GONE);
             practiceText.setText("Connecting ...");
@@ -1555,6 +1785,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         updateSessionInfo();
         updateFpsOrientation();
         actionBar.setVisibility(View.VISIBLE);
+//        ll_question_form.setVisibility(View.INVISIBLE);
         if (ZoomVideoSDK.getInstance().getShareHelper().isSharingOut()) {
             ZoomVideoSDK.getInstance().getShareHelper().stopShare();
         }
@@ -1571,6 +1802,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         EventBus.getDefault().post(new SessionJoinedEvent(taskId, ZoomVideoSDK.getInstance().getSession().getSessionID()));
     }
 
+
     @SuppressLint("MissingPermission")
     private void publishLocationEvent() {
         if (!allowToCaptureLocation) {
@@ -1580,10 +1812,10 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         // setting LocationRequest on FusedLocationClient
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-           /** this line is commented by arul on 07/12/23 becasuse we will ask user to enalbe location at join meeting button and
-            * if location is disable we will send -1 as lat lon in event */
+            /** this line is commented by arul on 07/12/23 becasuse we will ask user to enalbe location at join meeting button and
+             * if location is disable we will send -1 as lat lon in event */
             // ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_ID);
-            LocationEvent bestAccuracyLocationEvent = new LocationEvent(-1,-1,-1,meetingEntityId);
+            LocationEvent bestAccuracyLocationEvent = new LocationEvent(-1, -1, -1, meetingEntityId);
             EventBus.getDefault().post(bestAccuracyLocationEvent);
             return;
         }
@@ -1619,8 +1851,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         public void onLocationResult(LocationResult locationResult) {
             Location mLastLocation = locationResult.getLastLocation();
             //add this check to make sure last known location should not be null
-            if (mLastLocation!=null)
-            {
+            if (mLastLocation != null) {
                 locationEvents.add(new LocationEvent(mLastLocation.getLatitude(), mLastLocation.getLongitude(), mLastLocation.getAccuracy(), meetingEntityId));
             }
         }
@@ -1639,13 +1870,13 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
     @Override
     public void onError(int errorcode) {
-        Toast.makeText(this, ErrorMsgUtil.getMsgByErrorCode(errorcode) + ". Error code: "+errorcode, Toast.LENGTH_LONG).show();
+        Toast.makeText(this, ErrorMsgUtil.getMsgByErrorCode(errorcode) + ". Error code: " + errorcode, Toast.LENGTH_LONG).show();
         if (errorcode == ZoomVideoSDKErrors.Errors_Session_Disconnect) {
             unSubscribe();
             adapter.clear(true);
             updateSessionInfo();
             currentShareUser = null;
-            mActiveUser=null;
+            mActiveUser = null;
             chatMsgAdapter.clear();
             chatListView.setVisibility(View.GONE);
             btnViewShare.setVisibility(View.GONE);
@@ -1803,12 +2034,11 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                 @Override
                 public void run() {
                     isVisitFirstTime = false;
-                    adapter.onUserMuteUnmuteChanged(userList,userVideoList);
+                    adapter.onUserMuteUnmuteChanged(userList, userVideoList);
                 }
             }, 3000);
-        }
-        else {
-            adapter.onUserMuteUnmuteChanged(userList,userVideoList);
+        } else {
+            adapter.onUserMuteUnmuteChanged(userList, userVideoList);
         }
     }
 
@@ -1816,11 +2046,11 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     public void onUserShareStatusChanged(ZoomVideoSDKShareHelper shareHelper, ZoomVideoSDKUser userInfo, ZoomVideoSDKShareStatus status) {
         if (status == ZoomVideoSDKShareStatus.ZoomVideoSDKShareStatus_Start) {
             currentShareUser = userInfo;
-            if (userInfo== session.getMySelf()) {
+            if (userInfo == session.getMySelf()) {
                 iconShare.setImageResource(R.drawable.icon_stop_share);
             }
         } else if (status == ZoomVideoSDKShareStatus.ZoomVideoSDKShareStatus_Stop) {
-             if (userInfo == session.getMySelf()) {
+            if (userInfo == session.getMySelf()) {
                 /* only self share stop should update the ui */
                 iconShare.setImageResource(R.drawable.icon_share);
                 shareViewGroup.setVisibility(View.GONE);
@@ -1928,12 +2158,12 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
     @Override
     public void onUserManagerChanged(ZoomVideoSDKUser user) {
-        Log.d(TAG,"onUserManagerChanged:"+user);
+        Log.d(TAG, "onUserManagerChanged:" + user);
     }
 
     @Override
     public void onUserNameChanged(ZoomVideoSDKUser user) {
-        Log.d(TAG,"onUserNameChanged:"+user);
+        Log.d(TAG, "onUserNameChanged:" + user);
 
     }
 
@@ -1975,8 +2205,8 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
     @Override
     public void onMultiCameraStreamStatusChanged(ZoomVideoSDKMultiCameraStreamStatus status, ZoomVideoSDKUser user, ZoomVideoSDKRawDataPipe videoPipe) {
-        Log.d(TAG, "onMultiCameraStreamStatusChanged: " + "status: " + status + ", user: " + user.getUserName()+" videoPipe:"+videoPipe);
-        if (null != getMultiStreamDelegate()&&renderType==RENDER_TYPE_OPENGLES&&null!=videoPipe) {
+        Log.d(TAG, "onMultiCameraStreamStatusChanged: " + "status: " + status + ", user: " + user.getUserName() + " videoPipe:" + videoPipe);
+        if (null != getMultiStreamDelegate() && renderType == RENDER_TYPE_OPENGLES && null != videoPipe) {
             Log.d(TAG, "onMultiCameraStreamStatusChanged: subscribe pipe");
             if (status == ZoomVideoSDKMultiCameraStreamStatus.Status_Joined) {
                 videoPipe.subscribe(ZoomVideoSDKVideoResolution.VideoResolution_720P, getMultiStreamDelegate());
@@ -1989,8 +2219,8 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     }
 
     public void onMultiCameraStreamStatusChanged(ZoomVideoSDKMultiCameraStreamStatus status, ZoomVideoSDKUser user, ZoomVideoSDKVideoCanvas canvas) {
-        Log.d(TAG, "onMultiCameraStreamStatusChanged: " + "status: " + status + ", user: " + user.getUserName()+" videoPipe:"+canvas);
-        if(null!=getMultiStreamVideoView()&&renderType==RENDER_TYPE_ZOOMRENDERER&&null!=canvas){
+        Log.d(TAG, "onMultiCameraStreamStatusChanged: " + "status: " + status + ", user: " + user.getUserName() + " videoPipe:" + canvas);
+        if (null != getMultiStreamVideoView() && renderType == RENDER_TYPE_ZOOMRENDERER && null != canvas) {
             Log.d(TAG, "onMultiCameraStreamStatusChanged: subscribe canvas");
             if (status == ZoomVideoSDKMultiCameraStreamStatus.Status_Joined) {
                 canvas.subscribe(getMultiStreamVideoView(), ZoomVideoSDKVideoAspect.ZoomVideoSDKVideoAspect_PanAndScan);
@@ -2036,9 +2266,10 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     public void onProxySettingNotification(ZoomVideoSDKProxySettingHandler handler) {
     }
 
-    protected  ZoomVideoSDKUser feccUser;
+    protected ZoomVideoSDKUser feccUser;
+
     public void onCameraControlRequestResult(ZoomVideoSDKUser user, boolean isApproved) {
-        Log.d(TAG,"onCameraControlRequestResult:"+user+":"+isApproved);
+        Log.d(TAG, "onCameraControlRequestResult:" + user + ":" + isApproved);
         if (isApproved) {
             feccUser = user;
         } else {
@@ -2046,11 +2277,11 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         }
     }
 
-    protected ZoomVideoSDKRawDataPipeDelegate getMultiStreamDelegate(){
+    protected ZoomVideoSDKRawDataPipeDelegate getMultiStreamDelegate() {
         return null;
     }
 
-    protected ZoomVideoSDKVideoView getMultiStreamVideoView(){
+    protected ZoomVideoSDKVideoView getMultiStreamVideoView() {
         return null;
     }
 
@@ -2108,8 +2339,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         internetAlertDialog.findViewById(R.id.btn_retry).setOnClickListener(view -> {
             if (NetworkUtil.isOnline(BaseMeetingActivity.this)) {
                 internetAlertDialog.hide();
-            }
-            else {
+            } else {
                 Toast.makeText(BaseMeetingActivity.this, R.string.internet_toast_error_message, Toast.LENGTH_SHORT).show();
             }
         });
@@ -2120,19 +2350,17 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onInternetChange(InternetEvent internetEvent) {
-        Log.d(TAG,"InternetChangeEvent received, with isOnline as " + internetEvent.isOnline);
+        Log.d(TAG, "InternetChangeEvent received, with isOnline as " + internetEvent.isOnline);
         if (internetEvent.isOnline) {
             if (internetAlertDialog != null) {
                 internetAlertDialog.hide();
             }
-        }
-        else {
+        } else {
             if (internetAlertDialog != null) {
                 if (!internetAlertDialog.isShowing()) {
                     showOfflineDialog();
                 }
-            }
-            else {
+            } else {
                 showOfflineDialog();
             }
         }

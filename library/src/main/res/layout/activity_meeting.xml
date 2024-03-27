@@ -38,7 +38,7 @@
                 android:paddingVertical="6dp"
                 android:textColor="@color/white"
                 android:textSize="12sp"
-                android:visibility="gone"></TextView>
+                android:visibility="gone" />
         </FrameLayout>
     </FrameLayout>
 
@@ -50,21 +50,21 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:paddingTop="@dimen/dp_24"
             android:layout_height="74dp"
             android:layout_gravity="left|top"
             android:background="@drawable/meeting_top_bar_bg"
             android:orientation="horizontal"
-            android:paddingRight="@dimen/dp_8"
-            android:paddingLeft="@dimen/dp_8">
+            android:paddingLeft="@dimen/dp_8"
+            android:paddingTop="@dimen/dp_24"
+            android:paddingRight="@dimen/dp_8">
 
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:gravity="center_vertical"
-                android:visibility="visible"
                 android:layout_weight="1"
-                android:orientation="horizontal">
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:visibility="visible">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -91,11 +91,11 @@
                             android:textSize="@dimen/textsize_16" />
 
                         <ImageView
-                            android:visibility="gone"
                             android:id="@+id/meeting_lock_status"
                             android:layout_width="40dp"
                             android:layout_height="wrap_content"
-                            android:src="@drawable/small_lock" />
+                            android:src="@drawable/small_lock"
+                            android:visibility="gone" />
 
                     </LinearLayout>
 
@@ -103,25 +103,26 @@
                         android:id="@+id/text_meeting_user_size"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:visibility="gone"
                         android:layout_marginTop="@dimen/dp_4"
                         android:text="Participants:"
                         android:textColor="@color/white"
-                        android:textSize="@dimen/textsize_13" />
+                        android:textSize="@dimen/textsize_13"
+                        android:visibility="gone" />
 
                 </LinearLayout>
 
                 <View
-                    android:visibility="gone"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1" />
+                    android:layout_weight="1"
+                    android:visibility="gone" />
             </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/panelRecordBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
                 android:layout_marginLeft="4dp"
                 android:layout_marginRight="4dp"
                 android:background="@drawable/zm_bg_record_pressed"
@@ -130,8 +131,7 @@
                 android:orientation="horizontal"
                 android:paddingLeft="4dp"
                 android:paddingRight="4dp"
-                android:visibility="gone"
-                android:layout_gravity="center_vertical">
+                android:visibility="gone">
 
                 <ImageView
                     android:id="@+id/imgRecordAnim"
@@ -142,13 +142,13 @@
                     android:src="@drawable/zm_ic_red_dot" />
 
                 <TextView
-                    android:textColor="#80FFFFFF"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="4dp"
                     android:focusable="false"
                     android:gravity="center"
                     android:text="REC"
+                    android:textColor="#80FFFFFF"
                     android:textStyle="bold" />
             </LinearLayout>
 
@@ -180,15 +180,15 @@
 
         <LinearLayout
             android:layout_width="wrap_content"
-            android:paddingTop="@dimen/dp_5"
-            android:paddingBottom="@dimen/dp_5"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="15dp"
             android:layout_gravity="left|top"
+            android:layout_marginLeft="15dp"
             android:background="@drawable/meeting_top_bar_bg"
             android:orientation="horizontal"
+            android:paddingLeft="@dimen/dp_5"
+            android:paddingTop="@dimen/dp_5"
             android:paddingRight="@dimen/dp_5"
-            android:paddingLeft="@dimen/dp_5">
+            android:paddingBottom="@dimen/dp_5">
 
             <TextView
                 android:id="@+id/username"
@@ -219,9 +219,9 @@
             android:id="@+id/layout_lower_third"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="gone"
+            android:layout_marginLeft="8dp"
             android:layout_marginTop="8dp"
-            android:layout_marginLeft="8dp"/>
+            android:visibility="gone" />
     </LinearLayout>
 
     <LinearLayout
@@ -229,8 +229,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="right|center_vertical"
         android:layout_marginRight="5dp"
-        android:background="@drawable/video_list_bg"
         android:layout_marginBottom="50dp"
+        android:background="@drawable/video_list_bg"
         android:orientation="vertical">
 
         <LinearLayout
@@ -283,9 +283,110 @@
         style="?android:attr/progressBarStyleLarge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:background="@color/white"
-        android:visibility="visible"
-        android:layout_gravity="center" />
+        android:visibility="visible" />
+
+    <LinearLayout
+        android:id="@+id/ll_question_form"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal|bottom"
+        android:layout_marginBottom="105dp"
+        android:background="@color/white"
+        android:gravity="center_horizontal|bottom"
+        android:orientation="vertical"
+        android:padding="@dimen/dp_10"
+        android:visibility="invisible">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="@dimen/dp_5"
+            android:background="@drawable/bg_capture_data"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:paddingHorizontal="@dimen/dp_10"
+            android:paddingVertical="@dimen/dp_10">
+
+            <TextView
+                android:id="@+id/questionTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/session_name"
+                android:textAllCaps="true"
+                android:textColor="#FFFFFF"
+                android:textSize="@dimen/textsize_12" />
+
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:id="@+id/llEnterValue"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="@dimen/dp_5"
+                android:background="@drawable/bg_capture_data"
+                android:gravity="center"
+                android:visibility="gone"
+                android:paddingHorizontal="@dimen/dp_10"
+                android:paddingVertical="@dimen/dp_10"
+                android:orientation="vertical">
+
+                <EditText
+                    android:id="@+id/etAnswer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAllCaps="true"
+                    android:inputType="text"
+                    android:textColorHint="@color/text_grey"
+                    android:textColor="@color/white"
+                    android:background="@null"
+                    android:textSize="@dimen/textsize_12" />
+
+            </LinearLayout>
+
+            <RadioGroup
+                android:id="@+id/optionRadioGroup"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp_5">
+
+                <!-- You can add RadioButtons programmatically based on options -->
+
+            </RadioGroup>
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/btnNext"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="@dimen/dp_5"
+            android:background="@drawable/bg_button"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:paddingHorizontal="@dimen/dp_10"
+            android:paddingVertical="@dimen/dp_10">
+
+            <TextView
+                android:id="@+id/tvNext"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/next"
+                android:textAllCaps="true"
+                android:textColor="#FFFFFF"
+                android:textSize="@dimen/textsize_12" />
+
+        </LinearLayout>
+    </LinearLayout>
 
     <include layout="@layout/layout_bottom_action_bar" />
 
@@ -325,8 +426,7 @@
                 android:layout_height="wrap_content"
                 android:paddingLeft="12dp"
                 android:paddingRight="12dp"
-                android:src="@drawable/send"
-                />
+                android:src="@drawable/send" />
 
         </LinearLayout>
 

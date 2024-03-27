@@ -93,4 +93,5 @@
     <string name="internet_dialog_error_message">Please check your internet connectivity…</string>
     <string name="internet_dialog_error_try_again">Retry</string>
     <string name="internet_toast_error_message">Still no internet connectivity..</string>
+    <string name="next">Next</string>
 </resources>

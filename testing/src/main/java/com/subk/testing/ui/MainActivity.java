@@ -1,5 +1,6 @@
 package com.subk.testing.ui;
 
+import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_ALLOW_TO_CAPTURE_CE_FORM_DATA;
 import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_ALLOW_TO_END_MEETING;
 import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_ALLOW_TO_GET_LOCATION;
 import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_ALLOW_TO_HIDE_VIDEO;
@@ -8,8 +9,10 @@ import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_ALLOW_TO_MUTE_AUDIO;
 import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_ALLOW_TO_SHARE_SCREEN;
 import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_ALLOW_TO_TAKE_SCREENSHOT;
 import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_PASSWORD;
+import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_QUESTION_ANSWER;
 import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_RENDER_TYPE;
 import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_SESSION_NAME;
+import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_TASK_ID;
 import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_TOKEN;
 import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_USERNAME;
 import static co.subk.zoomsdk.ZoomSdkHelper.RENDER_TYPE_ZOOMRENDERER;
@@ -19,6 +22,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -30,17 +34,36 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.subk.testing.R;
+import com.subk.testing.Utils;
 import com.subk.testing.databinding.ActivityMainBinding;
 import com.subk.testing.service.EventManagementService;
 
+
+import java.lang.reflect.Type;
+import java.util.List;
+
 import co.subk.zoomsdk.MeetingActivity;
+import co.subk.zoomsdk.meeting.models.Question;
 
 public class MainActivity extends AppCompatActivity {
     protected final static int REQUEST_VIDEO_AUDIO_CODE = 1010;
 
     private AppBarConfiguration appBarConfiguration;
     private ActivityMainBinding binding;
+    List<Question> questionResponses;
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,11 +78,17 @@ public class MainActivity extends AppCompatActivity {
         appBarConfiguration = new AppBarConfiguration.Builder(navController.getGraph()).build();
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
 
+        String jsonData = Utils.loadJSONFromAsset(this, "questions.json");
+        Type listType = new TypeToken<List<Question>>() {
+        }.getType();
+        questionResponses = new Gson().fromJson(jsonData, listType);
+
+        Log.e("print ques", "onCreate: " + questionResponses);
         binding.fab.setOnClickListener(view -> {
-            String sessionName = "Different title";
-            String name = "Kunal Bhavsar";
+            String sessionName = "VHV for vhv-meeting-1";
+            String name = "Piyush Dobariya";
             String password = "789789789";
-            String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHBfa2V5IjoiSFRvZVBWVkhSbmhONEV5dmQxc3Q3RmJyN1hJZkJLc08xQmEzIiwicm9sZV90eXBlIjoxLCJ0cGMiOiJEaWZmZXJlbnQgdGl0bGUiLCJ2ZXJzaW9uIjoxLCJpYXQiOjE3MTAzMTgzODUsImV4cCI6MTcxMDMyNTU4NSwidXNlcl9pZGVudGl0eSI6IjM1NDgiLCJzZXNzaW9uX2tleSI6ImE2NmEwYWNiLWJiYjItNDE1NS1iNDUyLTNjOWYwZjA2N2E5NiIsInB3ZCI6Ijc4OTc4OTc4OSIsImNsb3VkX3JlY29yZGluZ19vcHRpb24iOjAsImNsb3VkX3JlY29yZGluZ19lbGVjdGlvbiI6MX0.mDiAEnxKAtZKvVSMqwtcgwJ0Q--VQ4vkQ7vKhg5UDu8";
+            String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHBfa2V5IjoiSFRvZVBWVkhSbmhONEV5dmQxc3Q3RmJyN1hJZkJLc08xQmEzIiwicm9sZV90eXBlIjoxLCJ0cGMiOiJWSFYgZm9yIHZodi1tZWV0aW5nLTEiLCJ2ZXJzaW9uIjoxLCJpYXQiOjE3MTE1MTU0NjQsImV4cCI6MTcxMTUyMjY2NCwidXNlcl9pZGVudGl0eSI6IjAwMTAiLCJzZXNzaW9uX2tleSI6Ijc0MWEwZmUyLTA3MWEtNGQ3OS04NGYzLTY5ZDk3NGQzOWRiZCIsInB3ZCI6Ijc4OTc4OTc4OSIsImNsb3VkX3JlY29yZGluZ19vcHRpb24iOjAsImNsb3VkX3JlY29yZGluZ19lbGVjdGlvbiI6MX0.C4TKySi0SKvQR5G1PT7hoyiMcxMIOkjyG07ijSZ8zqY";
 
             Intent intent = new Intent(MainActivity.this, MeetingActivity.class);
             intent.putExtra(PARAM_USERNAME, name);
@@ -74,6 +103,8 @@ public class MainActivity extends AppCompatActivity {
             intent.putExtra(PARAM_ALLOW_TO_END_MEETING, true);
             intent.putExtra(PARAM_ALLOW_TO_TAKE_SCREENSHOT, true);
             intent.putExtra(PARAM_ALLOW_TO_GET_LOCATION, true);
+            intent.putExtra(PARAM_ALLOW_TO_CAPTURE_CE_FORM_DATA, true);
+            intent.putExtra(PARAM_QUESTION_ANSWER, new Gson().toJson(questionResponses));
             startActivity(intent);
         });
 

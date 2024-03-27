@@ -209,6 +209,32 @@
             android:src="@drawable/icon_feedback_survey" />
     </LinearLayout>
 
+    <!--capture data form-->
+    <LinearLayout
+        android:id="@+id/llCaptureData"
+        android:layout_width="match_parent"
+        android:layout_height="66dp"
+        android:background="@drawable/more_action_last_bg"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingLeft="24dp"
+        android:paddingRight="16dp">
+
+        <TextView
+            android:id="@+id/tvCaptureData"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Capture Data"
+            android:textColor="#232333"
+            android:textSize="16sp" />
+
+        <ImageView
+            android:id="@+id/ivCaptureData"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/icon_feedback_survey" />
+    </LinearLayout>
 <!--    <LinearLayout-->
 <!--        android:id="@+id/llStartRecord"-->
 <!--        android:layout_width="match_parent"-->

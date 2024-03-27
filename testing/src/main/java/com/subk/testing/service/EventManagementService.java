@@ -8,16 +8,28 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.subk.testing.QuestionAnswerHolder;
+import com.subk.testing.Utils;
+
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
+import java.lang.reflect.Type;
+import java.util.List;
+
+import co.subk.zoomsdk.event.AnswerDataEvent;
 import co.subk.zoomsdk.event.LocationEvent;
 import co.subk.zoomsdk.event.SessionEndedEvent;
 import co.subk.zoomsdk.event.SessionJoinedEvent;
 import co.subk.zoomsdk.event.ShareScreenEvent;
+import co.subk.zoomsdk.meeting.models.Answer;
+import co.subk.zoomsdk.meeting.models.Question;
 
 public class EventManagementService extends Service {
     private static final String TAG = EventManagementService.class.getName();
+    List<Question> questionResponses;
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -64,4 +76,20 @@ public class EventManagementService extends Service {
     public void onShareScreenEventReceived(ShareScreenEvent shareScreenEvent) {
         Toast.makeText(this, "Screen sharing started", Toast.LENGTH_LONG).show();
     }
+
+    @Subscribe
+    public void onAnswerEventReceived(AnswerDataEvent answerDataEvent) {
+        List<Answer> questionAnswers = answerDataEvent.getQuestionAnswers();
+        QuestionAnswerHolder.getInstance().setQuestionAnswers(questionAnswers);
+        String jsonData = Utils.loadJSONFromAsset(this, "questions2.json");
+        Type listType = new TypeToken<List<Question>>() {
+        }.getType();
+        questionResponses = new Gson().fromJson(jsonData, listType);
+        if (questionResponses == null) {
+            EventBus.getDefault().post(true);
+        } else {
+            EventBus.getDefault().post(questionResponses);
+        }
+    }
+
 }
