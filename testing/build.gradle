@@ -51,5 +51,7 @@ dependencies {
     implementation 'androidx.navigation:navigation-fragment:2.7.3'
     implementation 'androidx.navigation:navigation-ui:2.7.3'
     implementation 'org.greenrobot:eventbus:3.2.0'
+    implementation 'com.google.code.gson:gson:2.10.1'
+
     implementation project(path: ':library')
 }
