@@ -1,20 +1,20 @@
 package co.subk.zoomsdk.meeting.models;
 
 public class Answer {
-    private String questionId;
+    private String id;
     private String answer;
 
     public Answer(String questionId, String answer) {
-        this.questionId = questionId;
+        this.id = questionId;
         this.answer = answer;
     }
 
-    public String getQuestionId() {
-        return questionId;
+    public String getId() {
+        return id;
     }
 
-    public void setQuestionId(String questionId) {
-        this.questionId = questionId;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getAnswer() {

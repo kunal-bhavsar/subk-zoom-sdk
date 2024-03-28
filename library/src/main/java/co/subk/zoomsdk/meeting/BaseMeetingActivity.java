@@ -1034,73 +1034,74 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         btnNext = findViewById(R.id.btnNext);
         tvNext = findViewById(R.id.tvNext);
 
-        if (questions == null) {
-            questions = new Gson().fromJson(questionAnswer, new TypeToken<List<Question>>() {
-            }.getType());
-            Log.e("print new0", "initView: " + questions);
-        }
+        if (!questionAnswer.isEmpty()) {
+            if (questions == null) {
+                questions = new Gson().fromJson(questionAnswer, new TypeToken<List<Question>>() {
+                }.getType());
+                Log.e("print new0", "initView: " + questions);
+            }
 
-        showQuestion(currentQuestionIndex);
-        // Restore saved answers when the activity is created
-        btnNext.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                boolean isAnswerValid = true;
-                String answer = "";
+            showQuestion(currentQuestionIndex);
+            // Restore saved answers when the activity is created
+            btnNext.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    boolean isAnswerValid = true;
+                    String answer = "";
 
-                // Get the current question
-                Question question = questions.get(currentQuestionIndex);
-                String questionId = question.getId();
+                    // Get the current question
+                    Question question = questions.get(currentQuestionIndex);
+                    String questionId = question.getId();
 
-                switch (question.getAnswerType()) {
-                    case "text":
-                    case "number":
-                        answer = etAnswer.getText().toString().trim();
-                        break;
-                    case "mcq":
-                        if (selectedTextView != null) {
-                            answer = selectedTextView.getText().toString().trim();
+                    switch (question.getAnswerType()) {
+                        case "text":
+                        case "number":
+                            answer = etAnswer.getText().toString().trim();
+                            break;
+                        case "mcq":
+                            if (selectedTextView != null) {
+                                answer = selectedTextView.getText().toString().trim();
+                            } else {
+                                isAnswerValid = false;
+                                Toast.makeText(BaseMeetingActivity.this, "Please Select an Answer ", Toast.LENGTH_SHORT).show();
+                            }
+                            break;
+                        default:
+                            answer = "";
+                    }
+
+                    // Check if the answer is empty
+                    if (answer.isEmpty()) {
+                        isAnswerValid = false;
+                        Toast.makeText(BaseMeetingActivity.this, "Please Enter an Answer", Toast.LENGTH_SHORT).show();
+                    }
+
+                    // Proceed only if the answer is valid
+                    if (isAnswerValid) {
+                        // Create QuestionAnswer object and add to list
+                        List<Answer> answers = new ArrayList<>();
+                        answers.add(new Answer(questionId, answer));
+
+                        // Post event to pass the answer list
+                        EventBus.getDefault().post(new AnswerDataEvent(taskId, token, answers));
+
+                        // Move to the next question or hide the form if there are no more questions
+                        if (currentQuestionIndex < questions.size() - 1) {
+                            // Move to the next question
+                            if (responseFailed) {
+                                currentQuestionIndex++;
+                            }
+                            showQuestion(currentQuestionIndex);
                         } else {
-                            isAnswerValid = false;
-                            Toast.makeText(BaseMeetingActivity.this, "Please Select an Answer ", Toast.LENGTH_SHORT).show();
+                            // Hide the form if there are no more questions
+                            ll_question_form.setVisibility(View.GONE);
+                            allowToCaptureData = false;
                         }
-                        break;
-                    default:
-                        answer = "";
-                }
-
-                // Check if the answer is empty
-                if (answer.isEmpty()) {
-                    isAnswerValid = false;
-                    Toast.makeText(BaseMeetingActivity.this, "Please Enter an Answer", Toast.LENGTH_SHORT).show();
-                }
-
-                // Proceed only if the answer is valid
-                if (isAnswerValid) {
-                    // Create QuestionAnswer object and add to list
-                    List<Answer> answers = new ArrayList<>();
-                    answers.add(new Answer(questionId, answer));
-
-                    // Post event to pass the answer list
-                    EventBus.getDefault().post(new AnswerDataEvent(taskId, token, answers));
-
-                    // Move to the next question or hide the form if there are no more questions
-                    if (currentQuestionIndex < questions.size() - 1) {
-                        // Move to the next question
-                        if (responseFailed) {
-                            currentQuestionIndex++;
-                        }
-                        showQuestion(currentQuestionIndex);
-                    } else {
-                        // Hide the form if there are no more questions
-                        ll_question_form.setVisibility(View.GONE);
-                        allowToCaptureData = false;
                     }
                 }
-            }
-        });
+            });
 
-
+        }
         onKeyBoardChange(false, 0, 30);
         final int margin = (int) (5 * displayMetrics.scaledDensity);
         userVideoList.addItemDecoration(new RecyclerView.ItemDecoration() {
@@ -1413,7 +1414,6 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         llCaptureData.setOnClickListener(view1 -> {
             builder.dismiss();
             ll_question_form.setVisibility(View.VISIBLE);
-
         });
 
         if (allowToInviteAttendee) {
