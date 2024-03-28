@@ -9,7 +9,7 @@ public class AnswerDataEvent {
     public final String token;
     private List<Answer> questionAnswers;
 
-    public AnswerDataEvent(String taskId, String clientToken,List<Answer> questionAnswers) {
+    public AnswerDataEvent(String taskId, String clientToken, List<Answer> questionAnswers) {
         this.id = taskId;
         this.token = clientToken;
         this.questionAnswers = questionAnswers;
