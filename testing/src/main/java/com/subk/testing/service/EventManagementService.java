@@ -10,26 +10,25 @@ import androidx.annotation.Nullable;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.subk.testing.QuestionAnswerHolder;
 import com.subk.testing.Utils;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
 
-import co.subk.zoomsdk.event.AnswerDataEvent;
+import co.subk.zoomsdk.event.CeFormAnswerDataEvent;
 import co.subk.zoomsdk.event.LocationEvent;
 import co.subk.zoomsdk.event.SessionEndedEvent;
 import co.subk.zoomsdk.event.SessionJoinedEvent;
 import co.subk.zoomsdk.event.ShareScreenEvent;
-import co.subk.zoomsdk.meeting.models.Answer;
-import co.subk.zoomsdk.meeting.models.Question;
+import co.subk.zoomsdk.meeting.models.CeFormQuestion;
 
 public class EventManagementService extends Service {
     private static final String TAG = EventManagementService.class.getName();
-    List<Question> questionResponses;
+    List<CeFormQuestion> questionResponses;
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -78,15 +77,14 @@ public class EventManagementService extends Service {
     }
 
     @Subscribe
-    public void onAnswerEventReceived(AnswerDataEvent answerDataEvent) {
-        List<Answer> questionAnswers = answerDataEvent.getQuestionAnswers();
-        QuestionAnswerHolder.getInstance().setQuestionAnswers(questionAnswers);
+    public void onAnswerEventReceived(CeFormAnswerDataEvent ceFormAnswerDataEvent) {
         String jsonData = Utils.loadJSONFromAsset(this, "questions2.json");
-        Type listType = new TypeToken<List<Question>>() {
+        Type listType = new TypeToken<List<CeFormQuestion>>() {
         }.getType();
         questionResponses = new Gson().fromJson(jsonData, listType);
         if (questionResponses == null) {
-            EventBus.getDefault().post(true);
+            EventBus.getDefault().post(new ArrayList<>());
+            Log.e("print answer", "onAnswerEventReceived: " + 0 );
         } else {
             EventBus.getDefault().post(questionResponses);
         }

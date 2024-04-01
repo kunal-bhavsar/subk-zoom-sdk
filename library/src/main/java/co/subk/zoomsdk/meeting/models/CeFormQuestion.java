@@ -2,7 +2,7 @@ package co.subk.zoomsdk.meeting.models;
 
 import java.util.List;
 
-public class Question {
+public class CeFormQuestion {
     private String id;
     private String setCode;
     private String question;

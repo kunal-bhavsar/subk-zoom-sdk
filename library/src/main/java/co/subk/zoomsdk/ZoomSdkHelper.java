@@ -27,8 +27,11 @@ public class ZoomSdkHelper {
     public final static String PARAM_ALLOW_TO_END_MEETING = "allow_to_end_meeting";
     public final static String PARAM_ALLOW_TO_TAKE_SCREENSHOT = "allow_to_take_screenshot";
     public final static String PARAM_ALLOW_TO_GET_LOCATION = "allow_to_get_location";
-    public final static String PARAM_ALLOW_TO_CAPTURE_CE_FORM_DATA = "allow_to_capture_ce_form_data";
-    public final static String PARAM_QUESTION_ANSWER = "allow_to_question_answer";
+    public final static String PARAM_ALLOW_TO_CE_FORM_CAPTURE_DATA = "allow_to_ce_form_capture_data";
+    public final static String PARAM_CE_FORM_QUESTION_ANSWER_LIST = "ce_form_question_answer_list";
+    public final static String PARAM_CE_FORM_TYPE_TEXT = "text";
+    public final static String PARAM_CE_FORM_TYPE_NUMBER = "number";
+    public final static String PARAM_CE_FORM_TYPE_MCQ = "mcq";
     public static int stopShare() {
 
         return ZoomVideoSDK.getInstance().getShareHelper().stopShare();
