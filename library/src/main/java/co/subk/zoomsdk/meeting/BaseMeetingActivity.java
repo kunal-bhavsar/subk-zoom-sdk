@@ -350,7 +350,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     private Map<String, String> ceAnswersMap = new HashMap<>();
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onQuestionResponseReceived(List<CeFormQuestion> ceFormQuestionResponse) {
+    public void onCeAnswerResponseReceived(List<CeFormQuestion> ceFormQuestionResponse) {
         // Handle the received question responses here
         // Update UI or perform any required actions
         if (!ceFormQuestionResponse.isEmpty()) {
