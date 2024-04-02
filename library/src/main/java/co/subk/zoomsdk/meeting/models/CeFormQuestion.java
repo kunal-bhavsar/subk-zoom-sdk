@@ -13,6 +13,7 @@ public class CeFormQuestion {
     private String modifiedDate;
     private String questionCode;
     private List<String> availableAnswers;
+    private String answer;
     private String createdByName;
     private String modifiedByName;
 
@@ -112,5 +113,13 @@ public class CeFormQuestion {
 
     public void setModifiedByName(String modifiedByName) {
         this.modifiedByName = modifiedByName;
+    }
+
+    public String getAnswer() {
+        return answer;
+    }
+
+    public void setAnswer(String answer) {
+        this.answer = answer;
     }
 }

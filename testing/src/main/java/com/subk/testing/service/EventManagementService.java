@@ -81,7 +81,7 @@ public class EventManagementService extends Service {
         String jsonData = Utils.loadJSONFromAsset(this, "questions2.json");
         Type listType = new TypeToken<List<CeFormQuestion>>() {
         }.getType();
-        questionResponses = new Gson().fromJson(jsonData, listType);
+//        questionResponses = new Gson().fromJson(jsonData, listType);
         if (questionResponses == null) {
             EventBus.getDefault().post(new ArrayList<>());
             Log.e("print answer", "onAnswerEventReceived: " + 0 );

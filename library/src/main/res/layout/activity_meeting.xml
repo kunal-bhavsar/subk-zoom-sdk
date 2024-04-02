@@ -299,6 +299,14 @@
         android:padding="@dimen/dp_10"
         android:visibility="gone">
 
+        <ImageView
+            android:id="@+id/ce_form_close"
+            android:layout_width="23dp"
+            android:layout_height="23dp"
+            android:layout_gravity="right"
+            android:layout_marginBottom="3dp"
+            android:src="@drawable/icon_survey_close" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

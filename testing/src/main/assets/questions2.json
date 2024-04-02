@@ -1,30 +1,52 @@
 [
   {
-    "id": "afca8fd6-a9a2-41a8-a9b6-a08c24f61466",
-    "setCode": "VHV",
-    "question": "What is your Age?",
-    "answerType": "number",
-    "createdBy": "",
-    "createdDate": "2024-03-17T11:53:16.266Z",
-    "modifiedBy": null,
-    "modifiedDate": "2024-03-21T02:38:13.273Z",
-    "questionCode": "VHV-Q2",
-    "availableAnswers": [],
-    "createdByName": "",
-    "modifiedByName": ""
+    "createdBy":"",
+    "setCode":"VHV",
+    "question":"What is your place of birth?",
+    "answerType":"text",
+    "id":"1a17f1e5-f47f-4892-a6c0-657e11fa8de0",
+    "createdDate":"2024-03-17T11:53:16.272Z",
+    "modifiedBy":null,
+    "modifiedDate":"2024-04-01T22:20:21.382Z",
+    "questionCode":"VHV-Q3",
+    "availableAnswers":[
+    ],
+    "answer":"surat",
+    "createdBy_Name_":"",
+    "modifiedBy_Name_":""
   },
   {
-    "id": "8b0608ef-2502-4384-9e70-1e1138929ca0",
-    "setCode": "VHV",
-    "question": "What is your name?",
-    "answerType": "mcq",
-    "createdBy": "",
-    "createdDate": "2024-03-17T11:53:16.259Z",
-    "modifiedBy": null,
-    "modifiedDate": "2024-03-21T02:38:13.264Z",
-    "questionCode": "VHV-Q1",
-    "availableAnswers": ["John", "Doe"],
-    "createdByName": "",
-    "modifiedByName": ""
+    "createdBy":"",
+    "setCode":"VHV",
+    "question":"What is your Age?",
+    "answerType":"number",
+    "id":"afca8fd6-a9a2-41a8-a9b6-a08c24f61466",
+    "createdDate":"2024-03-17T11:53:16.266Z",
+    "modifiedBy":null,
+    "modifiedDate":"2024-04-01T22:20:21.373Z",
+    "questionCode":"VHV-Q2",
+    "availableAnswers":[
+    ],
+    "answer":"",
+    "createdBy_Name_":"",
+    "modifiedBy_Name_":""
+  },
+  {
+    "createdBy":"",
+    "setCode":"VHV",
+    "question":"What is your name?",
+    "answerType":"mcq",
+    "id":"8b0608ef-2502-4384-9e70-1e1138929ca0",
+    "createdDate":"2024-03-17T11:53:16.259Z",
+    "modifiedBy":null,
+    "modifiedDate":"2024-04-01T22:20:21.366Z",
+    "questionCode":"VHV-Q1",
+    "availableAnswers":[
+      "John",
+      "Doe"
+    ],
+    "answer":"John",
+    "createdBy_Name_":"",
+    "modifiedBy_Name_":""
   }
 ]
