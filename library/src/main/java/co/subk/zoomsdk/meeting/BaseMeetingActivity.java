@@ -1,6 +1,6 @@
 package co.subk.zoomsdk.meeting;
 
-import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_ALLOW_TO_CAPTURE_CE_FORM_DATA;
+import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_ALLOW_TO_CE_FORM_CAPTURE_DATA;
 import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_ALLOW_TO_END_MEETING;
 import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_ALLOW_TO_GET_LOCATION;
 import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_ALLOW_TO_HIDE_VIDEO;
@@ -8,9 +8,12 @@ import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_ALLOW_TO_INVITE_ATTENDEE;
 import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_ALLOW_TO_MUTE_AUDIO;
 import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_ALLOW_TO_SHARE_SCREEN;
 import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_ALLOW_TO_TAKE_SCREENSHOT;
+import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_CE_FORM_TYPE_MCQ;
+import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_CE_FORM_TYPE_NUMBER;
+import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_CE_FORM_TYPE_TEXT;
 import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_MEETING_ENTITY_ID;
 import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_PASSWORD;
-import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_QUESTION_ANSWER;
+import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_CE_FORM_QUESTION_ANSWER_LIST;
 import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_RENDER_TYPE;
 import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_SESSION_NAME;
 import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_TASK_ID;
@@ -30,7 +33,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
@@ -39,6 +41,7 @@ import android.graphics.Rect;
 import android.hardware.display.DisplayManager;
 import android.location.Location;
 import android.location.LocationManager;
+import android.media.Image;
 import android.media.projection.MediaProjectionManager;
 import android.net.ConnectivityManager;
 import android.net.Uri;
@@ -62,8 +65,8 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -91,9 +94,10 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import co.subk.zoomsdk.NetworkChangeReceiver;
 import co.subk.zoomsdk.R;
@@ -103,8 +107,7 @@ import co.subk.zoomsdk.cmd.CmdLowerThirdRequest;
 import co.subk.zoomsdk.cmd.CmdReactionRequest;
 import co.subk.zoomsdk.cmd.CmdRequest;
 import co.subk.zoomsdk.cmd.EmojiReactionType;
-import co.subk.zoomsdk.event.AnswerDataEvent;
-import co.subk.zoomsdk.event.QuestionDataEvent;
+import co.subk.zoomsdk.event.CeFormAnswerDataEvent;
 import co.subk.zoomsdk.event.InternetEvent;
 import co.subk.zoomsdk.event.InviteAttendeeEvent;
 import co.subk.zoomsdk.event.LocationEvent;
@@ -114,8 +117,8 @@ import co.subk.zoomsdk.event.ShareScreenEvent;
 import co.subk.zoomsdk.meeting.feedback.data.FeedbackDataManager;
 import co.subk.zoomsdk.meeting.feedback.view.FeedbackResultDialog;
 import co.subk.zoomsdk.meeting.feedback.view.FeedbackSubmitDialog;
-import co.subk.zoomsdk.meeting.models.Answer;
-import co.subk.zoomsdk.meeting.models.Question;
+import co.subk.zoomsdk.meeting.models.CeFormAnswer;
+import co.subk.zoomsdk.meeting.models.CeFormQuestion;
 import co.subk.zoomsdk.meeting.notification.NotificationMgr;
 import co.subk.zoomsdk.meeting.notification.NotificationService;
 import co.subk.zoomsdk.meeting.screenshare.ShareToolbar;
@@ -225,7 +228,6 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
     protected String myDisplayName = "";
     protected String meetingPwd = "";
-    protected String questionAnswer = "";
     protected String sessionName;
 
     protected String taskId;
@@ -331,33 +333,36 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     };
 
     boolean isVisitFirstTime = false;
-    protected TextView questionTextView;
-    protected RadioGroup optionRadioGroup;
-    protected LinearLayout llEnterValue;
-    protected EditText etAnswer;
-    protected LinearLayout btnNext;
-    protected TextView tvNext;
-    protected LinearLayout ll_question_form;
-    protected Boolean responseFailed = false;
-    private List<Question> questions;
-    private TextView selectedTextView = null;
+    protected TextView ceFormQuestionText;
+    protected RadioGroup ceFormRadioGroup;
+    protected LinearLayout ceFormEnterAnswer;
+    protected EditText ceFormEdittextAnswer;
+    protected TextView ceFormBtnNext;
+    protected TextView ceFormBtnPrev;
+    protected LinearLayout ceFormQuestionLayout;
+    protected ImageView ceFormClose;
+    protected RelativeLayout ceAddLayoutAnswer;
+    private List<CeFormQuestion> ceFormQuestions;
+    private TextView ceFormSelectedAnswer = null;
     private int currentQuestionIndex = 0;
     private float dX, dY;
+    protected Boolean responseFailed = false;
+    protected String ceQuestionResponse = "";
+    // Map to store answers with question IDs
+    private Map<String, String> ceAnswersMap = new HashMap<>();
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onQuestionResponseReceived(List<Question> questionResponses) {
+    public void onCeAnswerResponseReceived(List<CeFormQuestion> ceFormQuestionResponse) {
         // Handle the received question responses here
         // Update UI or perform any required actions
-        questions = questionResponses;
-        Log.e("print new", "onQuestionResponseReceived: " + questions);
-    }
+        if (!ceFormQuestionResponse.isEmpty()) {
+            ceFormQuestions = ceFormQuestionResponse;
+            responseFailed = false;
+            Log.e("print ans response", "onQuestionResponseReceived: " + ceFormQuestions);
+        } else {
+            responseFailed = true;
+        }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onQuestionResponseReceived(Boolean response) {
-        // Handle the received question responses here
-        // Update UI or perform any required actions
-        responseFailed = response;
-        Log.e("print boolean", "onQuestionResponseReceived: " + response);
     }
 
     @Override
@@ -393,32 +398,37 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
     // Method to display the current question
     private void showQuestion(int index) {
-        Question question = questions.get(index);
-        questionTextView.setText(question.getQuestion());
+        CeFormQuestion ceFormQuestion = ceFormQuestions.get(index);
+        ceFormQuestionText.setText(ceFormQuestion.getQuestionCode() + ". " + ceFormQuestion.getQuestion());
 
         // Clear existing options in the RadioGroup
-        optionRadioGroup.removeAllViews();
-
+        ceAddLayoutAnswer.removeAllViews();
+        ceFormRadioGroup.removeAllViews();
         // Update UI components based on the answer type
-        switch (question.getAnswerType()) {
-            case "text":
-                llEnterValue.setVisibility(View.VISIBLE);
-                optionRadioGroup.setVisibility(View.GONE);
-                etAnswer.setInputType(question.getAnswerType().equals("number") ? InputType.TYPE_CLASS_NUMBER : InputType.TYPE_CLASS_TEXT);
-                etAnswer.setText("");
-                etAnswer.setHint("Enter answer");
+        switch (ceFormQuestion.getAnswerType()) {
+            case PARAM_CE_FORM_TYPE_TEXT:
+                if (ceFormQuestion.getAnswer() != null && !ceFormQuestion.getAnswer().isEmpty()) {
+                    ceFormEdittextAnswer.setText(ceFormQuestion.getAnswer());
+                } else {
+                    ceFormEdittextAnswer.setText("");
+                }
+                ceAddLayoutAnswer.addView(ceFormEnterAnswer);
+                ceFormEdittextAnswer.setInputType(ceFormQuestion.getAnswerType().equals("number") ? InputType.TYPE_CLASS_NUMBER : InputType.TYPE_CLASS_TEXT);
+                ceFormEdittextAnswer.setHint("Enter answer");
                 break;
-            case "number":
-                llEnterValue.setVisibility(View.VISIBLE);
-                optionRadioGroup.setVisibility(View.GONE);
-                etAnswer.setInputType(InputType.TYPE_CLASS_NUMBER);
-                etAnswer.setText("");
-                etAnswer.setHint("Enter number");
+            case PARAM_CE_FORM_TYPE_NUMBER:
+                if (ceFormQuestion.getAnswer() != null && !ceFormQuestion.getAnswer().isEmpty()) {
+                    ceFormEdittextAnswer.setText(ceFormQuestion.getAnswer());
+                } else {
+                    ceFormEdittextAnswer.setText("");
+                }
+                ceAddLayoutAnswer.addView(ceFormEnterAnswer);
+                ceFormEdittextAnswer.setInputType(InputType.TYPE_CLASS_NUMBER);
+                ceFormEdittextAnswer.setHint("Enter number");
                 break;
-            case "mcq":
-                llEnterValue.setVisibility(View.GONE);
-                optionRadioGroup.setVisibility(View.VISIBLE);
-                for (int i = 0; i < question.getAvailableAnswers().size(); i++) {
+            case PARAM_CE_FORM_TYPE_MCQ:
+                ceAddLayoutAnswer.addView(ceFormRadioGroup);
+                for (int i = 0; i < ceFormQuestion.getAvailableAnswers().size(); i++) {
                     LinearLayout linearLayout = new LinearLayout(this);
                     LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
                             LinearLayout.LayoutParams.MATCH_PARENT,
@@ -427,39 +437,50 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                     layoutParams.setMargins(10, 15, 10, 15);
                     linearLayout.setLayoutParams(layoutParams);
                     linearLayout.setOrientation(LinearLayout.VERTICAL);
-                    TextView radioButton = (TextView) getLayoutInflater().inflate(R.layout.item_answer, null);
-                    radioButton.setText(question.getAvailableAnswers().get(i));
+                    TextView radioButton = (TextView) getLayoutInflater().inflate(R.layout.item_ce_form_answer, null);
+                    radioButton.setText(ceFormQuestion.getAvailableAnswers().get(i));
                     radioButton.setId(i);
                     radioButton.setLayoutParams(new LinearLayout.LayoutParams(
                             LinearLayout.LayoutParams.MATCH_PARENT,
                             LinearLayout.LayoutParams.WRAP_CONTENT
                     ));
+
+                    // Check if the current radio button matches the answer
+                    if (ceFormQuestion.getAnswer() != null && !ceFormQuestion.getAnswer().isEmpty()
+                            && ceFormQuestion.getAnswer().equals(ceFormQuestion.getAvailableAnswers().get(i))) {
+                        // Set background for the selected answer
+                        radioButton.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.bg_radio_button));
+                        ceFormSelectedAnswer = (TextView) radioButton;
+                    } else {
+                        // Set background for other options
+                        radioButton.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.bg_capture_data));
+                    }
                     radioButton.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            if (selectedTextView != null) {
-                                selectedTextView.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.bg_capture_data));
+                            if (ceFormSelectedAnswer != null) {
+                                ceFormSelectedAnswer.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.bg_capture_data));
                             }
-                            view.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.bg_radio_button));
                             // Set background color of clicked TextView to green
+                            view.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.bg_radio_button));
 //                            Update the selected TextView
-                            selectedTextView = (TextView) view;
+                            ceFormSelectedAnswer = (TextView) view;
                         }
                     });
 
                     linearLayout.addView(radioButton);
-                    optionRadioGroup.addView(linearLayout);
+                    ceFormRadioGroup.addView(linearLayout);
                 }
                 break;
         }
 
-        if (index == questions.size() - 1) {
-            tvNext.setText("Submit");
+        if (index == ceFormQuestions.size() - 1) {
+            ceFormBtnNext.setText("Submit");
         } else {
-            tvNext.setText("Next");
+            ceFormBtnNext.setText("Next");
         }
 
-        ll_question_form.setOnTouchListener(new View.OnTouchListener() {
+        ceFormQuestionLayout.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent event) {
                 switch (event.getAction()) {
@@ -601,8 +622,8 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
             allowToEndMeeting = bundle.getBoolean(PARAM_ALLOW_TO_END_MEETING);
             allowToTakeScreenshot = bundle.getBoolean(PARAM_ALLOW_TO_TAKE_SCREENSHOT);
             allowToCaptureLocation = bundle.getBoolean(PARAM_ALLOW_TO_GET_LOCATION);
-            allowToCaptureData = bundle.getBoolean(PARAM_ALLOW_TO_CAPTURE_CE_FORM_DATA);
-            questionAnswer = bundle.getString(PARAM_QUESTION_ANSWER);
+            allowToCaptureData = bundle.getBoolean(PARAM_ALLOW_TO_CE_FORM_CAPTURE_DATA);
+            ceQuestionResponse = bundle.getString(PARAM_CE_FORM_QUESTION_ANSWER_LIST);
         }
     }
 
@@ -1026,82 +1047,128 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         lowerThirdLayout = findViewById(R.id.layout_lower_third);
         lowerThirdLayout.setVisibility(View.GONE);
 
-        ll_question_form = findViewById(R.id.ll_question_form);
-        questionTextView = findViewById(R.id.questionTextView);
-        optionRadioGroup = findViewById(R.id.optionRadioGroup);
-        llEnterValue = findViewById(R.id.llEnterValue);
-        etAnswer = findViewById(R.id.etAnswer);
-        btnNext = findViewById(R.id.btnNext);
-        tvNext = findViewById(R.id.tvNext);
+        ceFormQuestionLayout = findViewById(R.id.ce_form_question_layout);
+        ceFormQuestionText = findViewById(R.id.ce_form_question_text);
+        ceAddLayoutAnswer = findViewById(R.id.ce_add_layout_answer);
+        ceFormBtnNext = findViewById(R.id.ce_form_btn_next);
+        ceFormBtnPrev = findViewById(R.id.ce_form_btn_prev);
+        ceFormEnterAnswer = findViewById(R.id.ce_form_enter_answer);
+        ceFormEdittextAnswer = findViewById(R.id.ce_form_edittext_answer);
+        ceFormRadioGroup = findViewById(R.id.ce_form_radio_group);
+        ceFormClose = findViewById(R.id.ce_form_close);
 
-        if (!questionAnswer.isEmpty()) {
-            if (questions == null) {
-                questions = new Gson().fromJson(questionAnswer, new TypeToken<List<Question>>() {
+        if (!ceQuestionResponse.isEmpty()) {
+            if (ceFormQuestions == null) {
+                ceFormQuestions = new Gson().fromJson(ceQuestionResponse, new TypeToken<List<CeFormQuestion>>() {
                 }.getType());
-                Log.e("print new0", "initView: " + questions);
+                Log.e("print que response", "initView: " + ceFormQuestions);
             }
 
             showQuestion(currentQuestionIndex);
             // Restore saved answers when the activity is created
-            btnNext.setOnClickListener(new View.OnClickListener() {
+
+            if (currentQuestionIndex > 0) {
+                ceFormBtnPrev.setBackgroundResource(R.drawable.bg_button);
+                ceFormBtnPrev.setEnabled(true);
+            } else {
+                ceFormBtnPrev.setBackgroundResource(R.drawable.bg_button_disable);
+                ceFormBtnPrev.setEnabled(false);
+            }
+
+            ceFormBtnPrev.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    boolean isAnswerValid = true;
+                    if (currentQuestionIndex > 0) {
+                        // Move to the previous question
+                        currentQuestionIndex--;
+
+                        // Show the previous question
+                        showQuestion(currentQuestionIndex);
+
+                        // Restore the previously entered answer
+                        restorePreviousAnswer();
+                        ceFormBtnPrev.setBackgroundResource(R.drawable.bg_button);
+                        ceFormBtnPrev.setEnabled(true);
+                        // If the current question index is 0, disable the previous button
+                        if (currentQuestionIndex == 0) {
+                            ceFormBtnPrev.setBackgroundResource(R.drawable.bg_button_disable);
+                            ceFormBtnPrev.setEnabled(false);
+                        }
+                    }
+                }
+            });
+
+            ceFormClose.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ceFormQuestionLayout.setVisibility(View.GONE);
+                }
+            });
+            ceFormBtnNext.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
                     String answer = "";
 
                     // Get the current question
-                    Question question = questions.get(currentQuestionIndex);
-                    String questionId = question.getId();
+                    CeFormQuestion ceFormQuestion = ceFormQuestions.get(currentQuestionIndex);
+                    String questionId = ceFormQuestion.getId();
 
-                    switch (question.getAnswerType()) {
-                        case "text":
-                        case "number":
-                            answer = etAnswer.getText().toString().trim();
+                    switch (ceFormQuestion.getAnswerType()) {
+                        case PARAM_CE_FORM_TYPE_TEXT:
+                        case PARAM_CE_FORM_TYPE_NUMBER:
+                            answer = ceFormEdittextAnswer.getText().toString().trim();
                             break;
-                        case "mcq":
-                            if (selectedTextView != null) {
-                                answer = selectedTextView.getText().toString().trim();
-                            } else {
-                                isAnswerValid = false;
-                                Toast.makeText(BaseMeetingActivity.this, "Please Select an Answer ", Toast.LENGTH_SHORT).show();
+                        case PARAM_CE_FORM_TYPE_MCQ:
+                            if (ceFormSelectedAnswer != null) {
+                                answer = ceFormSelectedAnswer.getText().toString().trim();
                             }
                             break;
                         default:
                             answer = "";
                     }
 
-                    // Check if the answer is empty
-                    if (answer.isEmpty()) {
-                        isAnswerValid = false;
-                        Toast.makeText(BaseMeetingActivity.this, "Please Enter an Answer", Toast.LENGTH_SHORT).show();
-                    }
+                    // Store the answer in the map
+                    ceAnswersMap.put(questionId, answer);
 
-                    // Proceed only if the answer is valid
-                    if (isAnswerValid) {
-                        // Create QuestionAnswer object and add to list
-                        List<Answer> answers = new ArrayList<>();
-                        answers.add(new Answer(questionId, answer));
+                    // Create QuestionAnswer object and add to list
+                    List<CeFormAnswer> answers = new ArrayList<>();
+                    answers.add(new CeFormAnswer(questionId, answer));
 
-                        // Post event to pass the answer list
-                        EventBus.getDefault().post(new AnswerDataEvent(taskId, token, answers));
+                    // Post event to pass the answer list
+                    EventBus.getDefault().post(new CeFormAnswerDataEvent(taskId, token, answers));
 
-                        // Move to the next question or hide the form if there are no more questions
-                        if (currentQuestionIndex < questions.size() - 1) {
-                            // Move to the next question
-                            if (responseFailed) {
-                                currentQuestionIndex++;
+                    // Move to the next question or hide the form if there are no more questions
+                    if (currentQuestionIndex < ceFormQuestions.size() - 1) {
+                        // Move to the next question
+                        currentQuestionIndex++;
+                        showQuestion(currentQuestionIndex);
+                        ceFormBtnPrev.setBackgroundResource(R.drawable.bg_button);
+                        ceFormBtnPrev.setEnabled(true);
+                    } else {
+                        // Check if any answer is empty
+                        boolean anyAnswerEmpty = false;
+                        for (CeFormQuestion question : ceFormQuestions) {
+                            String qId = question.getId();
+                            if (!ceAnswersMap.containsKey(qId) || ceAnswersMap.get(qId).isEmpty()) {
+                                anyAnswerEmpty = true;
+                                break;
                             }
-                            showQuestion(currentQuestionIndex);
+                        }
+
+                        if (anyAnswerEmpty) {
+                            Toast.makeText(BaseMeetingActivity.this, "Please answer all questions", Toast.LENGTH_SHORT).show();
                         } else {
-                            // Hide the form if there are no more questions
-                            ll_question_form.setVisibility(View.GONE);
+                            // Hide the form if all questions are answered
+                            ceFormQuestionLayout.setVisibility(View.GONE);
                             allowToCaptureData = false;
                         }
                     }
+
                 }
             });
 
         }
+
         onKeyBoardChange(false, 0, 30);
         final int margin = (int) (5 * displayMetrics.scaledDensity);
         userVideoList.addItemDecoration(new RecyclerView.ItemDecoration() {
@@ -1148,6 +1215,43 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         });
 
 
+    }
+
+    private void restorePreviousAnswer() {
+        CeFormQuestion ceFormQuestion = ceFormQuestions.get(currentQuestionIndex);
+        String questionId = ceFormQuestion.getId();
+
+        // Check if the answer for the current question is stored in the map
+        if (ceAnswersMap.containsKey(questionId)) {
+            String previousAnswer = ceAnswersMap.get(questionId);
+
+            switch (ceFormQuestion.getAnswerType()) {
+                case PARAM_CE_FORM_TYPE_TEXT:
+                case PARAM_CE_FORM_TYPE_NUMBER:
+                    // Set the previous text answer to the EditText
+                    ceFormEdittextAnswer.setText(previousAnswer);
+                    break;
+                case PARAM_CE_FORM_TYPE_MCQ:
+                    // Set the previous selected answer to the appropriate TextView
+                    if (previousAnswer != null) {
+                        for (int i = 0; i < ceFormRadioGroup.getChildCount(); i++) {
+                            View childView = ceFormRadioGroup.getChildAt(i);
+                            if (childView instanceof TextView) {
+                                TextView radioButton = (TextView) childView;
+                                if (radioButton.getText().toString().equals(previousAnswer)) {
+                                    radioButton.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.bg_radio_button));
+                                    ceFormSelectedAnswer = radioButton;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    break;
+            }
+        } else {
+            // If there is no previous answer stored, clear the EditText
+            ceFormEdittextAnswer.setText("");
+        }
     }
 
     protected void initMeeting() {
@@ -1248,7 +1352,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         unSubscribe();
         adapter.clear(true);
         actionBar.setVisibility(View.GONE);
-        ll_question_form.setVisibility(View.GONE);
+        ceFormQuestionLayout.setVisibility(View.GONE);
         // mtvInput.setVisibility(View.GONE);
     }
 
@@ -1413,7 +1517,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
         llCaptureData.setOnClickListener(view1 -> {
             builder.dismiss();
-            ll_question_form.setVisibility(View.VISIBLE);
+            ceFormQuestionLayout.setVisibility(View.VISIBLE);
         });
 
         if (allowToInviteAttendee) {
@@ -1775,7 +1879,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                 return;
             }
             actionBar.setVisibility(View.GONE);
-            ll_question_form.setVisibility(View.GONE);
+            ceFormQuestionLayout.setVisibility(View.GONE);
             // mtvInput.setVisibility(View.GONE);
             text_fps.setVisibility(View.GONE);
             practiceText.setText("Connecting ...");
@@ -1799,7 +1903,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         updateSessionInfo();
         updateFpsOrientation();
         actionBar.setVisibility(View.VISIBLE);
-//        ll_question_form.setVisibility(View.INVISIBLE);
+
         if (ZoomVideoSDK.getInstance().getShareHelper().isSharingOut()) {
             ZoomVideoSDK.getInstance().getShareHelper().stopShare();
         }

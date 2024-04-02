@@ -2,7 +2,7 @@ package co.subk.zoomsdk.meeting.models;
 
 import java.util.List;
 
-public class Question {
+public class CeFormQuestion {
     private String id;
     private String setCode;
     private String question;
@@ -13,6 +13,7 @@ public class Question {
     private String modifiedDate;
     private String questionCode;
     private List<String> availableAnswers;
+    private String answer;
     private String createdByName;
     private String modifiedByName;
 
@@ -112,5 +113,13 @@ public class Question {
 
     public void setModifiedByName(String modifiedByName) {
         this.modifiedByName = modifiedByName;
+    }
+
+    public String getAnswer() {
+        return answer;
+    }
+
+    public void setAnswer(String answer) {
+        this.answer = answer;
     }
 }

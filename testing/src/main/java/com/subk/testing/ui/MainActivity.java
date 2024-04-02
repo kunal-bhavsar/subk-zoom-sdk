@@ -1,6 +1,6 @@
 package com.subk.testing.ui;
 
-import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_ALLOW_TO_CAPTURE_CE_FORM_DATA;
+import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_ALLOW_TO_CE_FORM_CAPTURE_DATA;
 import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_ALLOW_TO_END_MEETING;
 import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_ALLOW_TO_GET_LOCATION;
 import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_ALLOW_TO_HIDE_VIDEO;
@@ -9,10 +9,9 @@ import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_ALLOW_TO_MUTE_AUDIO;
 import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_ALLOW_TO_SHARE_SCREEN;
 import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_ALLOW_TO_TAKE_SCREENSHOT;
 import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_PASSWORD;
-import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_QUESTION_ANSWER;
+import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_CE_FORM_QUESTION_ANSWER_LIST;
 import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_RENDER_TYPE;
 import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_SESSION_NAME;
-import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_TASK_ID;
 import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_TOKEN;
 import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_USERNAME;
 import static co.subk.zoomsdk.ZoomSdkHelper.RENDER_TYPE_ZOOMRENDERER;
@@ -46,14 +45,14 @@ import java.lang.reflect.Type;
 import java.util.List;
 
 import co.subk.zoomsdk.MeetingActivity;
-import co.subk.zoomsdk.meeting.models.Question;
+import co.subk.zoomsdk.meeting.models.CeFormQuestion;
 
 public class MainActivity extends AppCompatActivity {
     protected final static int REQUEST_VIDEO_AUDIO_CODE = 1010;
 
     private AppBarConfiguration appBarConfiguration;
     private ActivityMainBinding binding;
-    List<Question> questionResponses;
+    List<CeFormQuestion> questionResponses;
 
     @Override
     protected void onStart() {
@@ -79,16 +78,16 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
 
         String jsonData = Utils.loadJSONFromAsset(this, "questions.json");
-        Type listType = new TypeToken<List<Question>>() {
+        Type listType = new TypeToken<List<CeFormQuestion>>() {
         }.getType();
         questionResponses = new Gson().fromJson(jsonData, listType);
 
         Log.e("print ques", "onCreate: " + questionResponses);
         binding.fab.setOnClickListener(view -> {
-            String sessionName = "VHV for meeting-1";
+            String sessionName = "VHV for vhv-meeting-1";
             String name = "Piyush Dobariya";
             String password = "789789789";
-            String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHBfa2V5IjoiSFRvZVBWVkhSbmhONEV5dmQxc3Q3RmJyN1hJZkJLc08xQmEzIiwicm9sZV90eXBlIjoxLCJ0cGMiOiJWSFYgZm9yIG1lZXRpbmctMSIsInZlcnNpb24iOjEsImlhdCI6MTcxMTYwOTY1MSwiZXhwIjoxNzExNjE2ODUxLCJ1c2VyX2lkZW50aXR5IjoiMDAxMCIsInNlc3Npb25fa2V5IjoiYTM3NWFmZDgtMWJlNy00MTU4LWE1YmEtMDc5MTZhMzlhMjc3IiwicHdkIjoiNzg5Nzg5Nzg5IiwiY2xvdWRfcmVjb3JkaW5nX29wdGlvbiI6MCwiY2xvdWRfcmVjb3JkaW5nX2VsZWN0aW9uIjoxfQ.v6Kh2tfJA_-DmOKV94tcuQgsekmE6wfyZdf4g5U41GE";
+            String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHBfa2V5IjoiSFRvZVBWVkhSbmhONEV5dmQxc3Q3RmJyN1hJZkJLc08xQmEzIiwicm9sZV90eXBlIjoxLCJ0cGMiOiJWSFYgZm9yIHZodi1tZWV0aW5nLTEiLCJ2ZXJzaW9uIjoxLCJpYXQiOjE3MTIwNDIzNTcsImV4cCI6MTcxMjA0OTU1NywidXNlcl9pZGVudGl0eSI6IjAwMTAiLCJzZXNzaW9uX2tleSI6IjRlYThiMjA1LWYzZWQtNDZiOC05Yzg0LTUzMWVmMTdmNzA1MiIsInB3ZCI6Ijc4OTc4OTc4OSIsImNsb3VkX3JlY29yZGluZ19vcHRpb24iOjAsImNsb3VkX3JlY29yZGluZ19lbGVjdGlvbiI6MX0.dufQlbpYY8ntP1TbFXDLAEa9g5e-g5wHkPvtQH0HjeI";
 
             Intent intent = new Intent(MainActivity.this, MeetingActivity.class);
             intent.putExtra(PARAM_USERNAME, name);
@@ -103,8 +102,8 @@ public class MainActivity extends AppCompatActivity {
             intent.putExtra(PARAM_ALLOW_TO_END_MEETING, true);
             intent.putExtra(PARAM_ALLOW_TO_TAKE_SCREENSHOT, true);
             intent.putExtra(PARAM_ALLOW_TO_GET_LOCATION, true);
-            intent.putExtra(PARAM_ALLOW_TO_CAPTURE_CE_FORM_DATA, true);
-            intent.putExtra(PARAM_QUESTION_ANSWER, new Gson().toJson(questionResponses));
+            intent.putExtra(PARAM_ALLOW_TO_CE_FORM_CAPTURE_DATA, true);
+            intent.putExtra(PARAM_CE_FORM_QUESTION_ANSWER_LIST, new Gson().toJson(questionResponses));
             startActivity(intent);
         });
 
