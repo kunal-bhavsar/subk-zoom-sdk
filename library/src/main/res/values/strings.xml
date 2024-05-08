@@ -60,7 +60,8 @@
     <string name="on" tools:ignore="ExtraTranslation">On</string>
     <string name="off" tools:ignore="ExtraTranslation">Off</string>
 
-    <string name="leave_message">The meeting will be terminated as consent has been declined</string>
+    <string name="consent_decline_message">The meeting will be terminated as consent has been declined</string>
+    <string name="leave_message">Do you want to leave this session?</string>
     <string name="leave_end_text">End Session</string>
     <string name="leave_leave_text">Leave Session</string>
     <string name="share_title">Share</string>
