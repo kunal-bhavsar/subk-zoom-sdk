@@ -60,7 +60,7 @@
     <string name="on" tools:ignore="ExtraTranslation">On</string>
     <string name="off" tools:ignore="ExtraTranslation">Off</string>
 
-    <string name="leave_message">Do you want to leave this session?</string>
+    <string name="leave_message">The meeting will be terminated as consent has been declined</string>
     <string name="leave_end_text">End Session</string>
     <string name="leave_leave_text">Leave Session</string>
     <string name="share_title">Share</string>
@@ -95,4 +95,5 @@
     <string name="internet_toast_error_message">Still no internet connectivity..</string>
     <string name="next">Next</string>
     <string name="prev">Previous</string>
+    <string name="did_the_customer_s_consent_to_recording_this_call">Did the customer(s) consent to recording this call?</string>
 </resources>
