@@ -351,6 +351,8 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     // Map to store answers with question IDs
     private Map<String, String> ceAnswersMap = new HashMap<>();
 
+    protected LinearLayout manualConsentLayout;
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onCeAnswerResponseReceived(List<CeFormQuestion> ceFormQuestionResponse) {
         // Handle the received question responses here
@@ -1057,6 +1059,8 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         ceFormRadioGroup = findViewById(R.id.ce_form_radio_group);
         ceFormClose = findViewById(R.id.ce_form_close);
 
+        manualConsentLayout = findViewById(R.id.manual_consent_layout);
+
         if (!ceQuestionResponse.isEmpty()) {
             if (ceFormQuestions == null) {
                 ceFormQuestions = new Gson().fromJson(ceQuestionResponse, new TypeToken<List<CeFormQuestion>>() {
@@ -1308,6 +1312,10 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         builder.setCanceledOnTouchOutside(true);
         builder.setCancelable(true);
         builder.show();
+    }
+
+    public void onClickYes(View view) {
+        manualConsentLayout.setVisibility(View.GONE);
     }
 
     public void onClickEnd(View view) {
