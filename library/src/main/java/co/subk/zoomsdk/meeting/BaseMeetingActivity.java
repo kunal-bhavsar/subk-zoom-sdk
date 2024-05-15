@@ -1364,8 +1364,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
     public void onStartMeetingConsent() {
         final Dialog builder = new Dialog(this, R.style.MyDialog);
-        builder.setCanceledOnTouchOutside(true);
-        builder.setCancelable(true);
+        builder.setCancelable(false);
         builder.setContentView(R.layout.dialog_leave_alert);
         ((TextView) builder.findViewById(R.id.txt_leave_session)).setText(getString(R.string.did_the_customer_s_consent_to_recording_this_call));
         ((TextView)builder.findViewById(R.id.btn_leave)).setText(getString(R.string.yes));
