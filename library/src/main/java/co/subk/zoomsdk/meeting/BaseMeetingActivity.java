@@ -1218,6 +1218,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
             }
         });
 
+        onStartMeetingConsent();
 
     }
 
@@ -1325,9 +1326,9 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         builder.setCanceledOnTouchOutside(true);
         builder.setCancelable(true);
         builder.setContentView(R.layout.dialog_leave_alert);
-        if(view.getId() == R.id.text_end_meeting) {
+        if (view.getId() == R.id.text_end_meeting) {
             ((TextView) builder.findViewById(R.id.txt_leave_session)).setText(getString(R.string.leave_message));
-        }else {
+        } else {
             ((TextView) builder.findViewById(R.id.txt_leave_session)).setText(getString(R.string.consent_decline_message));
         }
         builder.findViewById(R.id.btn_leave).setOnClickListener(new View.OnClickListener() {
@@ -1359,6 +1360,32 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         });
         builder.show();
 
+    }
+
+    public void onStartMeetingConsent() {
+        final Dialog builder = new Dialog(this, R.style.MyDialog);
+        builder.setCanceledOnTouchOutside(true);
+        builder.setCancelable(true);
+        builder.setContentView(R.layout.dialog_leave_alert);
+        ((TextView) builder.findViewById(R.id.txt_leave_session)).setText(getString(R.string.did_the_customer_s_consent_to_recording_this_call));
+        ((TextView)builder.findViewById(R.id.btn_leave)).setText(getString(R.string.yes));
+        builder.findViewById(R.id.btn_leave).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                builder.dismiss();
+                onClickYes(view);
+            }
+        });
+
+        ((TextView)builder.findViewById(R.id.btn_end)).setText(getString(R.string.no));
+        builder.findViewById(R.id.btn_end).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                builder.dismiss();
+                onClickEnd(view);
+            }
+        });
+        builder.show();
     }
 
     private void releaseResource() {
