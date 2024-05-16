@@ -59,6 +59,7 @@ import android.view.Display;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -1323,8 +1324,8 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         ZoomVideoSDKUser userInfo = session.getMySelf();
 
         final Dialog builder = new Dialog(this, R.style.MyDialog);
-        builder.setCanceledOnTouchOutside(true);
-        builder.setCancelable(true);
+        builder.setCanceledOnTouchOutside(false);
+        builder.setCancelable(false);
         builder.setContentView(R.layout.dialog_leave_alert);
         if (view.getId() == R.id.text_end_meeting) {
             ((TextView) builder.findViewById(R.id.txt_leave_session)).setText(getString(R.string.leave_message));
@@ -1365,23 +1366,29 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     public void onStartMeetingConsent() {
         final Dialog builder = new Dialog(this, R.style.MyDialog);
         builder.setCancelable(false);
+        /*DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        int height = displayMetrics.heightPixels;
+        int width = displayMetrics.widthPixels;*/
+        //builder.requestWindowFeature(Window.FEATURE_NO_TITLE);
         builder.setContentView(R.layout.dialog_leave_alert);
+       // builder.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, (int) (height*0.5));
         ((TextView) builder.findViewById(R.id.txt_leave_session)).setText(getString(R.string.did_the_customer_s_consent_to_recording_this_call));
-        ((TextView)builder.findViewById(R.id.btn_leave)).setText(getString(R.string.yes));
+        ((TextView)builder.findViewById(R.id.btn_leave)).setText(getString(R.string.no));
         builder.findViewById(R.id.btn_leave).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 builder.dismiss();
-                onClickYes(view);
+                onClickEnd(view);
             }
         });
 
-        ((TextView)builder.findViewById(R.id.btn_end)).setText(getString(R.string.no));
+        ((TextView)builder.findViewById(R.id.btn_end)).setText(getString(R.string.yes));
         builder.findViewById(R.id.btn_end).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 builder.dismiss();
-                onClickEnd(view);
+                onClickYes(view);
             }
         });
         builder.show();
