@@ -401,7 +401,8 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     // Method to display the current question
     private void showQuestion(int index) {
         CeFormQuestion ceFormQuestion = ceFormQuestions.get(index);
-        ceFormQuestionText.setText(ceFormQuestion.getQuestionCode() + ". " + ceFormQuestion.getQuestion());
+//        ceFormQuestionText.setText(ceFormQuestion.getQuestionCode() + ". " + ceFormQuestion.getQuestion());
+        ceFormQuestionText.setText(ceFormQuestion.getQuestion());
 
         // Clear existing options in the RadioGroup
         ceAddLayoutAnswer.removeAllViews();
@@ -1369,6 +1370,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
     public void onStartMeetingConsent() {
         final Dialog builder = new Dialog(this, R.style.MyDialog);
+        builder.setCanceledOnTouchOutside(false);
         builder.setCancelable(false);
         builder.setContentView(R.layout.dialog_leave_alert);
         ((TextView) builder.findViewById(R.id.txt_leave_session)).setText(getString(R.string.did_the_customer_s_consent_to_recording_this_call));
