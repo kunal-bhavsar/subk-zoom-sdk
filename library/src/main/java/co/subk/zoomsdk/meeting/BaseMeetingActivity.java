@@ -402,7 +402,8 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     // Method to display the current question
     private void showQuestion(int index) {
         CeFormQuestion ceFormQuestion = ceFormQuestions.get(index);
-        ceFormQuestionText.setText(ceFormQuestion.getQuestionCode() + ". " + ceFormQuestion.getQuestion());
+//        ceFormQuestionText.setText(ceFormQuestion.getQuestionCode() + ". " + ceFormQuestion.getQuestion());
+        ceFormQuestionText.setText(ceFormQuestion.getQuestion());
 
         // Clear existing options in the RadioGroup
         ceAddLayoutAnswer.removeAllViews();
@@ -1348,6 +1349,11 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
             end = true;
         }
         final boolean endSession = end;
+        if (view.getId() == R.id.text_end_meeting) {
+            builder.findViewById(R.id.btn_end).setVisibility(View.VISIBLE);
+        }else{
+            builder.findViewById(R.id.btn_end).setVisibility(View.GONE);
+        }
         builder.findViewById(R.id.btn_end).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -1365,6 +1371,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
     public void onStartMeetingConsent() {
         final Dialog builder = new Dialog(this, R.style.MyDialog);
+        builder.setCanceledOnTouchOutside(false);
         builder.setCancelable(false);
         /*DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
@@ -1392,7 +1399,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
             }
         });
         builder.show();
-    }
+}
 
     private void releaseResource() {
         unSubscribe();
