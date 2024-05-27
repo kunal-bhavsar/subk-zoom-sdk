@@ -111,6 +111,8 @@ public class MainActivity extends AppCompatActivity {
 
         requestPermission();
 
+        
+
         startService(new Intent(this, EventManagementService.class));
     }
 
