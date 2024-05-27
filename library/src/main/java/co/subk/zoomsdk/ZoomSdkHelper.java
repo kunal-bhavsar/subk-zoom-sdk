@@ -17,6 +17,10 @@ public class ZoomSdkHelper {
     public final static String PARAM_TOKEN = "token";
     public final static String PARAM_PASSWORD = "password";
     public final static String PARAM_SESSION_NAME = "session_name";
+
+    public final static String PARAM_SHOW_CONSENT = "show_content";
+
+
     public final static String PARAM_RENDER_TYPE = "render_type";
     public final static String PARAM_TASK_ID = "task_id";
     public final static String PARAM_MEETING_ENTITY_ID = "meeting_entity_id";

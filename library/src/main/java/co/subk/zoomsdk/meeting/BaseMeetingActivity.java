@@ -16,6 +16,7 @@ import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_PASSWORD;
 import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_CE_FORM_QUESTION_ANSWER_LIST;
 import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_RENDER_TYPE;
 import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_SESSION_NAME;
+import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_SHOW_CONSENT;
 import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_TASK_ID;
 import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_TOKEN;
 import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_USERNAME;
@@ -237,6 +238,8 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
     protected boolean allowToInviteAttendee = false;
     protected boolean allowToShareScreen = false;
+
+    protected boolean showConsent = false;
     protected boolean allowToMuteAudio = false;
     protected boolean allowToHideVideo = false;
     protected boolean allowToEndMeeting = false;
@@ -621,6 +624,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
             renderType = bundle.getInt(PARAM_RENDER_TYPE, RENDER_TYPE_ZOOMRENDERER);
             allowToInviteAttendee = bundle.getBoolean(PARAM_ALLOW_TO_INVITE_ATTENDEE);
             allowToShareScreen = bundle.getBoolean(PARAM_ALLOW_TO_SHARE_SCREEN);
+            showConsent = bundle.getBoolean(PARAM_SHOW_CONSENT);
             allowToMuteAudio = bundle.getBoolean(PARAM_ALLOW_TO_MUTE_AUDIO);
             allowToHideVideo = bundle.getBoolean(PARAM_ALLOW_TO_HIDE_VIDEO);
             allowToEndMeeting = bundle.getBoolean(PARAM_ALLOW_TO_END_MEETING);
@@ -1132,6 +1136,15 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                                 answer = "";
                         }
 
+                       /* if (!answer.equalsIgnoreCase(""))
+                        {
+                            Toast.makeText(v.getContext(), "Khali Koni", Toast.LENGTH_LONG).show();
+                        }
+                        else
+                        {
+                            Toast.makeText(v.getContext(), "Khali Hai", Toast.LENGTH_LONG).show();
+                        }*/
+
                         // Store the answer in the map
                         ceAnswersMap.put(questionId, answer);
 
@@ -1220,7 +1233,10 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
             }
         });
 
-        onStartMeetingConsent();
+        if (showConsent)
+        {
+            onStartMeetingConsent();
+        }
 
     }
 
@@ -1375,7 +1391,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         builder.setCancelable(false);
         /*DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        int height = displayMetrics.heightPixels;
+        int height = displayMet9rics.heightPixels;
         int width = displayMetrics.widthPixels;*/
         //builder.requestWindowFeature(Window.FEATURE_NO_TITLE);
         builder.setContentView(R.layout.dialog_leave_alert);

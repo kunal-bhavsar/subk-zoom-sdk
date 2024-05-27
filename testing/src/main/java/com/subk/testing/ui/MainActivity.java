@@ -12,6 +12,7 @@ import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_PASSWORD;
 import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_CE_FORM_QUESTION_ANSWER_LIST;
 import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_RENDER_TYPE;
 import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_SESSION_NAME;
+import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_SHOW_CONSENT;
 import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_TOKEN;
 import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_USERNAME;
 import static co.subk.zoomsdk.ZoomSdkHelper.RENDER_TYPE_ZOOMRENDERER;
@@ -84,10 +85,10 @@ public class MainActivity extends AppCompatActivity {
 
         Log.e("print ques", "onCreate: " + questionResponses);
         binding.fab.setOnClickListener(view -> {
-            String sessionName = "VCM for BSF017-ANANT MAO C24 for MAY 2024";
-            String name = "Arul Harsh";
+            String sessionName = "VHV for subk9145";
+            String name = "7676898765";
             String password = "789789789";
-            String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHBfa2V5IjoiSFRvZVBWVkhSbmhONEV5dmQxc3Q3RmJyN1hJZkJLc08xQmEzIiwicm9sZV90eXBlIjoxLCJ0cGMiOiJWQ00gZm9yIEJTRjAxNy1BTkFOVCBNQU8gQzI0IGZvciBNQVkgMjAyNCIsInZlcnNpb24iOjEsImlhdCI6MTcxNTg1OTM2NywiZXhwIjoxNzE1ODY2NTY3LCJ1c2VyX2lkZW50aXR5IjoiODQ1NCIsInNlc3Npb25fa2V5IjoiZmNkZjEwZDUtOTgwNC00YjgxLTkxN2YtODc0MGNlNmUxNTk5IiwicHdkIjoiNzg5Nzg5Nzg5IiwiY2xvdWRfcmVjb3JkaW5nX29wdGlvbiI6MCwiY2xvdWRfcmVjb3JkaW5nX2VsZWN0aW9uIjoxfQ.KjSNpXqqxYPY3Xbdg2Lz92gyKh2IKcmBbtM85LtFI0M";
+            String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHBfa2V5IjoiSFRvZVBWVkhSbmhONEV5dmQxc3Q3RmJyN1hJZkJLc08xQmEzIiwicm9sZV90eXBlIjoxLCJ0cGMiOiJWSFYgZm9yIHN1Yms5MTQ1IiwidmVyc2lvbiI6MSwiaWF0IjoxNzE2ODA2MzQ5LCJleHAiOjE3MTY4MTM1NDksInVzZXJfaWRlbnRpdHkiOiI5OTk5OTkiLCJzZXNzaW9uX2tleSI6ImRlYTY0ZjIyLWExODItNDFlOC04NWIxLTJkNzhkZWZlYmEzYiIsInB3ZCI6Ijc4OTc4OTc4OSIsImNsb3VkX3JlY29yZGluZ19vcHRpb24iOjAsImNsb3VkX3JlY29yZGluZ19lbGVjdGlvbiI6MX0.VcMY6RJ1VCLpyub62qd0qPEHdejdyWjIKmv1mSqjqdo";
 
             Intent intent = new Intent(MainActivity.this, MeetingActivity.class);
             intent.putExtra(PARAM_USERNAME, name);
@@ -96,6 +97,7 @@ public class MainActivity extends AppCompatActivity {
             intent.putExtra(PARAM_SESSION_NAME, sessionName);
             intent.putExtra(PARAM_RENDER_TYPE, RENDER_TYPE_ZOOMRENDERER);
             intent.putExtra(PARAM_ALLOW_TO_INVITE_ATTENDEE, true);
+            intent.putExtra(PARAM_SHOW_CONSENT, true);
             intent.putExtra(PARAM_ALLOW_TO_SHARE_SCREEN, true);
             intent.putExtra(PARAM_ALLOW_TO_MUTE_AUDIO, true);
             intent.putExtra(PARAM_ALLOW_TO_HIDE_VIDEO, true);
