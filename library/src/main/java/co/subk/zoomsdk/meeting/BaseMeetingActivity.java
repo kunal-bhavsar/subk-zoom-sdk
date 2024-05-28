@@ -1150,8 +1150,6 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                             Toast.makeText(v.getContext(), "Khali Hai", Toast.LENGTH_LONG).show();
                         }*/
 
-                        if(!answer.isEmpty()) {
-
                             // Store the answer in the map
                             ceAnswersMap.put(questionId, answer);
 
