@@ -1069,8 +1069,13 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
         if (!ceQuestionResponse.isEmpty()) {
             if (ceFormQuestions == null) {
-                ceFormQuestions = new Gson().fromJson(ceQuestionResponse, new TypeToken<List<CeFormQuestion>>() {
-                }.getType());
+                try {
+                    ceFormQuestions = new Gson().fromJson(ceQuestionResponse, new TypeToken<List<CeFormQuestion>>() {
+                    }.getType());
+                } catch (Exception e) {
+                    Toast.makeText(this, "Gson Parsing Error Catch", Toast.LENGTH_SHORT).show();
+                    Log.e("GsonParsingError", "Error parsing JSON", e);
+                }
                 Log.e("print que response", "initView: " + ceFormQuestions);
                 showQuestion(currentQuestionIndex);
 
@@ -1136,51 +1141,51 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                                 answer = "";
                         }
 
-                       /* if (!answer.equalsIgnoreCase(""))
-                        {
-                            Toast.makeText(v.getContext(), "Khali Koni", Toast.LENGTH_LONG).show();
-                        }
-                        else
-                        {
-                            Toast.makeText(v.getContext(), "Khali Hai", Toast.LENGTH_LONG).show();
-                        }*/
+                        /*if (!answer.equalsIgnoreCase(""))
+                        {*/
+                            // Store the answer in the map
+                            ceAnswersMap.put(questionId, answer);
 
-                        // Store the answer in the map
-                        ceAnswersMap.put(questionId, answer);
+                            // Create QuestionAnswer object and add to list
+                            List<CeFormAnswer> answers = new ArrayList<>();
+                            answers.add(new CeFormAnswer(questionId, answer));
 
-                        // Create QuestionAnswer object and add to list
-                        List<CeFormAnswer> answers = new ArrayList<>();
-                        answers.add(new CeFormAnswer(questionId, answer));
+                            // Post event to pass the answer list
+                            EventBus.getDefault().post(new CeFormAnswerDataEvent(taskId, token, answers));
 
-                        // Post event to pass the answer list
-                        EventBus.getDefault().post(new CeFormAnswerDataEvent(taskId, token, answers));
+                            // Move to the next question or hide the form if there are no more questions
+                            if (currentQuestionIndex < ceFormQuestions.size() - 1) {
+                                // Move to the next question
+                                currentQuestionIndex++;
+                                showQuestion(currentQuestionIndex);
+                                ceFormBtnPrev.setBackgroundResource(R.drawable.bg_button);
+                                ceFormBtnPrev.setEnabled(true);
+                            } else {
+                                // Check if any answer is empty
+                                boolean anyAnswerEmpty = false;
+                                for (CeFormQuestion question : ceFormQuestions) {
+                                    String qId = question.getId();
+                                    if (!ceAnswersMap.containsKey(qId) || ceAnswersMap.get(qId).isEmpty()) {
+                                        anyAnswerEmpty = true;
+                                        break;
+                                    }
+                                }
 
-                        // Move to the next question or hide the form if there are no more questions
-                        if (currentQuestionIndex < ceFormQuestions.size() - 1) {
-                            // Move to the next question
-                            currentQuestionIndex++;
-                            showQuestion(currentQuestionIndex);
-                            ceFormBtnPrev.setBackgroundResource(R.drawable.bg_button);
-                            ceFormBtnPrev.setEnabled(true);
-                        } else {
-                            // Check if any answer is empty
-                            boolean anyAnswerEmpty = false;
-                            for (CeFormQuestion question : ceFormQuestions) {
-                                String qId = question.getId();
-                                if (!ceAnswersMap.containsKey(qId) || ceAnswersMap.get(qId).isEmpty()) {
-                                    anyAnswerEmpty = true;
-                                    break;
+                                if (anyAnswerEmpty) {
+                                    Toast.makeText(BaseMeetingActivity.this, "Please answer all questions", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    // Hide the form if all questions are answered
+                                    ceFormQuestionLayout.setVisibility(View.GONE);
+                                    allowToCaptureData = false;
                                 }
                             }
 
-                            if (anyAnswerEmpty) {
-                                Toast.makeText(BaseMeetingActivity.this, "Please answer all questions", Toast.LENGTH_SHORT).show();
-                            } else {
-                                // Hide the form if all questions are answered
-                                ceFormQuestionLayout.setVisibility(View.GONE);
-                                allowToCaptureData = false;
-                            }
-                        }
+                       /* }
+                        else
+                        {
+                            Toast.makeText(v.getContext(), "Please answer the question", Toast.LENGTH_LONG).show();
+                        }*/
+
 
                     }
                 });

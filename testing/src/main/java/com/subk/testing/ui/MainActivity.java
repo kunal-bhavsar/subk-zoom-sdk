@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
             String sessionName = "VHV for subk9145";
             String name = "7676898765";
             String password = "789789789";
-            String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHBfa2V5IjoiSFRvZVBWVkhSbmhONEV5dmQxc3Q3RmJyN1hJZkJLc08xQmEzIiwicm9sZV90eXBlIjoxLCJ0cGMiOiJWSFYgZm9yIHN1Yms5MTQ1IiwidmVyc2lvbiI6MSwiaWF0IjoxNzE2ODA2MzQ5LCJleHAiOjE3MTY4MTM1NDksInVzZXJfaWRlbnRpdHkiOiI5OTk5OTkiLCJzZXNzaW9uX2tleSI6ImRlYTY0ZjIyLWExODItNDFlOC04NWIxLTJkNzhkZWZlYmEzYiIsInB3ZCI6Ijc4OTc4OTc4OSIsImNsb3VkX3JlY29yZGluZ19vcHRpb24iOjAsImNsb3VkX3JlY29yZGluZ19lbGVjdGlvbiI6MX0.VcMY6RJ1VCLpyub62qd0qPEHdejdyWjIKmv1mSqjqdo";
+            String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHBfa2V5IjoiSFRvZVBWVkhSbmhONEV5dmQxc3Q3RmJyN1hJZkJLc08xQmEzIiwicm9sZV90eXBlIjoxLCJ0cGMiOiJWSFYgZm9yIHN1Yms5MTQ1IiwidmVyc2lvbiI6MSwiaWF0IjoxNzE2ODcwNDE3LCJleHAiOjE3MTY4Nzc2MTcsInVzZXJfaWRlbnRpdHkiOiI5OTk5OTkiLCJzZXNzaW9uX2tleSI6ImRlYTY0ZjIyLWExODItNDFlOC04NWIxLTJkNzhkZWZlYmEzYiIsInB3ZCI6Ijc4OTc4OTc4OSIsImNsb3VkX3JlY29yZGluZ19vcHRpb24iOjAsImNsb3VkX3JlY29yZGluZ19lbGVjdGlvbiI6MX0.nbuEccNXkWJ9w-irycTghIE_VgIQVwIMncTZBAx9k6U";
 
             Intent intent = new Intent(MainActivity.this, MeetingActivity.class);
             intent.putExtra(PARAM_USERNAME, name);
@@ -111,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
 
         requestPermission();
 
-        
+
 
         startService(new Intent(this, EventManagementService.class));
     }
