@@ -19,12 +19,3 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
-
-# Keep TypeToken and its generic types
--keep class com.google.gson.reflect.TypeToken { *; }
-
-# Keep CeFormQuestion and related classes
--keep class co.subk.zoomsdk.meeting.models.CeFormQuestion { *; }
-
-# Keep fields annotated with @SerializedName
--keepattributes Signature,RuntimeVisibleAnnotations,AnnotationDefault
