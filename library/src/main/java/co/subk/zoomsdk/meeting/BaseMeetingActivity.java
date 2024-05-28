@@ -1141,8 +1141,17 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                                 answer = "";
                         }
 
-                        /*if (!answer.equalsIgnoreCase(""))
-                        {*/
+                       /* if (!answer.equalsIgnoreCase(""))
+                        {
+                            Toast.makeText(v.getContext(), "Khali Koni", Toast.LENGTH_LONG).show();
+                        }
+                        else
+                        {
+                            Toast.makeText(v.getContext(), "Khali Hai", Toast.LENGTH_LONG).show();
+                        }*/
+
+                        if(!answer.isEmpty()) {
+
                             // Store the answer in the map
                             ceAnswersMap.put(questionId, answer);
 
@@ -1152,40 +1161,33 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
                             // Post event to pass the answer list
                             EventBus.getDefault().post(new CeFormAnswerDataEvent(taskId, token, answers));
-
-                            // Move to the next question or hide the form if there are no more questions
-                            if (currentQuestionIndex < ceFormQuestions.size() - 1) {
-                                // Move to the next question
-                                currentQuestionIndex++;
-                                showQuestion(currentQuestionIndex);
-                                ceFormBtnPrev.setBackgroundResource(R.drawable.bg_button);
-                                ceFormBtnPrev.setEnabled(true);
-                            } else {
-                                // Check if any answer is empty
-                                boolean anyAnswerEmpty = false;
-                                for (CeFormQuestion question : ceFormQuestions) {
-                                    String qId = question.getId();
-                                    if (!ceAnswersMap.containsKey(qId) || ceAnswersMap.get(qId).isEmpty()) {
-                                        anyAnswerEmpty = true;
-                                        break;
-                                    }
-                                }
-
-                                if (anyAnswerEmpty) {
-                                    Toast.makeText(BaseMeetingActivity.this, "Please answer all questions", Toast.LENGTH_SHORT).show();
-                                } else {
-                                    // Hide the form if all questions are answered
-                                    ceFormQuestionLayout.setVisibility(View.GONE);
-                                    allowToCaptureData = false;
+                        }
+                        // Move to the next question or hide the form if there are no more questions
+                        if (currentQuestionIndex < ceFormQuestions.size() - 1) {
+                            // Move to the next question
+                            currentQuestionIndex++;
+                            showQuestion(currentQuestionIndex);
+                            ceFormBtnPrev.setBackgroundResource(R.drawable.bg_button);
+                            ceFormBtnPrev.setEnabled(true);
+                        } else {
+                            // Check if any answer is empty
+                            boolean anyAnswerEmpty = false;
+                            for (CeFormQuestion question : ceFormQuestions) {
+                                String qId = question.getId();
+                                if (!ceAnswersMap.containsKey(qId) || ceAnswersMap.get(qId).isEmpty()) {
+                                    anyAnswerEmpty = true;
+                                    break;
                                 }
                             }
 
-                       /* }
-                        else
-                        {
-                            Toast.makeText(v.getContext(), "Please answer the question", Toast.LENGTH_LONG).show();
-                        }*/
-
+                            if (anyAnswerEmpty) {
+                                Toast.makeText(BaseMeetingActivity.this, "Please answer all questions", Toast.LENGTH_SHORT).show();
+                            } else {
+                                // Hide the form if all questions are answered
+                                ceFormQuestionLayout.setVisibility(View.GONE);
+                                allowToCaptureData = false;
+                            }
+                        }
 
                     }
                 });
