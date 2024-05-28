@@ -79,8 +79,7 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
 
         String jsonData = Utils.loadJSONFromAsset(this, "questions.json");
-        Type listType = new TypeToken<List<CeFormQuestion>>() {
-        }.getType();
+        Type listType =  TypeToken.getParameterized(List.class, CeFormQuestion.class).getType();
         questionResponses = new Gson().fromJson(jsonData, listType);
 
         Log.e("print ques", "onCreate: " + questionResponses);

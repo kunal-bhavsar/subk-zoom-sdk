@@ -1069,14 +1069,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
         if (!ceQuestionResponse.isEmpty()) {
             if (ceFormQuestions == null) {
-                try {
-                    ceFormQuestions = new Gson().fromJson(ceQuestionResponse, new TypeToken<List<CeFormQuestion>>() {
-                    }.getType());
-                } catch (Exception e) {
-                    Toast.makeText(this, "Data Parsing Error " + e, Toast.LENGTH_SHORT).show();
-                    Log.e("GsonParsingError", "Error parsing JSON", e);
-                }
-                Log.e("print que response", "initView: " + ceFormQuestions);
+                ceFormQuestions = new Gson().fromJson(ceQuestionResponse, TypeToken.getParameterized(List.class, CeFormQuestion.class).getType());
                 showQuestion(currentQuestionIndex);
 
                 // Restore saved answers when the activity is created
@@ -1150,8 +1143,8 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                             Toast.makeText(v.getContext(), "Khali Hai", Toast.LENGTH_LONG).show();
                         }*/
 
-                            // Store the answer in the map
-                            ceAnswersMap.put(questionId, answer);
+                        // Store the answer in the map
+                        ceAnswersMap.put(questionId, answer);
 
                         // Create QuestionAnswer object and add to list
                         List<CeFormAnswer> answers = new ArrayList<>();
@@ -1238,8 +1231,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
             }
         });
 
-        if (showConsent)
-        {
+        if (showConsent) {
             onStartMeetingConsent();
         }
 
@@ -1372,7 +1364,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         final boolean endSession = end;
         if (view.getId() == R.id.text_end_meeting) {
             builder.findViewById(R.id.btn_end).setVisibility(View.VISIBLE);
-        }else{
+        } else {
             builder.findViewById(R.id.btn_end).setVisibility(View.GONE);
         }
         builder.findViewById(R.id.btn_end).setOnClickListener(new View.OnClickListener() {
@@ -1400,9 +1392,9 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         int width = displayMetrics.widthPixels;*/
         //builder.requestWindowFeature(Window.FEATURE_NO_TITLE);
         builder.setContentView(R.layout.dialog_leave_alert);
-       // builder.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, (int) (height*0.5));
+        // builder.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, (int) (height*0.5));
         ((TextView) builder.findViewById(R.id.txt_leave_session)).setText(getString(R.string.did_the_customer_s_consent_to_recording_this_call));
-        ((TextView)builder.findViewById(R.id.btn_leave)).setText(getString(R.string.no));
+        ((TextView) builder.findViewById(R.id.btn_leave)).setText(getString(R.string.no));
         builder.findViewById(R.id.btn_leave).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -1411,7 +1403,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
             }
         });
 
-        ((TextView)builder.findViewById(R.id.btn_end)).setText(getString(R.string.yes));
+        ((TextView) builder.findViewById(R.id.btn_end)).setText(getString(R.string.yes));
         builder.findViewById(R.id.btn_end).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -1420,7 +1412,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
             }
         });
         builder.show();
-}
+    }
 
     private void releaseResource() {
         unSubscribe();
