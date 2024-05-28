@@ -1145,16 +1145,18 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                             Toast.makeText(v.getContext(), "Khali Hai", Toast.LENGTH_LONG).show();
                         }*/
 
-                        // Store the answer in the map
-                        ceAnswersMap.put(questionId, answer);
+                        if(!answer.isEmpty()) {
 
-                        // Create QuestionAnswer object and add to list
-                        List<CeFormAnswer> answers = new ArrayList<>();
-                        answers.add(new CeFormAnswer(questionId, answer));
+                            // Store the answer in the map
+                            ceAnswersMap.put(questionId, answer);
 
-                        // Post event to pass the answer list
-                        EventBus.getDefault().post(new CeFormAnswerDataEvent(taskId, token, answers));
+                            // Create QuestionAnswer object and add to list
+                            List<CeFormAnswer> answers = new ArrayList<>();
+                            answers.add(new CeFormAnswer(questionId, answer));
 
+                            // Post event to pass the answer list
+                            EventBus.getDefault().post(new CeFormAnswerDataEvent(taskId, token, answers));
+                        }
                         // Move to the next question or hide the form if there are no more questions
                         if (currentQuestionIndex < ceFormQuestions.size() - 1) {
                             // Move to the next question
