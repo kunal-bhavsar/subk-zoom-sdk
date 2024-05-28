@@ -1069,8 +1069,13 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
         if (!ceQuestionResponse.isEmpty()) {
             if (ceFormQuestions == null) {
-                ceFormQuestions = new Gson().fromJson(ceQuestionResponse, new TypeToken<List<CeFormQuestion>>() {
-                }.getType());
+                try {
+                    ceFormQuestions = new Gson().fromJson(ceQuestionResponse, new TypeToken<List<CeFormQuestion>>() {
+                    }.getType());
+                } catch (Exception e) {
+                    Toast.makeText(this, "Data Parsing Error " + e, Toast.LENGTH_SHORT).show();
+                    Log.e("GsonParsingError", "Error parsing JSON", e);
+                }
                 Log.e("print que response", "initView: " + ceFormQuestions);
                 showQuestion(currentQuestionIndex);
 
@@ -1145,8 +1150,10 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                             Toast.makeText(v.getContext(), "Khali Hai", Toast.LENGTH_LONG).show();
                         }*/
 
-                        // Store the answer in the map
-                        ceAnswersMap.put(questionId, answer);
+                        if(!answer.isEmpty()) {
+
+                            // Store the answer in the map
+                            ceAnswersMap.put(questionId, answer);
 
                         // Create QuestionAnswer object and add to list
                         List<CeFormAnswer> answers = new ArrayList<>();
