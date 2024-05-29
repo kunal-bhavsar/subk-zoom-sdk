@@ -1067,6 +1067,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
         manualConsentLayout = findViewById(R.id.manual_consent_layout);
 
+        //just added commmne to publilsh new version of zoom
         if (!ceQuestionResponse.isEmpty()) {
             if (ceFormQuestions == null) {
                 ceFormQuestions = new Gson().fromJson(ceQuestionResponse, TypeToken.getParameterized(List.class, CeFormQuestion.class).getType());
