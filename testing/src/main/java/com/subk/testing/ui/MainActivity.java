@@ -84,10 +84,10 @@ public class MainActivity extends AppCompatActivity {
 
         Log.e("print ques", "onCreate: " + questionResponses);
         binding.fab.setOnClickListener(view -> {
-            String sessionName = "VHV for subk9145";
+            String sessionName = "VHV for ws123";
             String name = "7676898765";
             String password = "789789789";
-            String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHBfa2V5IjoiSFRvZVBWVkhSbmhONEV5dmQxc3Q3RmJyN1hJZkJLc08xQmEzIiwicm9sZV90eXBlIjoxLCJ0cGMiOiJWSFYgZm9yIHN1Yms5MTQ1IiwidmVyc2lvbiI6MSwiaWF0IjoxNzE2ODcwNDE3LCJleHAiOjE3MTY4Nzc2MTcsInVzZXJfaWRlbnRpdHkiOiI5OTk5OTkiLCJzZXNzaW9uX2tleSI6ImRlYTY0ZjIyLWExODItNDFlOC04NWIxLTJkNzhkZWZlYmEzYiIsInB3ZCI6Ijc4OTc4OTc4OSIsImNsb3VkX3JlY29yZGluZ19vcHRpb24iOjAsImNsb3VkX3JlY29yZGluZ19lbGVjdGlvbiI6MX0.nbuEccNXkWJ9w-irycTghIE_VgIQVwIMncTZBAx9k6U";
+            String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHBfa2V5IjoiSFRvZVBWVkhSbmhONEV5dmQxc3Q3RmJyN1hJZkJLc08xQmEzIiwicm9sZV90eXBlIjoxLCJ0cGMiOiJWSFYgZm9yIHdzMTIzIiwidmVyc2lvbiI6MSwiaWF0IjoxNzE3MDUzNTUyLCJleHAiOjE3MTcwNjA3NTIsInVzZXJfaWRlbnRpdHkiOiIwMDEwIiwic2Vzc2lvbl9rZXkiOiJlMzk4ZTNmYi0zZmJjLTQzMzgtOGZjMi1iMGNjNjA1NjhmODEiLCJwd2QiOiI3ODk3ODk3ODkiLCJjbG91ZF9yZWNvcmRpbmdfb3B0aW9uIjowLCJjbG91ZF9yZWNvcmRpbmdfZWxlY3Rpb24iOjF9.dM7G-EM78QuuFJb42HJrgz-Z5W1JuYNX1m9idn3hFkg";
 
             Intent intent = new Intent(MainActivity.this, MeetingActivity.class);
             intent.putExtra(PARAM_USERNAME, name);
