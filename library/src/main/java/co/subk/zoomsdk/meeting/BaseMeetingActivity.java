@@ -411,6 +411,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         // Clear existing options in the RadioGroup
         ceAddLayoutAnswer.removeAllViews();
         ceFormRadioGroup.removeAllViews();
+        ceFormSelectedAnswer = null;
         // Update UI components based on the answer type
         switch (ceFormQuestion.getAnswerType()) {
             case PARAM_CE_FORM_TYPE_TEXT:
@@ -420,7 +421,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                     ceFormEdittextAnswer.setText("");
                 }
                 ceAddLayoutAnswer.addView(ceFormEnterAnswer);
-                ceFormEdittextAnswer.setInputType(ceFormQuestion.getAnswerType().equals("number") ? InputType.TYPE_CLASS_NUMBER : InputType.TYPE_CLASS_TEXT);
+                ceFormEdittextAnswer.setInputType(InputType.TYPE_CLASS_TEXT);
                 ceFormEdittextAnswer.setHint("Enter answer");
                 break;
             case PARAM_CE_FORM_TYPE_NUMBER:
@@ -1144,16 +1145,18 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                             Toast.makeText(v.getContext(), "Khali Hai", Toast.LENGTH_LONG).show();
                         }*/
 
-                        // Store the answer in the map
-                        ceAnswersMap.put(questionId, answer);
+                        if(!answer.isEmpty()) {
+                            // Store the answer in the map
+                            ceAnswersMap.put(questionId, answer);
 
-                        // Create QuestionAnswer object and add to list
-                        List<CeFormAnswer> answers = new ArrayList<>();
-                        answers.add(new CeFormAnswer(questionId, answer));
+                            // Create QuestionAnswer object and add to list
+                            List<CeFormAnswer> answers = new ArrayList<>();
+                            answers.add(new CeFormAnswer(questionId, answer));
 
-                        // Post event to pass the answer list
-                        EventBus.getDefault().post(new CeFormAnswerDataEvent(taskId, token, answers));
+                            // Post event to pass the answer list
+                            EventBus.getDefault().post(new CeFormAnswerDataEvent(taskId, token, answers));
 
+                        }
                         // Move to the next question or hide the form if there are no more questions
                         if (currentQuestionIndex < ceFormQuestions.size() - 1) {
                             // Move to the next question
@@ -1177,7 +1180,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                             } else {
                                 // Hide the form if all questions are answered
                                 ceFormQuestionLayout.setVisibility(View.GONE);
-                                allowToCaptureData = false;
+//                                allowToCaptureData = false;
                             }
                         }
 
