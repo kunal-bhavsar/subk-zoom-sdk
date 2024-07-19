@@ -97,6 +97,8 @@
     <string name="next">Next</string>
     <string name="prev">Previous</string>
     <string name="did_the_customer_s_consent_to_recording_this_call">Did the customer(s) consent to recording this call?</string>
+    <string name="call_is_being_recorded_please_take_consent">This call is being recorded. Please take consent from all participants.</string>
     <string name="yes">YES</string>
     <string name="no">NO</string>
+    <string name="ok">OK</string>
 </resources>

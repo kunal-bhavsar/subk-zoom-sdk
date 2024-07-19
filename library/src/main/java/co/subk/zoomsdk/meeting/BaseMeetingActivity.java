@@ -1397,17 +1397,18 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         //builder.requestWindowFeature(Window.FEATURE_NO_TITLE);
         builder.setContentView(R.layout.dialog_leave_alert);
         // builder.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, (int) (height*0.5));
-        ((TextView) builder.findViewById(R.id.txt_leave_session)).setText(getString(R.string.did_the_customer_s_consent_to_recording_this_call));
+        ((TextView) builder.findViewById(R.id.txt_leave_session)).setText(getString(R.string.call_is_being_recorded_please_take_consent/*did_the_customer_s_consent_to_recording_this_call*/));
         ((TextView) builder.findViewById(R.id.btn_leave)).setText(getString(R.string.no));
+        ((TextView) builder.findViewById(R.id.btn_leave)).setVisibility(View.GONE);
         builder.findViewById(R.id.btn_leave).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 builder.dismiss();
-                onClickEnd(view);
+                //onClickEnd(view);
             }
         });
 
-        ((TextView) builder.findViewById(R.id.btn_end)).setText(getString(R.string.yes));
+        ((TextView) builder.findViewById(R.id.btn_end)).setText(getString(R.string.ok));
         builder.findViewById(R.id.btn_end).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
