@@ -4,7 +4,7 @@
     android:layout_height="wrap_content"
     android:background="@drawable/dialog_bg"
     android:orientation="vertical"
-    android:paddingLeft="@dimen/dp_24"
+    android:paddingLeft="@dimen/dp_15"
     android:paddingTop="@dimen/dp_24"
     android:paddingRight="@dimen/dp_12"
     android:paddingBottom="@dimen/dp_5">
@@ -21,6 +21,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="right"
+        android:layout_marginRight="10dp"
         android:layout_marginTop="@dimen/dp_22"
         android:orientation="horizontal">
 
@@ -29,18 +30,18 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Cancel"
-            android:padding="@dimen/dp_12"
+            android:padding="@dimen/dp_8"
             android:textColor="@drawable/leave_text_color"
-            android:textSize="@dimen/textsize_14" />
+            android:textSize="@dimen/textsize_12" />
 
         <TextView
             android:id="@+id/btn_leave"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/leave_leave_text"
-            android:padding="@dimen/dp_12"
+            android:padding="@dimen/dp_8"
             android:textColor="@drawable/leave_text_color"
-            android:textSize="@dimen/textsize_14" />
+            android:textSize="@dimen/textsize_12" />
 
         <TextView
             android:id="@+id/btn_cancel"
@@ -48,8 +49,8 @@
             android:layout_height="wrap_content"
             android:text="@string/cancel"
             android:visibility="gone"
-            android:padding="@dimen/dp_12"
+            android:padding="@dimen/dp_8"
             android:textColor="@drawable/leave_text_color"
-            android:textSize="@dimen/textsize_14" />
+            android:textSize="@dimen/textsize_12" />
     </LinearLayout>
 </LinearLayout>
