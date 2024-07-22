@@ -1360,6 +1360,12 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
             }
         });
 
+        if (view.getId() == R.id.text_end_meeting) {
+            builder.findViewById(R.id.btn_end).setVisibility(View.VISIBLE);
+        } else {
+            builder.findViewById(R.id.btn_end).setVisibility(View.GONE);
+        }
+
         boolean end = false;
         if (null != userInfo && userInfo.isHost() && allowToEndMeeting) {
             builder.findViewById(R.id.btn_end).setVisibility(View.VISIBLE);
@@ -1371,11 +1377,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
             builder.findViewById(R.id.btn_end).setVisibility(View.GONE);
         }
         final boolean endSession = end;
-        if (view.getId() == R.id.text_end_meeting) {
-            builder.findViewById(R.id.btn_end).setVisibility(View.VISIBLE);
-        } else {
-            builder.findViewById(R.id.btn_end).setVisibility(View.GONE);
-        }
+
         builder.findViewById(R.id.btn_end).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
