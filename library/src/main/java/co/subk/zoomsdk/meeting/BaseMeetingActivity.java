@@ -1157,11 +1157,19 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                             EventBus.getDefault().post(new CeFormAnswerDataEvent(taskId, token, answers));
 
                         }
+                        else
+                        {
+                            // If the answer is empty, remove the entry from the map
+                            ceAnswersMap.remove(questionId);
+                        }
+
                         // Move to the next question or hide the form if there are no more questions
                         if (currentQuestionIndex < ceFormQuestions.size() - 1) {
                             // Move to the next question
                             currentQuestionIndex++;
                             showQuestion(currentQuestionIndex);
+                            // Restore the previously entered answer
+                            restorePreviousAnswer();
                             ceFormBtnPrev.setBackgroundResource(R.drawable.bg_button);
                             ceFormBtnPrev.setEnabled(true);
                         } else {
