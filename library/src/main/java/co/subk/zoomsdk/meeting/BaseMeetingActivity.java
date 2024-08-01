@@ -1265,7 +1265,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                     break;
                 case PARAM_CE_FORM_TYPE_MCQ:
                     // Set the previous selected answer to the appropriate TextView
-                    if (previousAnswer != null) {
+                    /*if (previousAnswer != null) {
                         for (int i = 0; i < ceFormRadioGroup.getChildCount(); i++) {
                             View childView = ceFormRadioGroup.getChildAt(i);
                             if (childView instanceof TextView) {
@@ -1277,7 +1277,34 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                                 }
                             }
                         }
+                    }*/
+
+                    if (previousAnswer != null) {
+                        for (int i = 0; i < ceFormRadioGroup.getChildCount(); i++) {
+                            View childView = ceFormRadioGroup.getChildAt(i);
+
+                            if (childView instanceof LinearLayout) {
+                                LinearLayout linearLayout = (LinearLayout) childView;
+
+                                for (int j = 0; j < linearLayout.getChildCount(); j++) {
+                                    View nestedChild = linearLayout.getChildAt(j);
+
+                                    if (nestedChild instanceof TextView) {
+                                        TextView optionTextView = (TextView) nestedChild;
+
+                                        if (previousAnswer.equals(optionTextView.getText().toString())) {
+                                            // Set the background or other selection indication
+                                            optionTextView.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.bg_radio_button));
+                                            ceFormSelectedAnswer = optionTextView;
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
+
+
                     break;
             }
         } else {
