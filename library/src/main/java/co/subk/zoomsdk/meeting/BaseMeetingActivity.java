@@ -649,7 +649,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     private BroadcastReceiver apiResponseReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Toast.makeText(context, "Get Call Back form Main App ", Toast.LENGTH_SHORT).show();
+           // Toast.makeText(context, "Get Call Back form Main App ", Toast.LENGTH_SHORT).show();
             String apiResponse = intent.getStringExtra("API_RESPONSE");
             // Handle the API response inside the meeting activity
             processApiResponse(apiResponse);
@@ -659,7 +659,139 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     private void processApiResponse(String apiResponse) {
         // Logic to handle the API response in the meeting activity
 
-        Log.d("MeetingActivity", "API response received: " + apiResponse);
+         allowToCaptureData = true;
+         ceQuestionResponse = apiResponse;
+
+        if (!ceQuestionResponse.isEmpty()) {
+            if (ceFormQuestions == null) {
+                ceFormQuestions = new Gson().fromJson(ceQuestionResponse, TypeToken.getParameterized(List.class, CeFormQuestion.class).getType());
+                showQuestion(currentQuestionIndex);
+
+                // Restore saved answers when the activity is created
+
+                if (currentQuestionIndex > 0) {
+                    ceFormBtnPrev.setBackgroundResource(R.drawable.bg_button);
+                    ceFormBtnPrev.setEnabled(true);
+                } else {
+                    ceFormBtnPrev.setBackgroundResource(R.drawable.bg_button_disable);
+                    ceFormBtnPrev.setEnabled(false);
+                }
+
+                ceFormBtnPrev.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (currentQuestionIndex > 0) {
+                            // Move to the previous question
+                            currentQuestionIndex--;
+
+                            // Show the previous question
+                            showQuestion(currentQuestionIndex);
+
+                            // Restore the previously entered answer
+                            restorePreviousAnswer();
+                            ceFormBtnPrev.setBackgroundResource(R.drawable.bg_button);
+                            ceFormBtnPrev.setEnabled(true);
+                            // If the current question index is 0, disable the previous button
+                            if (currentQuestionIndex == 0) {
+                                ceFormBtnPrev.setBackgroundResource(R.drawable.bg_button_disable);
+                                ceFormBtnPrev.setEnabled(false);
+                            }
+                        }
+                    }
+                });
+
+                ceFormClose.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        ceFormQuestionLayout.setVisibility(View.GONE);
+                    }
+                });
+                ceFormBtnNext.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String answer = "";
+
+                        // Get the current question
+                        CeFormQuestion ceFormQuestion = ceFormQuestions.get(currentQuestionIndex);
+                        String questionId = ceFormQuestion.getId();
+
+                        switch (ceFormQuestion.getAnswerType()) {
+                            case PARAM_CE_FORM_TYPE_TEXT:
+                            case PARAM_CE_FORM_TYPE_NUMBER:
+                                answer = ceFormEdittextAnswer.getText().toString().trim();
+                                break;
+                            case PARAM_CE_FORM_TYPE_MCQ:
+                                if (ceFormSelectedAnswer != null) {
+                                    answer = ceFormSelectedAnswer.getText().toString().trim();
+                                }
+                                break;
+                            default:
+                                answer = "";
+                        }
+
+                       /* if (!answer.equalsIgnoreCase(""))
+                        {
+                            Toast.makeText(v.getContext(), "Khali Koni", Toast.LENGTH_LONG).show();
+                        }
+                        else
+                        {
+                            Toast.makeText(v.getContext(), "Khali Hai", Toast.LENGTH_LONG).show();
+                        }*/
+
+                        if(!answer.isEmpty()) {
+                            // Store the answer in the map
+                            ceAnswersMap.put(questionId, answer);
+
+                            // Create QuestionAnswer object and add to list
+                            List<CeFormAnswer> answers = new ArrayList<>();
+                            answers.add(new CeFormAnswer(questionId, answer));
+
+                            // Post event to pass the answer list
+                            EventBus.getDefault().post(new CeFormAnswerDataEvent(taskId, token, answers));
+
+                        }
+                        else
+                        {
+                            // If the answer is empty, remove the entry from the map
+                            ceAnswersMap.remove(questionId);
+                        }
+
+                        // Move to the next question or hide the form if there are no more questions
+                        if (currentQuestionIndex < ceFormQuestions.size() - 1) {
+                            // Move to the next question
+                            currentQuestionIndex++;
+                            showQuestion(currentQuestionIndex);
+                            // Restore the previously entered answer
+                            restorePreviousAnswer();
+                            ceFormBtnPrev.setBackgroundResource(R.drawable.bg_button);
+                            ceFormBtnPrev.setEnabled(true);
+                        } else {
+                            // Check if any answer is empty
+                            boolean anyAnswerEmpty = false;
+                            for (CeFormQuestion question : ceFormQuestions) {
+                                String qId = question.getId();
+                                if (!ceAnswersMap.containsKey(qId) || ceAnswersMap.get(qId).isEmpty()) {
+                                    anyAnswerEmpty = true;
+                                    break;
+                                }
+                            }
+
+                            if (anyAnswerEmpty) {
+                                Toast.makeText(BaseMeetingActivity.this, "Please answer all questions", Toast.LENGTH_SHORT).show();
+                            } else {
+                                // Hide the form if all questions are answered
+                                ceFormQuestionLayout.setVisibility(View.GONE);
+//                                allowToCaptureData = false;
+                            }
+                        }
+
+                    }
+                });
+            }
+
+        }
+
+        //Log.d("MeetingActivity", "API response received: " + apiResponse);
     }
 
     @Override
@@ -1101,7 +1233,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         manualConsentLayout = findViewById(R.id.manual_consent_layout);
 
         //just added commmne to publilsh new version of zoom
-        if (!ceQuestionResponse.isEmpty()) {
+        /*if (!ceQuestionResponse.isEmpty()) {
             if (ceFormQuestions == null) {
                 ceFormQuestions = new Gson().fromJson(ceQuestionResponse, TypeToken.getParameterized(List.class, CeFormQuestion.class).getType());
                 showQuestion(currentQuestionIndex);
@@ -1168,14 +1300,14 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                                 answer = "";
                         }
 
-                       /* if (!answer.equalsIgnoreCase(""))
+                       *//* if (!answer.equalsIgnoreCase(""))
                         {
                             Toast.makeText(v.getContext(), "Khali Koni", Toast.LENGTH_LONG).show();
                         }
                         else
                         {
                             Toast.makeText(v.getContext(), "Khali Hai", Toast.LENGTH_LONG).show();
-                        }*/
+                        }*//*
 
                         if(!answer.isEmpty()) {
                             // Store the answer in the map
@@ -1228,7 +1360,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                 });
             }
 
-        }
+        }*/
 
         onKeyBoardChange(false, 0, 30);
         final int margin = (int) (5 * displayMetrics.scaledDensity);
