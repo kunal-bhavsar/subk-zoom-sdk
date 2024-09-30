@@ -570,6 +570,11 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         sessionContext.sessionIdleTimeoutMins = 40;
 
         ZoomVideoSDKSession session = ZoomVideoSDK.getInstance().joinSession(sessionContext);
+
+        // Once the meeting starts, send a broadcast
+        Intent intent = new Intent("co.subk.sarthi.MEETING_STARTED");
+        sendBroadcast(intent);
+
         if (null == session) {
             Log.i(BaseMeetingActivity.class.getName(), "Session name :" + sessionContext.sessionName);
             Log.i(BaseMeetingActivity.class.getName(), "User name :" + sessionContext.userName);
@@ -761,7 +766,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         super.onStart();
 
         // Register to receive API response from BaseWebViewActivity
-        IntentFilter filter = new IntentFilter("co.subk.sarthi..SEND_RESPONSE_TO_MEETING");
+        IntentFilter filter = new IntentFilter("co.subk.sarthi.SEND_RESPONSE_TO_MEETING");
         registerReceiver(apiResponseReceiver, filter);
 
 

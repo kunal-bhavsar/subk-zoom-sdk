@@ -102,9 +102,6 @@ public class MeetingActivity extends BaseMeetingActivity implements RawDataRende
         CmdHelper.getInstance().addListener(mFeedbackPushHandler);
         FeedbackDataManager.getInstance().startListenerFeedbackData();
 
-        // Once the meeting starts, send a broadcast
-        Intent intent = new Intent("co.subk.sarthi.MEETING_STARTED");
-        sendBroadcast(intent);
     }
 
     @Override
