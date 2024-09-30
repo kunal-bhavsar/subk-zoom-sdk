@@ -636,7 +636,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
             allowToCaptureLocation = bundle.getBoolean(PARAM_ALLOW_TO_GET_LOCATION);
 
            // allowToCaptureData = bundle.getBoolean(PARAM_ALLOW_TO_CE_FORM_CAPTURE_DATA);
-            ceQuestionResponse = bundle.getString(PARAM_CE_FORM_QUESTION_ANSWER_LIST);
+           // ceQuestionResponse = bundle.getString(PARAM_CE_FORM_QUESTION_ANSWER_LIST);
         }
     }
 
