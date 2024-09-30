@@ -4,8 +4,11 @@ import static co.subk.zoomsdk.ZoomSdkHelper.RENDER_TYPE_OPENGLES;
 import static co.subk.zoomsdk.ZoomSdkHelper.RENDER_TYPE_ZOOMRENDERER;
 
 import android.Manifest;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
@@ -98,6 +101,10 @@ public class MeetingActivity extends BaseMeetingActivity implements RawDataRende
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
         CmdHelper.getInstance().addListener(mFeedbackPushHandler);
         FeedbackDataManager.getInstance().startListenerFeedbackData();
+
+        // Once the meeting starts, send a broadcast
+        Intent intent = new Intent("co.subk.sarthi.MEETING_STARTED");
+        sendBroadcast(intent);
     }
 
     @Override
@@ -470,8 +477,12 @@ public class MeetingActivity extends BaseMeetingActivity implements RawDataRende
     @Override
     protected void onStart() {
         super.onStart();
-
         // requestPermission(REQUEST_VIDEO_AUDIO_CODE);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
     }
 
     protected boolean requestPermission(int code) {

@@ -101,6 +101,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import co.subk.zoomsdk.MeetingActivity;
 import co.subk.zoomsdk.NetworkChangeReceiver;
 import co.subk.zoomsdk.R;
 import co.subk.zoomsdk.cmd.CmdHandler;
@@ -612,6 +613,8 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     @Override
     protected void onStop() {
         super.onStop();
+
+        unregisterReceiver(apiResponseReceiver);  // Unregister when activity stops
     }
 
     protected void parseIntent() {
@@ -631,9 +634,27 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
             allowToEndMeeting = bundle.getBoolean(PARAM_ALLOW_TO_END_MEETING);
             allowToTakeScreenshot = bundle.getBoolean(PARAM_ALLOW_TO_TAKE_SCREENSHOT);
             allowToCaptureLocation = bundle.getBoolean(PARAM_ALLOW_TO_GET_LOCATION);
-            allowToCaptureData = bundle.getBoolean(PARAM_ALLOW_TO_CE_FORM_CAPTURE_DATA);
+
+           // allowToCaptureData = bundle.getBoolean(PARAM_ALLOW_TO_CE_FORM_CAPTURE_DATA);
             ceQuestionResponse = bundle.getString(PARAM_CE_FORM_QUESTION_ANSWER_LIST);
         }
+    }
+
+    // Receive API response and process it in the meeting activity
+    private BroadcastReceiver apiResponseReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Toast.makeText(context, "Get Call Back form Main App ", Toast.LENGTH_SHORT).show();
+            String apiResponse = intent.getStringExtra("API_RESPONSE");
+            // Handle the API response inside the meeting activity
+            processApiResponse(apiResponse);
+        }
+    };
+
+    private void processApiResponse(String apiResponse) {
+        // Logic to handle the API response in the meeting activity
+
+        Log.d("MeetingActivity", "API response received: " + apiResponse);
     }
 
     @Override
@@ -738,6 +759,12 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     @Override
     protected void onStart() {
         super.onStart();
+
+        // Register to receive API response from BaseWebViewActivity
+        IntentFilter filter = new IntentFilter("co.subk.sarthi..SEND_RESPONSE_TO_MEETING");
+        registerReceiver(apiResponseReceiver, filter);
+
+
         if (!EventBus.getDefault().isRegistered(this))
             EventBus.getDefault().register(this);
     }
