@@ -60,6 +60,7 @@ public class NotificationService extends Service {
     private void startServiceAsForeground() {
         if (!isAppInForeground()) {
             // If the app is not in the foreground, use an alternative approach (e.g., WorkManager)
+
             Log.e(TAG, "Cannot start foreground service because the app is not in the foreground");
             return;
         }
