@@ -153,23 +153,27 @@ public class UserVideoAdapter extends RecyclerView.Adapter<UserVideoAdapter.Base
 
     public void onUserJoin(List<ZoomVideoSDKUser> joinList) {
         int originalSize = userList.size();
+        ZoomVideoSDKUser self = ZoomVideoSDK.getInstance().getSession().getMySelf();
+
+        joinList.remove(self);
         for (ZoomVideoSDKUser user : joinList) {
-            if (!userList.contains(user)) {
+                        if (!userList.contains(user) && !userList.contains(self)) {
                 userList.add(user);
-                notifyItemInserted(userList.size() - 1);  // Notify new position
+                notifyDataSetChanged();
+               // notifyItemInserted(userList.size() - 1);  // Notify new position
             }
         }
 
         // Double check that the "self" user is not duplicated
-        ZoomVideoSDKUser self = ZoomVideoSDK.getInstance().getSession().getMySelf();
-        if (!userList.contains(self)) {
+
+        /*if (!userList.contains(self)) {
             userList.add(self);
             notifyItemInserted(userList.size() - 1);
-        }
-
-        if (originalSize != userList.size()) {
+        }*/
+      //  notifyDataSetChanged();
+       /* if (originalSize != userList.size()) {
             checkUserList();
-        }
+        }*/
     }
 
     private void checkUserList() {
@@ -210,8 +214,8 @@ public class UserVideoAdapter extends RecyclerView.Adapter<UserVideoAdapter.Base
         if (refreshActive) {
             notifyItemRangeChanged(0, userList.size(), "active");
         }
-
-        checkUserList();
+        notifyDataSetChanged();
+       // checkUserList();
     }
 
 
