@@ -569,6 +569,11 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         sessionContext.sessionIdleTimeoutMins = 40;
 
         ZoomVideoSDKSession session = ZoomVideoSDK.getInstance().joinSession(sessionContext);
+
+        // Once the meeting starts, send a broadcast
+        Intent intent = new Intent("co.subk.sarthi.MEETING_STARTED");
+        sendBroadcast(intent);
+
         if (null == session) {
             Log.i(BaseMeetingActivity.class.getName(), "Session name :" + sessionContext.sessionName);
             Log.i(BaseMeetingActivity.class.getName(), "User name :" + sessionContext.userName);
@@ -612,6 +617,8 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     @Override
     protected void onStop() {
         super.onStop();
+
+        unregisterReceiver(apiResponseReceiver);  // Unregister when activity stops
     }
 
     protected void parseIntent() {
@@ -631,9 +638,159 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
             allowToEndMeeting = bundle.getBoolean(PARAM_ALLOW_TO_END_MEETING);
             allowToTakeScreenshot = bundle.getBoolean(PARAM_ALLOW_TO_TAKE_SCREENSHOT);
             allowToCaptureLocation = bundle.getBoolean(PARAM_ALLOW_TO_GET_LOCATION);
-            allowToCaptureData = bundle.getBoolean(PARAM_ALLOW_TO_CE_FORM_CAPTURE_DATA);
-            ceQuestionResponse = bundle.getString(PARAM_CE_FORM_QUESTION_ANSWER_LIST);
+
+           // allowToCaptureData = bundle.getBoolean(PARAM_ALLOW_TO_CE_FORM_CAPTURE_DATA);
+           // ceQuestionResponse = bundle.getString(PARAM_CE_FORM_QUESTION_ANSWER_LIST);
         }
+    }
+
+    // Receive API response and process it in the meeting activity
+    private BroadcastReceiver apiResponseReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+           // Toast.makeText(context, "Get Call Back form Main App ", Toast.LENGTH_SHORT).show();
+            String apiResponse = intent.getStringExtra("API_RESPONSE");
+            // Handle the API response inside the meeting activity
+            processApiResponse(apiResponse);
+        }
+    };
+
+    private void processApiResponse(String apiResponse) {
+        // Logic to handle the API response in the meeting activity
+
+         allowToCaptureData = true;
+         ceQuestionResponse = apiResponse;
+
+        if (!ceQuestionResponse.isEmpty()) {
+            if (ceFormQuestions == null) {
+                ceFormQuestions = new Gson().fromJson(ceQuestionResponse, TypeToken.getParameterized(List.class, CeFormQuestion.class).getType());
+                showQuestion(currentQuestionIndex);
+
+                // Restore saved answers when the activity is created
+
+                if (currentQuestionIndex > 0) {
+                    ceFormBtnPrev.setBackgroundResource(R.drawable.bg_button);
+                    ceFormBtnPrev.setEnabled(true);
+                } else {
+                    ceFormBtnPrev.setBackgroundResource(R.drawable.bg_button_disable);
+                    ceFormBtnPrev.setEnabled(false);
+                }
+
+                ceFormBtnPrev.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (currentQuestionIndex > 0) {
+                            // Move to the previous question
+                            currentQuestionIndex--;
+
+                            // Show the previous question
+                            showQuestion(currentQuestionIndex);
+
+                            // Restore the previously entered answer
+                            restorePreviousAnswer();
+                            ceFormBtnPrev.setBackgroundResource(R.drawable.bg_button);
+                            ceFormBtnPrev.setEnabled(true);
+                            // If the current question index is 0, disable the previous button
+                            if (currentQuestionIndex == 0) {
+                                ceFormBtnPrev.setBackgroundResource(R.drawable.bg_button_disable);
+                                ceFormBtnPrev.setEnabled(false);
+                            }
+                        }
+                    }
+                });
+
+                ceFormClose.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        ceFormQuestionLayout.setVisibility(View.GONE);
+                    }
+                });
+                ceFormBtnNext.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String answer = "";
+
+                        // Get the current question
+                        CeFormQuestion ceFormQuestion = ceFormQuestions.get(currentQuestionIndex);
+                        String questionId = ceFormQuestion.getId();
+
+                        switch (ceFormQuestion.getAnswerType()) {
+                            case PARAM_CE_FORM_TYPE_TEXT:
+                            case PARAM_CE_FORM_TYPE_NUMBER:
+                                answer = ceFormEdittextAnswer.getText().toString().trim();
+                                break;
+                            case PARAM_CE_FORM_TYPE_MCQ:
+                                if (ceFormSelectedAnswer != null) {
+                                    answer = ceFormSelectedAnswer.getText().toString().trim();
+                                }
+                                break;
+                            default:
+                                answer = "";
+                        }
+
+                       /* if (!answer.equalsIgnoreCase(""))
+                        {
+                            Toast.makeText(v.getContext(), "Khali Koni", Toast.LENGTH_LONG).show();
+                        }
+                        else
+                        {
+                            Toast.makeText(v.getContext(), "Khali Hai", Toast.LENGTH_LONG).show();
+                        }*/
+
+                        if(!answer.isEmpty()) {
+                            // Store the answer in the map
+                            ceAnswersMap.put(questionId, answer);
+
+                            // Create QuestionAnswer object and add to list
+                            List<CeFormAnswer> answers = new ArrayList<>();
+                            answers.add(new CeFormAnswer(questionId, answer));
+
+                            // Post event to pass the answer list
+                            EventBus.getDefault().post(new CeFormAnswerDataEvent(taskId, token, answers));
+
+                        }
+                        else
+                        {
+                            // If the answer is empty, remove the entry from the map
+                            ceAnswersMap.remove(questionId);
+                        }
+
+                        // Move to the next question or hide the form if there are no more questions
+                        if (currentQuestionIndex < ceFormQuestions.size() - 1) {
+                            // Move to the next question
+                            currentQuestionIndex++;
+                            showQuestion(currentQuestionIndex);
+                            // Restore the previously entered answer
+                            restorePreviousAnswer();
+                            ceFormBtnPrev.setBackgroundResource(R.drawable.bg_button);
+                            ceFormBtnPrev.setEnabled(true);
+                        } else {
+                            // Check if any answer is empty
+                            boolean anyAnswerEmpty = false;
+                            for (CeFormQuestion question : ceFormQuestions) {
+                                String qId = question.getId();
+                                if (!ceAnswersMap.containsKey(qId) || ceAnswersMap.get(qId).isEmpty()) {
+                                    anyAnswerEmpty = true;
+                                    break;
+                                }
+                            }
+
+                            if (anyAnswerEmpty) {
+                                Toast.makeText(BaseMeetingActivity.this, "Please answer all questions", Toast.LENGTH_SHORT).show();
+                            } else {
+                                // Hide the form if all questions are answered
+                                ceFormQuestionLayout.setVisibility(View.GONE);
+//                                allowToCaptureData = false;
+                            }
+                        }
+
+                    }
+                });
+            }
+
+        }
+
+        //Log.d("MeetingActivity", "API response received: " + apiResponse);
     }
 
     @Override
@@ -738,6 +895,12 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
     @Override
     protected void onStart() {
         super.onStart();
+
+        // Register to receive API response from BaseWebViewActivity
+        IntentFilter filter = new IntentFilter("co.subk.sarthi.SEND_RESPONSE_TO_MEETING");
+        registerReceiver(apiResponseReceiver, filter);
+
+
         if (!EventBus.getDefault().isRegistered(this))
             EventBus.getDefault().register(this);
     }
@@ -1069,7 +1232,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         manualConsentLayout = findViewById(R.id.manual_consent_layout);
 
         //just added commmne to publilsh new version of zoom
-        if (!ceQuestionResponse.isEmpty()) {
+        /*if (!ceQuestionResponse.isEmpty()) {
             if (ceFormQuestions == null) {
                 ceFormQuestions = new Gson().fromJson(ceQuestionResponse, TypeToken.getParameterized(List.class, CeFormQuestion.class).getType());
                 showQuestion(currentQuestionIndex);
@@ -1138,12 +1301,41 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
                         // Store the current answer
                         ceAnswersMap.put(questionId, answer);
+                       *//* if (!answer.equalsIgnoreCase(""))
+                        {
+                            Toast.makeText(v.getContext(), "Khali Koni", Toast.LENGTH_LONG).show();
+                        }
+                        else
+                        {
+                            Toast.makeText(v.getContext(), "Khali Hai", Toast.LENGTH_LONG).show();
+                        }*//*
+
+                        if(!answer.isEmpty()) {
+                            // Store the answer in the map
+                            ceAnswersMap.put(questionId, answer);
 
                         // Move to the next question or check all answers if it's the last question
+                            // Create QuestionAnswer object and add to list
+                            List<CeFormAnswer> answers = new ArrayList<>();
+                            answers.add(new CeFormAnswer(questionId, answer));
+
+                            // Post event to pass the answer list
+                            EventBus.getDefault().post(new CeFormAnswerDataEvent(taskId, token, answers));
+
+                        }
+                        else
+                        {
+                            // If the answer is empty, remove the entry from the map
+                            ceAnswersMap.remove(questionId);
+                        }
+
+                        // Move to the next question or hide the form if there are no more questions
                         if (currentQuestionIndex < ceFormQuestions.size() - 1) {
                             // Move to the next question
                             currentQuestionIndex++;
                             showQuestion(currentQuestionIndex);
+                            restorePreviousAnswer();
+                            // Restore the previously entered answer
                             restorePreviousAnswer();
                             ceFormBtnPrev.setBackgroundResource(R.drawable.bg_button);
                             ceFormBtnPrev.setEnabled(true);
@@ -1172,7 +1364,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
             }
 
-        }
+        }*/
 
         onKeyBoardChange(false, 0, 30);
         final int margin = (int) (5 * displayMetrics.scaledDensity);
@@ -1241,7 +1433,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                     break;
                 case PARAM_CE_FORM_TYPE_MCQ:
                     // Set the previous selected answer to the appropriate TextView
-                    if (previousAnswer != null) {
+                    /*if (previousAnswer != null) {
                         for (int i = 0; i < ceFormRadioGroup.getChildCount(); i++) {
                             View childView = ceFormRadioGroup.getChildAt(i);
                             if (childView instanceof TextView) {
@@ -1253,7 +1445,34 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                                 }
                             }
                         }
+                    }*/
+
+                    if (previousAnswer != null) {
+                        for (int i = 0; i < ceFormRadioGroup.getChildCount(); i++) {
+                            View childView = ceFormRadioGroup.getChildAt(i);
+
+                            if (childView instanceof LinearLayout) {
+                                LinearLayout linearLayout = (LinearLayout) childView;
+
+                                for (int j = 0; j < linearLayout.getChildCount(); j++) {
+                                    View nestedChild = linearLayout.getChildAt(j);
+
+                                    if (nestedChild instanceof TextView) {
+                                        TextView optionTextView = (TextView) nestedChild;
+
+                                        if (previousAnswer.equals(optionTextView.getText().toString())) {
+                                            // Set the background or other selection indication
+                                            optionTextView.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.bg_radio_button));
+                                            ceFormSelectedAnswer = optionTextView;
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
+
+
                     break;
             }
         } else {
@@ -1344,17 +1563,24 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
             }
         });
 
-        boolean end = false;
-        if (null != userInfo && userInfo.isHost() && allowToEndMeeting) {
-            ((TextView) builder.findViewById(R.id.btn_end)).setText(getString(R.string.leave_end_text));
-            end = true;
-        }
-        final boolean endSession = end;
         if (view.getId() == R.id.text_end_meeting) {
             builder.findViewById(R.id.btn_end).setVisibility(View.VISIBLE);
         } else {
             builder.findViewById(R.id.btn_end).setVisibility(View.GONE);
         }
+
+        boolean end = false;
+        if (null != userInfo && userInfo.isHost() && allowToEndMeeting) {
+            builder.findViewById(R.id.btn_end).setVisibility(View.VISIBLE);
+            ((TextView) builder.findViewById(R.id.btn_end)).setText(getString(R.string.leave_end_text));
+            end = true;
+        }
+        else
+        {
+            builder.findViewById(R.id.btn_end).setVisibility(View.GONE);
+        }
+        final boolean endSession = end;
+
         builder.findViewById(R.id.btn_end).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -1366,6 +1592,15 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                 }
             }
         });
+
+        builder.findViewById(R.id.btn_cancel).setVisibility(View.VISIBLE);
+        builder.findViewById(R.id.btn_cancel).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                builder.dismiss();
+            }
+        });
+
         builder.show();
 
     }
@@ -1381,17 +1616,19 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         //builder.requestWindowFeature(Window.FEATURE_NO_TITLE);
         builder.setContentView(R.layout.dialog_leave_alert);
         // builder.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, (int) (height*0.5));
-        ((TextView) builder.findViewById(R.id.txt_leave_session)).setText(getString(R.string.did_the_customer_s_consent_to_recording_this_call));
+        ((TextView) builder.findViewById(R.id.txt_leave_session)).setText(getString(R.string.call_is_being_recorded_please_take_consent/*did_the_customer_s_consent_to_recording_this_call*/));
         ((TextView) builder.findViewById(R.id.btn_leave)).setText(getString(R.string.no));
+        ((TextView) builder.findViewById(R.id.btn_leave)).setVisibility(View.GONE);
+        builder.findViewById(R.id.btn_cancel).setVisibility(View.GONE);
         builder.findViewById(R.id.btn_leave).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 builder.dismiss();
-                onClickEnd(view);
+                //onClickEnd(view);
             }
         });
 
-        ((TextView) builder.findViewById(R.id.btn_end)).setText(getString(R.string.yes));
+        ((TextView) builder.findViewById(R.id.btn_end)).setText(getString(R.string.ok));
         builder.findViewById(R.id.btn_end).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
