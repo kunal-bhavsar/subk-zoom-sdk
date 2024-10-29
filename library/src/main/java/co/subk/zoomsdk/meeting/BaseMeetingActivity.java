@@ -898,7 +898,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
         // Register to receive API response from BaseWebViewActivity
         IntentFilter filter = new IntentFilter("co.subk.sarthi.SEND_RESPONSE_TO_MEETING");
-        registerReceiver(apiResponseReceiver, filter);
+        registerReceiver(apiResponseReceiver, filter, Context.RECEIVER_NOT_EXPORTED);
 
 
         if (!EventBus.getDefault().isRegistered(this))
