@@ -101,7 +101,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import co.subk.zoomsdk.MeetingActivity;
 import co.subk.zoomsdk.NetworkChangeReceiver;
 import co.subk.zoomsdk.R;
 import co.subk.zoomsdk.cmd.CmdHandler;
@@ -899,7 +898,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
         // Register to receive API response from BaseWebViewActivity
         IntentFilter filter = new IntentFilter("co.subk.sarthi.SEND_RESPONSE_TO_MEETING");
-        registerReceiver(apiResponseReceiver, filter);
+        registerReceiver(apiResponseReceiver, filter, Context.RECEIVER_NOT_EXPORTED);
 
 
         if (!EventBus.getDefault().isRegistered(this))
@@ -1300,6 +1299,8 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                                 answer = "";
                         }
 
+                        // Store the current answer
+                        ceAnswersMap.put(questionId, answer);
                        *//* if (!answer.equalsIgnoreCase(""))
                         {
                             Toast.makeText(v.getContext(), "Khali Koni", Toast.LENGTH_LONG).show();
@@ -1313,6 +1314,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                             // Store the answer in the map
                             ceAnswersMap.put(questionId, answer);
 
+                        // Move to the next question or check all answers if it's the last question
                             // Create QuestionAnswer object and add to list
                             List<CeFormAnswer> answers = new ArrayList<>();
                             answers.add(new CeFormAnswer(questionId, answer));
@@ -1332,6 +1334,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                             // Move to the next question
                             currentQuestionIndex++;
                             showQuestion(currentQuestionIndex);
+                            restorePreviousAnswer();
                             // Restore the previously entered answer
                             restorePreviousAnswer();
                             ceFormBtnPrev.setBackgroundResource(R.drawable.bg_button);
@@ -1341,7 +1344,8 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                             boolean anyAnswerEmpty = false;
                             for (CeFormQuestion question : ceFormQuestions) {
                                 String qId = question.getId();
-                                if (!ceAnswersMap.containsKey(qId) || ceAnswersMap.get(qId).isEmpty()) {
+                                String savedAnswer = ceAnswersMap.get(qId);
+                                if (savedAnswer == null || savedAnswer.trim().isEmpty()) {
                                     anyAnswerEmpty = true;
                                     break;
                                 }
@@ -1352,12 +1356,12 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                             } else {
                                 // Hide the form if all questions are answered
                                 ceFormQuestionLayout.setVisibility(View.GONE);
-//                                allowToCaptureData = false;
+                                // allowToCaptureData = false;
                             }
                         }
-
                     }
                 });
+
             }
 
         }*/

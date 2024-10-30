@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -22,6 +23,7 @@ import co.subk.zoomsdk.meeting.rawdata.RawDataRenderer;
 import co.subk.zoomsdk.meeting.util.UserHelper;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import us.zoom.sdk.ZoomVideoSDK;
@@ -138,52 +140,84 @@ public class UserVideoAdapter extends RecyclerView.Adapter<UserVideoAdapter.Base
     }
 
     public void addAll() {
-        userList.clear();
+        // Get all users without clearing the list first
         List<ZoomVideoSDKUser> all = UserHelper.getAllUsers();
-        userList.addAll(all);
-        notifyDataSetChanged();
+
+        // Only update the list if there are changes
+        if (!userList.equals(all)) {
+            userList.clear();
+            userList.addAll(all);
+            notifyDataSetChanged();
+        }
     }
 
     public void onUserJoin(List<ZoomVideoSDKUser> joinList) {
+        int originalSize = userList.size();
+        ZoomVideoSDKUser self = ZoomVideoSDK.getInstance().getSession().getMySelf();
+
+        joinList.remove(self);
         for (ZoomVideoSDKUser user : joinList) {
-            if (!userList.contains(user)) {
+                        if (!userList.contains(user) && !userList.contains(self)) {
                 userList.add(user);
-                notifyItemInserted(userList.size());
+                notifyDataSetChanged();
+               // notifyItemInserted(userList.size() - 1);  // Notify new position
             }
         }
-        checkUserList();
+
+        // Double check that the "self" user is not duplicated
+
+        /*if (!userList.contains(self)) {
+            userList.add(self);
+            notifyItemInserted(userList.size() - 1);
+        }*/
+      //  notifyDataSetChanged();
+       /* if (originalSize != userList.size()) {
+            checkUserList();
+        }*/
     }
 
     private void checkUserList() {
         List<ZoomVideoSDKUser> all = UserHelper.getAllUsers();
-        if (all.size() != userList.size()) {
+
+        // Remove duplicates, ensure "self" is only present once
+        ZoomVideoSDKUser self = ZoomVideoSDK.getInstance().getSession().getMySelf();
+        if (userList.contains(self) && Collections.frequency(userList, self) > 1) {
+            userList.remove(self);  // Remove duplicate "self"
+        }
+
+        // Update the list if necessary
+        if (!userList.equals(all)) {
             userList.clear();
-            for (ZoomVideoSDKUser userInfo : all) {
-                userList.add(userInfo);
-            }
+            userList.addAll(all);
             notifyDataSetChanged();
         }
     }
 
     public void onUserLeave(List<ZoomVideoSDKUser> leaveList) {
+        boolean refreshActive = false;
 
-        boolean refreshActive=false;
-        if (null != selectedVideoUser && leaveList.contains(selectedVideoUser)) {
+        // If the active user leaves, reset selectedVideoUser
+        if (selectedVideoUser != null && leaveList.contains(selectedVideoUser)) {
             selectedVideoUser = ZoomVideoSDK.getInstance().getSession().getMySelf();
-            refreshActive=true;
+            refreshActive = true;
         }
+
         for (ZoomVideoSDKUser user : leaveList) {
             int index = userList.indexOf(user);
             if (index >= 0) {
                 userList.remove(index);
-                notifyItemRemoved(index);
+                notifyItemRemoved(index);  // Notify removal at the correct position
             }
         }
+
+        // Refresh active video user if necessary
         if (refreshActive) {
             notifyItemRangeChanged(0, userList.size(), "active");
         }
-        checkUserList();
+        notifyDataSetChanged();
+       // checkUserList();
     }
+
 
 
     public void onUserActiveAudioChanged(List<ZoomVideoSDKUser> list, RecyclerView userVideoList) {
@@ -351,12 +385,12 @@ public class UserVideoAdapter extends RecyclerView.Adapter<UserVideoAdapter.Base
             return;
         }
 
-        if (null == payloads || payloads.isEmpty() || payloads.contains("video")) {
+        if (payloads == null || payloads.isEmpty() || payloads.contains("video")) {
             subscribeVideo(user, viewHolder);
         }
         viewHolder.user = user;
 
-        if (null != user) {
+        if (user != null) {
             if (!user.getVideoStatus().isOn()) {
                 viewHolder.video_off_contain.setVisibility(View.VISIBLE);
                 viewHolder.video_off_tips.setImageResource(R.drawable.zm_conf_no_avatar);
@@ -367,29 +401,20 @@ public class UserVideoAdapter extends RecyclerView.Adapter<UserVideoAdapter.Base
         }
 
         if (selectedVideoUser == user) {
-            //Toast.makeText(context, "aayo", Toast.LENGTH_SHORT).show();
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    if (null != tapListener) {
-                        tapListener.onSingleTap(user);
-                    }
+            new Handler().postDelayed(() -> {
+                if (tapListener != null && viewHolder.itemView != null) {
+                    tapListener.onSingleTap(user);
                     viewHolder.itemView.setBackgroundResource(R.drawable.video_active_item_bg);
                     viewHolder.itemView.setVisibility(View.GONE);
                 }
             }, 1000);
-
-        }
-        else {
-            //Toast.makeText(context, "nhi aayo", Toast.LENGTH_SHORT).show();
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
+        } else {
+            new Handler().postDelayed(() -> {
+                if (viewHolder.itemView != null) {
                     viewHolder.itemView.setBackgroundResource(R.drawable.video_item_bg);
                     viewHolder.itemView.setVisibility(View.VISIBLE);
                 }
             }, 1000);
-
         }
 
         if (null != activeAudioList && activeAudioList.contains(user)) {
