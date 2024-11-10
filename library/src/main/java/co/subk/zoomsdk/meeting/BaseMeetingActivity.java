@@ -2230,16 +2230,41 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         }
 
         if (isLocationEnabled()) {
-            locationProviderClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, new CancellationTokenSource().getToken()).addOnSuccessListener(location -> {
-                if (null != location) {
-                    LocationEvent locationEvent = new LocationEvent(location.latitude, location.longitude, location.accuracy, meetingEntityId);
-                    EventBus.getDefault().post(locationEvent);
-                } else {
-                    new Handler().postDelayed(() -> publishLocationEvent(), 5000);
+            LocationRequest locationRequest = new LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 5000)
+                    .setMinUpdateIntervalMillis(2000)
+                    .setMaxUpdateDelayMillis(5000)
+                    .setMaxUpdates(5)
+                    .build();
+
+            LocationServices.getFusedLocationProviderClient(this).requestLocationUpdates(locationRequest, mLocationCallback, Looper.myLooper());
+
+            new Handler().postDelayed(() -> {
+                LocationEvent bestAccuracyLocationEvent = null;
+                for (LocationEvent locationEvent : locationEvents) {
+                    if (null == bestAccuracyLocationEvent || locationEvent.accuracy < bestAccuracyLocationEvent.accuracy) {
+                        bestAccuracyLocationEvent = locationEvent;
+                    }
+                    Log.i("PUBLISH_LOCATION_EVENT", "Stored locations, latitude : " + locationEvent.latitude + ", longitude : " + locationEvent.longitude + ", accuracy : " + locationEvent.accuracy);
                 }
-            });
+                if (bestAccuracyLocationEvent != null) {
+                    Log.i("PUBLISH_LOCATION_EVENT", "So highest accurate location have latitude : " + bestAccuracyLocationEvent.latitude + ", longitude : " + bestAccuracyLocationEvent.longitude + ", accuracy : " + bestAccuracyLocationEvent.accuracy);
+                    EventBus.getDefault().post(bestAccuracyLocationEvent);
+                }
+            }, 30000);
         }
     }
+
+    private LocationCallback mLocationCallback = new LocationCallback() {
+
+        @Override
+        public void onLocationResult(LocationResult locationResult) {
+            Location mLastLocation = locationResult.getLastLocation();
+            //add this check to make sure last known location should not be null
+            if (mLastLocation != null) {
+                locationEvents.add(new LocationEvent(mLastLocation.getLatitude(), mLastLocation.getLongitude(), mLastLocation.getAccuracy(), meetingEntityId));
+            }
+        }
+    };
 
     public void publishSessionEndedEvent() {
         EventBus.getDefault().post(new SessionEndedEvent(taskId));
