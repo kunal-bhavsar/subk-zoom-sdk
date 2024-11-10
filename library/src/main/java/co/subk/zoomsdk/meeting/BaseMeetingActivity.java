@@ -1,6 +1,5 @@
 package co.subk.zoomsdk.meeting;
 
-import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_ALLOW_TO_CE_FORM_CAPTURE_DATA;
 import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_ALLOW_TO_END_MEETING;
 import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_ALLOW_TO_GET_LOCATION;
 import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_ALLOW_TO_HIDE_VIDEO;
@@ -13,7 +12,6 @@ import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_CE_FORM_TYPE_NUMBER;
 import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_CE_FORM_TYPE_TEXT;
 import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_MEETING_ENTITY_ID;
 import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_PASSWORD;
-import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_CE_FORM_QUESTION_ANSWER_LIST;
 import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_RENDER_TYPE;
 import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_SESSION_NAME;
 import static co.subk.zoomsdk.ZoomSdkHelper.PARAM_SHOW_CONSENT;
@@ -40,9 +38,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.hardware.display.DisplayManager;
-import android.location.Location;
 import android.location.LocationManager;
-import android.media.Image;
 import android.media.projection.MediaProjectionManager;
 import android.net.ConnectivityManager;
 import android.net.Uri;
@@ -60,7 +56,6 @@ import android.view.Display;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.Window;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -75,17 +70,16 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.gms.location.LocationCallback;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.Priority;
+import com.google.android.gms.tasks.CancellationTokenSource;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -357,6 +351,8 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
     protected LinearLayout manualConsentLayout;
 
+    protected FusedLocationProviderClient locationProviderClient;
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onCeAnswerResponseReceived(List<CeFormQuestion> ceFormQuestionResponse) {
         // Handle the received question responses here
@@ -387,6 +383,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         displayMetrics = new DisplayMetrics();
         display.getMetrics(displayMetrics);
 
+        this.locationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         setupZoom();
 
         session = ZoomVideoSDK.getInstance().getSession();
@@ -892,13 +889,16 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
     @Override
     protected void onStart() {
         super.onStart();
 
         // Register to receive API response from BaseWebViewActivity
         IntentFilter filter = new IntentFilter("co.subk.sarthi.SEND_RESPONSE_TO_MEETING");
-        registerReceiver(apiResponseReceiver, filter, Context.RECEIVER_NOT_EXPORTED);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            registerReceiver(apiResponseReceiver, filter, Context.RECEIVER_NOT_EXPORTED);
+        }
 
 
         if (!EventBus.getDefault().isRegistered(this))
@@ -2219,52 +2219,24 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         }
 
         // setting LocationRequest on FusedLocationClient
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            /** this line is commented by arul on 07/12/23 becasuse we will ask user to enalbe location at join meeting button and
-             * if location is disable we will send -1 as lat lon in event */
-            // ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_ID);
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             LocationEvent bestAccuracyLocationEvent = new LocationEvent(-1, -1, -1, meetingEntityId);
             EventBus.getDefault().post(bestAccuracyLocationEvent);
             return;
         }
 
-        if (isLocationEnabled()) {
-            LocationRequest locationRequest = new LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 5000)
-                    .setMinUpdateIntervalMillis(2000)
-                    .setMaxUpdateDelayMillis(5000)
-                    .setMaxUpdates(5)
-                    .build();
-
-            LocationServices.getFusedLocationProviderClient(this).requestLocationUpdates(locationRequest, mLocationCallback, Looper.myLooper());
-
-            new Handler().postDelayed(() -> {
-                LocationEvent bestAccuracyLocationEvent = null;
-                for (LocationEvent locationEvent : locationEvents) {
-                    if (null == bestAccuracyLocationEvent || locationEvent.accuracy < bestAccuracyLocationEvent.accuracy) {
-                        bestAccuracyLocationEvent = locationEvent;
-                    }
-                    Log.i("PUBLISH_LOCATION_EVENT", "Stored locations, latitude : " + locationEvent.latitude + ", longitude : " + locationEvent.longitude + ", accuracy : " + locationEvent.accuracy);
+        if (isLocationEnabled() && locationProviderClient != null) {
+            locationProviderClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, new CancellationTokenSource().getToken()).addOnSuccessListener(location -> {
+                if (null != location) {
+                    LocationEvent locationEvent = new LocationEvent(location.getLatitude(), location.getLongitude(), location.getAccuracy(), meetingEntityId);
+                    EventBus.getDefault().post(locationEvent);
+                } else {
+                    new Handler(Looper.getMainLooper()).postDelayed(this::publishLocationEvent, 5000);
                 }
-                if (bestAccuracyLocationEvent != null) {
-                    Log.i("PUBLISH_LOCATION_EVENT", "So highest accurate location have latitude : " + bestAccuracyLocationEvent.latitude + ", longitude : " + bestAccuracyLocationEvent.longitude + ", accuracy : " + bestAccuracyLocationEvent.accuracy);
-                    EventBus.getDefault().post(bestAccuracyLocationEvent);
-                }
-            }, 30000);
+            });
         }
     }
-
-    private LocationCallback mLocationCallback = new LocationCallback() {
-
-        @Override
-        public void onLocationResult(LocationResult locationResult) {
-            Location mLastLocation = locationResult.getLastLocation();
-            //add this check to make sure last known location should not be null
-            if (mLastLocation != null) {
-                locationEvents.add(new LocationEvent(mLastLocation.getLatitude(), mLastLocation.getLongitude(), mLastLocation.getAccuracy(), meetingEntityId));
-            }
-        }
-    };
 
     public void publishSessionEndedEvent() {
         EventBus.getDefault().post(new SessionEndedEvent(taskId));
