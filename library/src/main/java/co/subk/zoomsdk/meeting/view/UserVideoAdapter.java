@@ -214,7 +214,7 @@ public class UserVideoAdapter extends RecyclerView.Adapter<UserVideoAdapter.Base
         if (refreshActive) {
             notifyItemRangeChanged(0, userList.size(), "active");
         }
-        notifyDataSetChanged();
+        //notifyDataSetChanged();
        // checkUserList();
     }
 
