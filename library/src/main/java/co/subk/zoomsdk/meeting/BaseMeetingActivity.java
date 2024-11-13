@@ -399,6 +399,11 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         mNetworkReceiver = new NetworkChangeReceiver();
         registerNetworkBroadcastForNougat();
 
+        /** Below 3 lned added by arul to mute audio and off video by default when join meeting*/
+       /* ZoomVideoSDK.getInstance().getVideoHelper().stopVideo();
+        ZoomVideoSDKUser zoomSDKUserInfo = session.getMySelf();
+        ZoomVideoSDK.getInstance().getAudioHelper().muteAudio(zoomSDKUserInfo);*/
+
     }
 
 
@@ -553,11 +558,12 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
         ZoomVideoSDKAudioOption audioOption = new ZoomVideoSDKAudioOption();
         audioOption.connect = true;
-        audioOption.mute = false;
+        audioOption.mute = true; // it was false and i change it to true to mute mic when user join the meeting
         audioOption.isMyVoiceInMix = true;
 
         ZoomVideoSDKVideoOption videoOption = new ZoomVideoSDKVideoOption();
-        videoOption.localVideoOn = true;
+        videoOption.localVideoOn = false; // it was true and i change it to false to Off Camera when user join the meeting
+
 
         ZoomVideoSDKSessionContext sessionContext = new ZoomVideoSDKSessionContext();
         sessionContext.audioOption = audioOption;
@@ -573,6 +579,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         // Once the meeting starts, send a broadcast
         Intent intent = new Intent("co.subk.sarthi.MEETING_STARTED");
         sendBroadcast(intent);
+
 
         if (null == session) {
             Log.i(BaseMeetingActivity.class.getName(), "Session name :" + sessionContext.sessionName);

@@ -84,10 +84,10 @@ public class MainActivity extends AppCompatActivity {
 
         Log.e("print ques", "onCreate: " + questionResponses);
         binding.fab.setOnClickListener(view -> {
-            String sessionName = "meeting for testing";
-            String name = "8688364670";
+            String sessionName = "Tedt and";
+            String name = "Arul Harsh (8454)";
             String password = "789789789";
-            String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHBfa2V5Ijoib0tNc1JJSWFNbElIeUZ3TkM1dzJBUG12clVLNkdEU1p5T2RJIiwicm9sZV90eXBlIjowLCJ0cGMiOiJtZWV0aW5nIGZvciB0ZXN0aW5nIiwidmVyc2lvbiI6MSwiaWF0IjoxNzMwMTg3Mzg1LCJleHAiOjE3MzAxOTQ1ODUsInVzZXJfaWRlbnRpdHkiOiI1NjM3Iiwic2Vzc2lvbl9rZXkiOiJjYWQ2OWI0Yi02N2VlLTQxY2EtYjE4ZS0wOGYyMWY2NWRmMTUiLCJwd2QiOiI3ODk3ODk3ODkifQ.S0f1EvSqzCwEBTB2BmNewTAC8kJ-Bf8xVV4lJ6wS-sQ";
+            String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHBfa2V5Ijoib0tNc1JJSWFNbElIeUZ3TkM1dzJBUG12clVLNkdEU1p5T2RJIiwicm9sZV90eXBlIjoxLCJ0cGMiOiJUZWR0IGFuZCIsInZlcnNpb24iOjEsImlhdCI6MTczMDI3MDQ2NiwiZXhwIjoxNzMwMjc3NjY2LCJ1c2VyX2lkZW50aXR5IjoiODQ1NCIsInNlc3Npb25fa2V5IjoiNmUwMDBiOTQtMDRmNC00NjFkLTgwNzEtZDdiMmVmZjEyMmIzIiwicHdkIjoiNzg5Nzg5Nzg5IiwiY2xvdWRfcmVjb3JkaW5nX29wdGlvbiI6MCwiY2xvdWRfcmVjb3JkaW5nX2VsZWN0aW9uIjoxfQ.COXBEAVX0Ky_V-DSd76O6uU1ODGz06-ehGubR7Ia6cg";
 
             Intent intent = new Intent(MainActivity.this, MeetingActivity.class);
             intent.putExtra(PARAM_USERNAME, name);
