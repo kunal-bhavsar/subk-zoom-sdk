@@ -82,6 +82,8 @@ public class MeetingActivity extends BaseMeetingActivity implements RawDataRende
 
     TextView username;
 
+    boolean isFirstTime = true;
+
     private CmdHandler mFeedbackPushHandler = new CmdHandler() {
         @Override
         public void onCmdReceived(CmdRequest request) {
@@ -438,7 +440,16 @@ public class MeetingActivity extends BaseMeetingActivity implements RawDataRende
             isOn = true;//show preview
         }
         if (isOn) {
-            videoOffView.setVisibility(View.GONE);
+            if (isFirstTime)
+            {
+                videoOffView.setVisibility(View.VISIBLE);
+                text_fps.setVisibility(View.GONE);
+                videoOffView.setImageResource(R.drawable.zm_conf_no_avatar);
+                isFirstTime = false;
+            }
+            else {
+                videoOffView.setVisibility(View.GONE);
+            }
         } else {
             videoOffView.setVisibility(View.VISIBLE);
             text_fps.setVisibility(View.GONE);
