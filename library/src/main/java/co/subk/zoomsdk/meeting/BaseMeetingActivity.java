@@ -1555,6 +1555,9 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         builder.setCanceledOnTouchOutside(false);
         builder.setCancelable(false);
         builder.setContentView(R.layout.dialog_leave_alert);
+
+        TextView btn_cancel_button = builder.findViewById(R.id.btn_cancel_button);
+
         if (view.getId() == R.id.text_end_meeting) {
             ((TextView) builder.findViewById(R.id.txt_leave_session)).setText(getString(R.string.leave_message));
         } else {
@@ -1600,14 +1603,21 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
             }
         });
 
-        builder.findViewById(R.id.btn_cancel).setVisibility(View.VISIBLE);
+        btn_cancel_button.setVisibility(View.VISIBLE);
+        btn_cancel_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                builder.dismiss();
+            }
+        });
+       /* builder.findViewById(R.id.btn_cancel).setVisibility(View.VISIBLE);
         builder.findViewById(R.id.btn_cancel).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 builder.dismiss();
             }
         });
-
+*/
         builder.show();
 
     }
@@ -1626,7 +1636,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         ((TextView) builder.findViewById(R.id.txt_leave_session)).setText(getString(R.string.call_is_being_recorded_please_take_consent/*did_the_customer_s_consent_to_recording_this_call*/));
         ((TextView) builder.findViewById(R.id.btn_leave)).setText(getString(R.string.no));
         ((TextView) builder.findViewById(R.id.btn_leave)).setVisibility(View.GONE);
-        builder.findViewById(R.id.btn_cancel).setVisibility(View.GONE);
+        builder.findViewById(R.id.btn_cancel_button).setVisibility(View.GONE);
         builder.findViewById(R.id.btn_leave).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
