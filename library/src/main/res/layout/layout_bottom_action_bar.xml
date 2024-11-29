@@ -79,13 +79,15 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/leave_button_bg"
-                android:onClick="onClickEnd"
                 android:paddingHorizontal="16dp"
                 android:paddingVertical="8dp"
                 android:singleLine="true"
                 android:text="LEAVE"
                 android:textColor="#E02828"
                 android:textSize="14sp" />
+
+            <!-- android:onClick="onClickEnd"-->
+
         </LinearLayout>
     </ScrollView>
 

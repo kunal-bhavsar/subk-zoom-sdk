@@ -367,6 +367,8 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
     }
 
+    TextView text_end_meeting;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -1147,6 +1149,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
     protected void initView() {
         loader = findViewById(R.id.loader);
+        text_end_meeting = findViewById(R.id.text_end_meeting);
         showLoader();
 
         sessionNameText = findViewById(R.id.sessionName);
@@ -1422,6 +1425,82 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
             onStartMeetingConsent();
         }
 
+
+        text_end_meeting.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+               // Toast.makeText(BaseMeetingActivity.this, "Close button ", Toast.LENGTH_SHORT).show();
+
+
+                ZoomVideoSDKUser userInfo = session.getMySelf();
+
+                final Dialog builder = new Dialog(BaseMeetingActivity.this, R.style.MyDialog);
+                builder.setCanceledOnTouchOutside(false);
+                builder.setCancelable(false);
+                builder.setContentView(R.layout.dialog_leave_alert);
+
+                TextView btn_cancel_button = builder.findViewById(R.id.btn_cancel_button);
+
+
+                if (view.getId() == R.id.text_end_meeting) {
+                    ((TextView) builder.findViewById(R.id.txt_leave_session)).setText(getString(R.string.leave_message));
+                } else {
+                    ((TextView) builder.findViewById(R.id.txt_leave_session)).setText(getString(R.string.consent_decline_message));
+                }
+                builder.findViewById(R.id.btn_leave).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        builder.dismiss();
+                        releaseResource();
+                        int ret = ZoomVideoSDK.getInstance().leaveSession(false);
+                        Log.d(TAG, "leaveSession ret = " + ret);
+                    }
+                });
+
+                if (view.getId() == R.id.text_end_meeting) {
+                    builder.findViewById(R.id.btn_end).setVisibility(View.VISIBLE);
+                } else {
+                    builder.findViewById(R.id.btn_end).setVisibility(View.GONE);
+                }
+
+                boolean end = false;
+                if (null != userInfo && userInfo.isHost() && allowToEndMeeting) {
+                    builder.findViewById(R.id.btn_end).setVisibility(View.VISIBLE);
+                    ((TextView) builder.findViewById(R.id.btn_end)).setText(getString(R.string.leave_end_text));
+                    end = true;
+                }
+                else
+                {
+                    builder.findViewById(R.id.btn_end).setVisibility(View.GONE);
+                }
+                final boolean endSession = end;
+
+                builder.findViewById(R.id.btn_end).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        builder.dismiss();
+                        if (endSession) {
+                            releaseResource();
+                            int ret = ZoomVideoSDK.getInstance().leaveSession(true);
+                            Log.d(TAG, "leaveSession ret = " + ret);
+                        }
+                    }
+                });
+
+                // builder.findViewById(R.id.btn_cancel).setVisibility(View.VISIBLE);
+                /*builder.findViewById(R.id.btn_cancel)*/btn_cancel_button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        builder.dismiss();
+                    }
+                });
+
+                builder.show();
+
+
+            }
+        });
+
     }
 
     private void restorePreviousAnswer() {
@@ -1558,7 +1637,6 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
 
         TextView btn_cancel_button = findViewById(R.id.btn_cancel_button);
 
-        TextView nayo_butt_add = builder.findViewById(R.id.nayo_butt_add);
 
         if (view.getId() == R.id.text_end_meeting) {
             ((TextView) builder.findViewById(R.id.txt_leave_session)).setText(getString(R.string.leave_message));
@@ -1605,22 +1683,6 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
             }
         });
 
-        if (nayo_butt_add == null)
-        {
-            Toast.makeText(this, "Nayo Button null ", Toast.LENGTH_SHORT).show();
-        }
-        else
-        {
-            Toast.makeText(this, "null Koni hai nayodo ", Toast.LENGTH_SHORT).show();
-        }
-
-        nayo_butt_add.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                builder.dismiss();
-            }
-        });
-
 
        /* if (btn_cancel_button == null) {
             Toast.makeText(this, "Button cancel is null ", Toast.LENGTH_SHORT).show();
@@ -1637,14 +1699,14 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                 builder.dismiss();
             }
         });*/
-       /* builder.findViewById(R.id.btn_cancel).setVisibility(View.VISIBLE);
+       // builder.findViewById(R.id.btn_cancel).setVisibility(View.VISIBLE);
         builder.findViewById(R.id.btn_cancel).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 builder.dismiss();
             }
         });
-*/
+
         builder.show();
 
     }
