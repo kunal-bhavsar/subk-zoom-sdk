@@ -1437,17 +1437,17 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                 final Dialog builder = new Dialog(BaseMeetingActivity.this, R.style.MyDialog);
                 builder.setCanceledOnTouchOutside(false);
                 builder.setCancelable(false);
-                builder.setContentView(R.layout.dialog_leave_alert);
+                builder.setContentView(R.layout.dialog_band_karo_meeting);
 
-                TextView btn_cancel_button = builder.findViewById(R.id.btn_cancel_button);
+                TextView btn_cancel_button = builder.findViewById(R.id.btn_cancel_button_naya);
 
 
                 if (view.getId() == R.id.text_end_meeting) {
-                    ((TextView) builder.findViewById(R.id.txt_leave_session)).setText(getString(R.string.leave_message));
+                    ((TextView) builder.findViewById(R.id.txt_leave_session_new)).setText(getString(R.string.leave_message));
                 } else {
-                    ((TextView) builder.findViewById(R.id.txt_leave_session)).setText(getString(R.string.consent_decline_message));
+                    ((TextView) builder.findViewById(R.id.txt_leave_session_new)).setText(getString(R.string.consent_decline_message));
                 }
-                builder.findViewById(R.id.btn_leave).setOnClickListener(new View.OnClickListener() {
+                builder.findViewById(R.id.btn_leave_naya).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         builder.dismiss();
@@ -1458,24 +1458,24 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
                 });
 
                 if (view.getId() == R.id.text_end_meeting) {
-                    builder.findViewById(R.id.btn_end).setVisibility(View.VISIBLE);
+                    builder.findViewById(R.id.btn_end_naya).setVisibility(View.VISIBLE);
                 } else {
-                    builder.findViewById(R.id.btn_end).setVisibility(View.GONE);
+                    builder.findViewById(R.id.btn_end_naya).setVisibility(View.GONE);
                 }
 
                 boolean end = false;
                 if (null != userInfo && userInfo.isHost() && allowToEndMeeting) {
-                    builder.findViewById(R.id.btn_end).setVisibility(View.VISIBLE);
-                    ((TextView) builder.findViewById(R.id.btn_end)).setText(getString(R.string.leave_end_text));
+                    builder.findViewById(R.id.btn_end_naya).setVisibility(View.VISIBLE);
+                    ((TextView) builder.findViewById(R.id.btn_end_naya)).setText(getString(R.string.leave_end_text));
                     end = true;
                 }
                 else
                 {
-                    builder.findViewById(R.id.btn_end).setVisibility(View.GONE);
+                    builder.findViewById(R.id.btn_end_naya).setVisibility(View.GONE);
                 }
                 final boolean endSession = end;
 
-                builder.findViewById(R.id.btn_end).setOnClickListener(new View.OnClickListener() {
+                builder.findViewById(R.id.btn_end_naya).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         builder.dismiss();
