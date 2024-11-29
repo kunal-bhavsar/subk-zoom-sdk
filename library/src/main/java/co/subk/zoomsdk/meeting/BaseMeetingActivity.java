@@ -1603,6 +1603,14 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
             }
         });
 
+        if (btn_cancel_button == null) {
+            Toast.makeText(this, "Button cancel is null ", Toast.LENGTH_SHORT).show();
+        }
+        else
+        {
+            Toast.makeText(this, "Not null ", Toast.LENGTH_SHORT).show();
+        }
+
         btn_cancel_button.setVisibility(View.VISIBLE);
         btn_cancel_button.setOnClickListener(new View.OnClickListener() {
             @Override
