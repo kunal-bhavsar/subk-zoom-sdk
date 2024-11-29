@@ -1672,7 +1672,8 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         if (zoomSDKUserInfo.getVideoStatus().isOn()) {
             ZoomVideoSDK.getInstance().getVideoHelper().stopVideo();
         } else {
-            ZoomVideoSDK.getInstance().getVideoHelper().startVideo();
+            /** Commented by arul because of this when user share screen from android then in web camera view is visible not screen - 28/nov/24*/
+           // ZoomVideoSDK.getInstance().getVideoHelper().startVideo();
         }
     }
 

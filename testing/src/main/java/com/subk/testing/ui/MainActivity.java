@@ -84,10 +84,10 @@ public class MainActivity extends AppCompatActivity {
 
         Log.e("print ques", "onCreate: " + questionResponses);
         binding.fab.setOnClickListener(view -> {
-            String sessionName = "My  Meet MicCamera";
+            String sessionName = "check other";
             String name = "Arul Harsh (8454)";
             String password = "789789789";
-            String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHBfa2V5Ijoib0tNc1JJSWFNbElIeUZ3TkM1dzJBUG12clVLNkdEU1p5T2RJIiwicm9sZV90eXBlIjoxLCJ0cGMiOiJNeSAgTWVldCBNaWNDYW1lcmEiLCJ2ZXJzaW9uIjoxLCJpYXQiOjE3MzE0NzUyMDksImV4cCI6MTczMTQ4MjQwOSwidXNlcl9pZGVudGl0eSI6Ijg0NTQiLCJzZXNzaW9uX2tleSI6IjRmZWQ2NWYyLWRhNmQtNDdhYy1iOWJmLWU1MTgwNzgwOTZiZSIsInB3ZCI6Ijc4OTc4OTc4OSIsImNsb3VkX3JlY29yZGluZ19vcHRpb24iOjAsImNsb3VkX3JlY29yZGluZ19lbGVjdGlvbiI6MX0.5gfPBARL9UdI7ZYO0kitSZLwDstO3iukTC5LsdzKdvY";
+            String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHBfa2V5Ijoib0tNc1JJSWFNbElIeUZ3TkM1dzJBUG12clVLNkdEU1p5T2RJIiwicm9sZV90eXBlIjoxLCJ0cGMiOiJjaGVjayBvdGhlciIsInZlcnNpb24iOjEsImlhdCI6MTczMjc4NjY1NCwiZXhwIjoxNzMyNzkzODU0LCJ1c2VyX2lkZW50aXR5IjoiODQ1NCIsInNlc3Npb25fa2V5IjoiYWM3NjE1MDUtYjU2NS00Yjk5LTkzOGEtMzNmYzQzMzZlYjRjIiwicHdkIjoiNzg5Nzg5Nzg5IiwiY2xvdWRfcmVjb3JkaW5nX29wdGlvbiI6MCwiY2xvdWRfcmVjb3JkaW5nX2VsZWN0aW9uIjoxfQ.1v6dW8sPxyxC-ATHZfxS7VSfryKk7wkij9yZTWbL0yg";
 
             Intent intent = new Intent(MainActivity.this, MeetingActivity.class);
             intent.putExtra(PARAM_USERNAME, name);
