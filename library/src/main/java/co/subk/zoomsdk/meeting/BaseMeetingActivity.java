@@ -1628,7 +1628,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         builder.setCancelable(false);
         /*DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        int height = displayMet9rics.heightPixels;
+        int height = displayMet9rics.heightPixels;nb,mn,m
         int width = displayMetrics.widthPixels;*/
         //builder.requestWindowFeature(Window.FEATURE_NO_TITLE);
         builder.setContentView(R.layout.dialog_leave_alert);
