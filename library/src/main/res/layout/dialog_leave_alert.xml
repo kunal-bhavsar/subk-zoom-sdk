@@ -52,5 +52,15 @@
             android:padding="@dimen/dp_8"
             android:textColor="@drawable/leave_text_color"
             android:textSize="@dimen/textsize_12" />
+
+        <TextView
+            android:id="@+id/nayo_butt_add"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/cancel"
+            android:visibility="visible"
+            android:padding="@dimen/dp_8"
+            android:textColor="@drawable/leave_text_color"
+            android:textSize="@dimen/textsize_12" />
     </LinearLayout>
 </LinearLayout>

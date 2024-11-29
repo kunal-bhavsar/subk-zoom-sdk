@@ -1556,7 +1556,9 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
         builder.setCancelable(false);
         builder.setContentView(R.layout.dialog_leave_alert);
 
-        TextView btn_cancel_button = builder.findViewById(R.id.btn_cancel_button);
+        TextView btn_cancel_button = findViewById(R.id.btn_cancel_button);
+
+        TextView nayo_butt_add = builder.findViewById(R.id.nayo_butt_add);
 
         if (view.getId() == R.id.text_end_meeting) {
             ((TextView) builder.findViewById(R.id.txt_leave_session)).setText(getString(R.string.leave_message));
@@ -1603,7 +1605,24 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
             }
         });
 
-        if (btn_cancel_button == null) {
+        if (nayo_butt_add == null)
+        {
+            Toast.makeText(this, "Nayo Button null ", Toast.LENGTH_SHORT).show();
+        }
+        else
+        {
+            Toast.makeText(this, "null Koni hai nayodo ", Toast.LENGTH_SHORT).show();
+        }
+
+        nayo_butt_add.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                builder.dismiss();
+            }
+        });
+
+
+       /* if (btn_cancel_button == null) {
             Toast.makeText(this, "Button cancel is null ", Toast.LENGTH_SHORT).show();
         }
         else
@@ -1617,7 +1636,7 @@ public class BaseMeetingActivity extends AppCompatActivity implements ZoomVideoS
             public void onClick(View view) {
                 builder.dismiss();
             }
-        });
+        });*/
        /* builder.findViewById(R.id.btn_cancel).setVisibility(View.VISIBLE);
         builder.findViewById(R.id.btn_cancel).setOnClickListener(new View.OnClickListener() {
             @Override
