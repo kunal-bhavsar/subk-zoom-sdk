@@ -39,6 +39,12 @@
                 android:textColor="@color/white"
                 android:textSize="12sp"
                 android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=" &lt;FrameLayout&#xA;        android:id=&quot;@+id/big_video_contain&quot;&#xA;        android:layout_width=&quot;match_parent&quot;&#xA;        android:layout_height=&quot;match_parent&quot;&#xA;        android:background=&quot;@color/black&quot;>" />
         </FrameLayout>
     </FrameLayout>
 
@@ -309,7 +315,7 @@
         android:gravity="center_horizontal|bottom"
         android:orientation="vertical"
         android:padding="@dimen/dp_10"
-        android:visibility="gone">
+        android:visibility="visible">
 
         <ImageView
             android:id="@+id/ce_form_close"
